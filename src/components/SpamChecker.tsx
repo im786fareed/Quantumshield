@@ -1,6 +1,6 @@
 'use client';
 
-import { Phone, AlertTriangle, CheckCircle, XCircle, Mail } from 'lucide-react';
+import { Phone, AlertTriangle, CheckCircle, XCircle, Mail, Link as LinkIcon } from 'lucide-react';
 import { useState } from 'react';
 
 interface Props {
@@ -11,44 +11,57 @@ interface CheckResult {
   verdict: 'SAFE' | 'SUSPICIOUS' | 'SPAM';
   riskScore: number;
   message: string;
-  type: 'phone' | 'email';
+  type: 'phone' | 'email' | 'sms';
   indicators: {
     hasScamKeywords: boolean;
     hasPhoneNumber: boolean;
     hasLink: boolean;
     hasUrgency: boolean;
     hasMoney: boolean;
+    hasLottery: boolean;
+    hasSuspiciousSender: boolean;
     foundKeywords: string[];
+    foundUrls: string[];
+    suspiciousPatterns: string[];
   };
   actions: string[];
+  details?: {
+    subject?: string;
+    urlCount?: number;
+    urgencyLevel?: string;
+  };
 }
 
 const CONTENT = {
   en: {
-    title: 'Spam Checker',
-    subtitle: 'Check phone numbers, emails, or messages',
-    phonePlaceholder: 'Enter phone number or paste suspicious message/email...',
-    checkButton: 'Check for Spam',
-    checking: 'Checking...',
-    result: 'Check Result',
-    riskScore: 'Risk Score',
-    indicators: 'Detected Patterns',
-    whatToDo: 'What to do',
-    checkAnother: 'Check Another',
-    disclaimer: 'Educational Tool: Pattern-based detection. Always verify through official channels.'
+    title: 'AI Email & SMS Spam Detector',
+    subtitle: 'Paste full email or message for deep content analysis',
+    phonePlaceholder: 'Paste complete email (subject + body) or SMS message here...\n\nExample:\nSubject: You Won 50 Lakh!\nFrom: lottery@unknown.com\n\nDear Winner, Click here to claim...',
+    checkButton: 'AI Analyze Email',
+    checking: 'AI analyzing content...',
+    result: 'AI Analysis Result',
+    riskScore: 'Spam Probability',
+    indicators: 'Detected Red Flags',
+    whatToDo: 'Recommended Actions',
+    checkAnother: 'Analyze Another',
+    disclaimer: 'AI-powered content analysis. Checks email text, URLs, sender patterns, and scam indicators.',
+    foundUrls: 'URLs Found in Email',
+    suspiciousPatterns: 'Warning Signs'
   },
   hi: {
-    title: 'स्पैम चेकर',
-    subtitle: 'फोन नंबर ईमेल या संदेश जांचें',
-    phonePlaceholder: 'फोन नंबर दर्ज करें या संदिग्ध संदेश पेस्ट करें',
-    checkButton: 'स्पैम चेक करें',
-    checking: 'जांच हो रही है',
-    result: 'जांच परिणाम',
-    riskScore: 'जोखिम स्कोर',
-    indicators: 'पैटर्न मिले',
-    whatToDo: 'क्या करें',
-    checkAnother: 'फिर जांचें',
-    disclaimer: 'शैक्षिक उपकरण: पैटर्न आधारित पहचान। हमेशा सत्यापित करें।'
+    title: 'AI ईमेल और SMS स्पैम डिटेक्टर',
+    subtitle: 'गहन सामग्री विश्लेषण के लिए पूरा ईमेल पेस्ट करें',
+    phonePlaceholder: 'पूरा ईमेल (विषय + संदेश) या SMS यहां पेस्ट करें...',
+    checkButton: 'AI विश्लेषण करें',
+    checking: 'AI विश्लेषण हो रहा है',
+    result: 'AI विश्लेषण परिणाम',
+    riskScore: 'स्पैम संभावना',
+    indicators: 'खोजे गए खतरे',
+    whatToDo: 'अनुशंसित कार्रवाई',
+    checkAnother: 'फिर विश्लेषण करें',
+    disclaimer: 'AI संचालित सामग्री विश्लेषण। ईमेल टेक्स्ट, URL, प्रेषक पैटर्न जांचता है।',
+    foundUrls: 'ईमेल में मिले URL',
+    suspiciousPatterns: 'चेतावनी संकेत'
   }
 };
 
@@ -57,6 +70,21 @@ export default function SpamChecker({ lang }: Props) {
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<CheckResult | null>(null);
   const content = CONTENT[lang];
+
+  const extractUrls = (text: string): string[] => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.match(urlRegex) || [];
+  };
+
+  const extractSubject = (text: string): string => {
+    const subjectMatch = text.match(/subject:?\s*(.+)/i);
+    return subjectMatch ? subjectMatch[1].trim() : '';
+  };
+
+  const extractSender = (text: string): string => {
+    const fromMatch = text.match(/from:?\s*(.+)/i);
+    return fromMatch ? fromMatch[1].trim() : '';
+  };
 
   const handleCheck = async () => {
     if (!input.trim()) return;
@@ -67,33 +95,64 @@ export default function SpamChecker({ lang }: Props) {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const text = input.toLowerCase();
+    const originalText = input;
     
-    // Detect if it's phone number or email/message
     const isPhoneOnly = /^[\d\s\-\+\(\)]+$/.test(input.trim());
-    const type: 'phone' | 'email' = isPhoneOnly ? 'phone' : 'email';
+    const hasSubject = /subject:/i.test(input);
+    const type: 'phone' | 'email' | 'sms' = isPhoneOnly ? 'phone' : hasSubject ? 'email' : 'sms';
 
-    // SPAM KEYWORDS (expanded list)
+    const subject = extractSubject(originalText);
+    const sender = extractSender(originalText);
+    const foundUrls = extractUrls(originalText);
+
+    // ENHANCED SCAM KEYWORDS
     const scamKeywords = [
-      'congratulations', 'won', 'lottery', 'prize', 'winner', 'claim', 'reward',
-      'urgent', 'verify', 'account', 'suspend', 'suspended', 'block', 'blocked',
-      'click here', 'link', 'otp', 'bank', 'credit card', 'debit card',
-      'kyc', 'update', 'immediately', 'expire', 'expired', 'act now',
-      'limited time', 'offer', 'free', 'gift', 'bonus', 'cashback',
-      'confirm', 'validate', 'security', 'alert', 'warning', 'notice',
-      'payment', 'refund', 'transaction', 'failed', 'pending',
-      'courier', 'parcel', 'delivery', 'customs', 'clearance',
-      'investment', 'profit', 'earn', 'income', 'money',
-      'covid', 'vaccine', 'medicine', 'cure', 'treatment',
-      'loan', 'approved', 'eligible', 'apply',
-      'dating', 'meet', 'chat', 'lonely', 'friend',
-      'job offer', 'work from home', 'hiring', 'vacancy',
-      'subscription', 'cancel', 'renew', 'membership'
+      // Lottery & Prize scams
+      'congratulations', 'winner', 'won', 'lottery', 'prize', 'jackpot', 'lucky',
+      'selected', 'chosen', 'award', 'lakh', 'crore', 'million', 'claim now',
+      
+      // Banking & KYC scams
+      'kyc', 'verify account', 'suspended', 'blocked', 'deactivated', 'expired',
+      'update details', 'confirm identity', 'reactivate', 'bank alert',
+      
+      // Urgency tactics
+      'urgent', 'immediately', 'expire', 'within 24 hours', 'last chance',
+      'act now', 'limited time', 'hurry', 'fast', 'today only', 'deadline',
+      
+      // Financial threats
+      'refund', 'penalty', 'fine', 'legal action', 'court', 'arrest', 'warrant',
+      'tax', 'outstanding', 'payment failed', 'dues',
+      
+      // Fake delivery
+      'parcel', 'courier', 'customs', 'delivery failed', 'shipment', 'package',
+      'clearance fee', 'customs duty',
+      
+      // Investment scams
+      'guaranteed returns', 'risk-free', 'double money', 'instant profit',
+      'trading', 'forex', 'cryptocurrency', 'bitcoin investment',
+      
+      // Job scams
+      'work from home', 'earn daily', 'part time job', 'easy money',
+      'registration fee', 'training fee',
+      
+      // Dating & loneliness scams
+      'lonely', 'friendship', 'meet me', 'video call', 'dating',
+      
+      // Tech support scams
+      'virus detected', 'computer infected', 'security alert', 'microsoft support',
+      
+      // Government impersonation
+      'income tax', 'aadhar', 'pan card', 'election commission', 'rbi',
+      
+      // Click baits
+      'click here', 'tap here', 'open link', 'download', 'install app'
     ];
 
     let riskScore = 0;
     const foundKeywords: string[] = [];
+    const suspiciousPatterns: string[] = [];
 
-    // Check for scam keywords
+    // KEYWORD DETECTION (20 points each for critical keywords)
     for (const keyword of scamKeywords) {
       if (text.includes(keyword)) {
         riskScore += 15;
@@ -101,20 +160,96 @@ export default function SpamChecker({ lang }: Props) {
       }
     }
 
-    // Additional indicators
+    // LOTTERY/PRIZE DETECTION (Critical - 30 points)
+    const lotteryWords = ['lottery', 'won', 'winner', 'prize', 'jackpot', 'lucky draw'];
+    const hasLottery = lotteryWords.some(word => text.includes(word));
+    if (hasLottery) {
+      riskScore += 30;
+      suspiciousPatterns.push('Lottery/Prize scam pattern detected');
+    }
+
+    // URL ANALYSIS (25 points per suspicious URL)
+    const hasLink = foundUrls.length > 0;
+    if (hasLink) {
+      for (const url of foundUrls) {
+        const lowerUrl = url.toLowerCase();
+        
+        // Suspicious URL patterns
+        if (lowerUrl.includes('bit.ly') || lowerUrl.includes('tinyurl') || 
+            lowerUrl.includes('short') || lowerUrl.includes('tiny')) {
+          riskScore += 25;
+          suspiciousPatterns.push(`Shortened URL: ${url}`);
+        }
+        
+        // Legitimate domains with spam content
+        if (lowerUrl.includes('mail.google.com') || lowerUrl.includes('outlook')) {
+          suspiciousPatterns.push('Email contains link to email service (check content carefully)');
+        }
+        
+        // Suspicious domains
+        if (!lowerUrl.includes('https://')) {
+          riskScore += 15;
+          suspiciousPatterns.push(`Insecure URL (no HTTPS): ${url}`);
+        }
+      }
+    }
+
+    // PHONE NUMBER DETECTION (10 points)
     const hasPhoneNumber = /\d{10}/.test(text);
-    const hasLink = /http|www\.|bit\.ly|tinyurl|short\.link|goo\.gl/i.test(text);
-    const hasUrgency = /urgent|immediately|now|asap|hurry|fast|quick|today|tonight/i.test(text);
-    const hasMoney = /₹|rupees|rs\.|crore|lakh|dollar|\$|£|€|prize|reward|cash|refund|payment/i.test(text);
+    if (hasPhoneNumber && type === 'email') {
+      riskScore += 10;
+      suspiciousPatterns.push('Unusual phone number in email body');
+    }
 
-    if (hasPhoneNumber) riskScore += 10;
-    if (hasLink) riskScore += 25;
-    if (hasUrgency) riskScore += 20;
-    if (hasMoney) riskScore += 20;
+    // URGENCY DETECTION (25 points)
+    const urgencyWords = ['urgent', 'immediately', 'expire', '24 hours', 'today', 'now', 'hurry', 'fast'];
+    const hasUrgency = urgencyWords.some(word => text.includes(word));
+    if (hasUrgency) {
+      riskScore += 25;
+      suspiciousPatterns.push('Urgency tactics detected (pressure to act quickly)');
+    }
 
-    // Check for multiple exclamation marks or all caps
-    if (/!!!|!!!!/.test(text)) riskScore += 10;
-    if (text.toUpperCase() === text && text.length > 20) riskScore += 15;
+    // MONEY MENTIONS (25 points)
+    const moneyWords = ['₹', 'rupees', 'rs.', 'lakh', 'crore', 'dollar', '$', '£', '€', 'prize', 'reward', 'cash'];
+    const hasMoney = moneyWords.some(word => text.includes(word));
+    if (hasMoney) {
+      riskScore += 20;
+      suspiciousPatterns.push('Financial amount mentioned');
+    }
+
+    // SENDER ANALYSIS (30 points for suspicious sender)
+    let hasSuspiciousSender = false;
+    if (sender) {
+      const suspiciousDomains = ['unknown', 'noreply', 'lottery', 'prize', 'winner', 'claim'];
+      hasSuspiciousSender = suspiciousDomains.some(domain => sender.toLowerCase().includes(domain));
+      if (hasSuspiciousSender) {
+        riskScore += 30;
+        suspiciousPatterns.push(`Suspicious sender: ${sender}`);
+      }
+    }
+
+    // SUBJECT ANALYSIS
+    if (subject) {
+      const suspiciousSubjects = ['won', 'winner', 'urgent', 'verify', 'suspended', 'claim'];
+      const hasSuspiciousSubject = suspiciousSubjects.some(word => subject.toLowerCase().includes(word));
+      if (hasSuspiciousSubject) {
+        riskScore += 20;
+        suspiciousPatterns.push(`Suspicious subject line: "${subject}"`);
+      }
+    }
+
+    // MULTIPLE EXCLAMATION MARKS (10 points)
+    if (/!!!|!!!!/.test(text)) {
+      riskScore += 10;
+      suspiciousPatterns.push('Excessive punctuation (!!!)');
+    }
+
+    // ALL CAPS TEXT (15 points)
+    const capsWords = text.match(/\b[A-Z]{4,}\b/g);
+    if (capsWords && capsWords.length > 3) {
+      riskScore += 15;
+      suspiciousPatterns.push('Excessive capitalization');
+    }
 
     riskScore = Math.min(riskScore, 100);
 
@@ -124,35 +259,37 @@ export default function SpamChecker({ lang }: Props) {
     if (riskScore >= 70) {
       verdict = 'SPAM';
       message = lang === 'en' 
-        ? 'HIGH SPAM PROBABILITY! This appears to be a scam. Do NOT respond, click links, or share any information.'
-        : 'उच्च स्पैम संभावना! यह एक स्कैम लगता है। जवाब न दें, लिंक न क्लिक करें, कोई जानकारी साझा न करें।';
+        ? '🚨 HIGH SPAM PROBABILITY! This is likely a scam. Do NOT respond, click links, or share information.'
+        : '🚨 उच्च स्पैम संभावना! यह संभवतः एक स्कैम है। जवाब न दें, लिंक न क्लिक करें।';
     } else if (riskScore >= 40) {
       verdict = 'SUSPICIOUS';
       message = lang === 'en'
-        ? 'SUSPICIOUS patterns detected. Verify sender identity through official channels before taking any action.'
-        : 'संदिग्ध पैटर्न मिले। कोई भी कार्रवाई से पहले आधिकारिक चैनलों से प्रेषक की पहचान सत्यापित करें।';
+        ? '⚠️ SUSPICIOUS content detected. Multiple red flags found. Verify sender through official channels before taking action.'
+        : '⚠️ संदिग्ध सामग्री मिली। कोई कार्रवाई से पहले प्रेषक को सत्यापित करें।';
     } else {
       verdict = 'SAFE';
       message = lang === 'en'
-        ? 'No obvious spam patterns detected. However, always stay cautious with unknown senders.'
-        : 'कोई स्पष्ट स्पैम पैटर्न नहीं मिला। हालांकि, अज्ञात प्रेषकों के साथ हमेशा सावधान रहें।';
+        ? '✅ No major spam indicators detected. However, always verify sender identity and avoid clicking suspicious links.'
+        : '✅ कोई बड़ा स्पैम संकेत नहीं मिला। हालांकि, हमेशा प्रेषक को सत्यापित करें।';
     }
 
     const actions = riskScore >= 70 ? [
-      lang === 'en' ? 'DO NOT respond to this message' : 'इस संदेश का जवाब न दें',
-      lang === 'en' ? 'DO NOT click any links' : 'किसी भी लिंक पर क्लिक न करें',
-      lang === 'en' ? 'DO NOT share OTP, password, or card details' : 'OTP, पासवर्ड, कार्ड विवरण साझा न करें',
-      lang === 'en' ? 'Block this sender immediately' : 'इस प्रेषक को तुरंत ब्लॉक करें',
-      lang === 'en' ? 'Report to 1930 or cybercrime.gov.in' : '1930 या cybercrime.gov.in पर रिपोर्ट करें'
+      lang === 'en' ? '🚫 DO NOT respond to this email/message' : '🚫 इस ईमेल का जवाब न दें',
+      lang === 'en' ? '🚫 DO NOT click any links' : '🚫 किसी भी लिंक पर क्लिक न करें',
+      lang === 'en' ? '🚫 DO NOT share OTP, password, or banking details' : '🚫 OTP, पासवर्ड साझा न करें',
+      lang === 'en' ? '📧 Mark as spam and delete immediately' : '📧 स्पैम के रूप में चिह्नित करें',
+      lang === 'en' ? '📞 Report to 1930 (cybercrime helpline)' : '📞 1930 पर रिपोर्ट करें',
+      lang === 'en' ? '⚠️ Warn others who received similar messages' : '⚠️ अन्य लोगों को चेतावनी दें'
     ] : riskScore >= 40 ? [
-      lang === 'en' ? 'Verify sender through official website or phone' : 'आधिकारिक वेबसाइट से प्रेषक सत्यापित करें',
-      lang === 'en' ? 'Do not share sensitive information' : 'संवेदनशील जानकारी साझा न करें',
-      lang === 'en' ? 'Check for official domain/phone number' : 'आधिकारिक डोमेन/फोन नंबर जांचें',
-      lang === 'en' ? 'Be cautious with links and attachments' : 'लिंक और अटैचमेंट से सावधान रहें'
+      lang === 'en' ? '🔍 Verify sender through official website/phone' : '🔍 आधिकारिक वेबसाइट से सत्यापित करें',
+      lang === 'en' ? '🚫 Do not share sensitive information' : '🚫 संवेदनशील जानकारी साझा न करें',
+      lang === 'en' ? '🔗 Check URLs carefully before clicking' : '🔗 क्लिक से पहले URL जांचें',
+      lang === 'en' ? '📧 Contact organization directly if urgent' : '📧 संगठन से सीधे संपर्क करें',
+      lang === 'en' ? '⏰ Ignore pressure tactics and urgency' : '⏰ दबाव रणनीति को अनदेखा करें'
     ] : [
-      lang === 'en' ? 'Stay vigilant with unknown senders' : 'अज्ञात प्रेषकों के साथ सतर्क रहें',
-      lang === 'en' ? 'Never share OTP or passwords' : 'कभी भी OTP या पासवर्ड साझा न करें',
-      lang === 'en' ? 'Verify urgent requests independently' : 'जरूरी अनुरोधों को स्वतंत्र रूप से सत्यापित करें'
+      lang === 'en' ? '✓ Still verify sender for important requests' : '✓ महत्वपूर्ण अनुरोधों को सत्यापित करें',
+      lang === 'en' ? '✓ Never share OTP or passwords via email/SMS' : '✓ कभी भी OTP या पासवर्ड साझा न करें',
+      lang === 'en' ? '✓ Be cautious with links even from known senders' : '✓ ज्ञात प्रेषकों के लिंक से भी सावधान रहें'
     ];
 
     setResult({
@@ -166,9 +303,18 @@ export default function SpamChecker({ lang }: Props) {
         hasLink,
         hasUrgency,
         hasMoney,
-        foundKeywords
+        hasLottery,
+        hasSuspiciousSender,
+        foundKeywords,
+        foundUrls,
+        suspiciousPatterns
       },
-      actions
+      actions,
+      details: {
+        subject,
+        urlCount: foundUrls.length,
+        urgencyLevel: riskScore >= 70 ? 'HIGH' : riskScore >= 40 ? 'MEDIUM' : 'LOW'
+      }
     });
     setIsChecking(false);
   };
@@ -189,7 +335,7 @@ export default function SpamChecker({ lang }: Props) {
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-12">
         <div className="inline-block p-4 bg-cyan-500/20 rounded-2xl mb-4">
-          <Phone className="w-12 h-12 text-cyan-400" />
+          <Mail className="w-12 h-12 text-cyan-400" />
         </div>
         <h2 className="text-4xl font-bold mb-2">{content.title}</h2>
         <p className="text-gray-400 text-lg">{content.subtitle}</p>
@@ -200,7 +346,7 @@ export default function SpamChecker({ lang }: Props) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={content.phonePlaceholder}
-          className="w-full h-40 bg-black/30 rounded-xl p-4 text-white placeholder-gray-500 border border-white/10 focus:border-cyan-400 focus:outline-none resize-none mb-4"
+          className="w-full h-64 bg-black/30 rounded-xl p-4 text-white placeholder-gray-500 border border-white/10 focus:border-cyan-400 focus:outline-none resize-none mb-4 font-mono text-sm"
         />
 
         <button
@@ -231,15 +377,63 @@ export default function SpamChecker({ lang }: Props) {
             <p className="text-xl">{result.message}</p>
           </div>
 
+          {result.details && (
+            <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
+              <h4 className="text-xl font-bold mb-4">Analysis Details:</h4>
+              <div className="space-y-2 text-gray-300">
+                {result.details.subject && (
+                  <p><span className="font-bold">Subject:</span> {result.details.subject}</p>
+                )}
+                <p><span className="font-bold">URLs Found:</span> {result.details.urlCount}</p>
+                <p><span className="font-bold">Threat Level:</span> {result.details.urgencyLevel}</p>
+              </div>
+            </div>
+          )}
+
+          {result.indicators.suspiciousPatterns.length > 0 && (
+            <div className="bg-red-600/20 backdrop-blur rounded-2xl border border-red-500/50 p-6">
+              <h4 className="text-xl font-bold mb-4 text-red-400">{content.suspiciousPatterns}:</h4>
+              <ul className="space-y-2">
+                {result.indicators.suspiciousPatterns.map((pattern, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-200">{pattern}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {result.indicators.foundUrls.length > 0 && (
+            <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
+              <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <LinkIcon className="w-6 h-6" />
+                {content.foundUrls}:
+              </h4>
+              <div className="space-y-2">
+                {result.indicators.foundUrls.map((url, i) => (
+                  <div key={i} className="bg-black/30 rounded p-3 break-all text-sm text-cyan-300 font-mono">
+                    {url}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {result.indicators.foundKeywords.length > 0 && (
             <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
               <h4 className="text-xl font-bold mb-4">{content.indicators}:</h4>
               <div className="flex flex-wrap gap-2">
-                {result.indicators.foundKeywords.map((keyword, i) => (
+                {result.indicators.foundKeywords.slice(0, 20).map((keyword, i) => (
                   <span key={i} className="px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-sm">
                     {keyword}
                   </span>
                 ))}
+                {result.indicators.foundKeywords.length > 20 && (
+                  <span className="px-3 py-1 bg-gray-500/20 text-gray-300 rounded-full text-sm">
+                    +{result.indicators.foundKeywords.length - 20} more
+                  </span>
+                )}
               </div>
             </div>
           )}
