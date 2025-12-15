@@ -1,7 +1,8 @@
 'use client';
 
-import { Scan, Link, MessageSquare, FileSearch, Smartphone, TrendingUp, GraduationCap, Brain, Menu, X, Globe, Shield, Lock, Database, AlertTriangle, Download } from 'lucide-react';
+import { Scan, Link, MessageSquare, FileSearch, Smartphone, TrendingUp, GraduationCap, Brain, Menu, X, Globe, Shield, Lock, Database, AlertTriangle, Download, Home as HomeIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import HomePage from '@/components/HomePage';
 import Scanner from '@/components/Scanner';
 import UrlChecker from '@/components/UrlChecker';
 import SpamChecker from '@/components/SpamChecker';
@@ -19,10 +20,11 @@ import SMSGuardian from '@/components/SMSGuardian';
 import DownloadScanner from '@/components/DownloadScanner';
 
 type Language = 'en' | 'hi';
-type TabId = 'scanner' | 'apk' | 'url' | 'spam' | 'file' | 'encryption' | 'breach' | 'ransomware' | 'device' | 'news' | 'education' | 'aboutai' | 'threats' | 'sms' | 'downloads';
+type TabId = 'home' | 'scanner' | 'apk' | 'url' | 'spam' | 'file' | 'encryption' | 'breach' | 'ransomware' | 'device' | 'news' | 'education' | 'aboutai' | 'threats' | 'sms' | 'downloads';
 
 const NAV_ITEMS = {
   en: [
+    { id: 'home', label: 'Home', icon: Home },
     { id: 'scanner', label: 'AI Scanner', icon: Scan },
     { id: 'threats', label: 'Threat Intel', icon: TrendingUp },
     { id: 'apk', label: 'APK Guardian', icon: Shield },
@@ -40,6 +42,7 @@ const NAV_ITEMS = {
     { id: 'aboutai', label: 'AI Tech', icon: Brain }
   ],
   hi: [
+    { id: 'home', label: 'होम', icon: HomeIcon  },
     { id: 'scanner', label: 'AI स्कैनर', icon: Scan },
     { id: 'threats', label: 'खतरा इंटेल', icon: TrendingUp },
     { id: 'apk', label: 'APK गार्डियन', icon: Shield },
@@ -62,20 +65,18 @@ const CONTENT = {
   en: {
     title: 'QuantumGuard',
     subtitle: 'AI-Powered Cyber Fraud Prevention',
-    tagline: 'India\'s First AI Anti-APK Shield - Autonomous Protection 24/7',
     disclaimer: 'AI-powered autonomous threat detection. Auto-updates from latest cyber news. Assisted SMS/Download scanning.',
   },
   hi: {
     title: 'QuantumGuard',
     subtitle: 'AI संचालित साइबर धोखाधड़ी रोकथाम',
-    tagline: 'भारत की पहली AI एंटी-APK शील्ड - 24/7 स्वायत्त सुरक्षा',
     disclaimer: 'AI संचालित स्वायत्त खतरा पहचान। नवीनतम साइबर समाचार से स्वतः अपडेट। सहायता प्राप्त SMS/डाउनलोड स्कैनिंग।',
   }
 };
 
 export default function Home() {
   const [language, setLanguage] = useState<Language>('en');
-  const [activeTab, setActiveTab] = useState<TabId>('scanner');
+  const [activeTab, setActiveTab] = useState<TabId>('home');
   const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
@@ -99,15 +100,19 @@ export default function Home() {
     }
   };
 
+  const handleNavigate = (tab: string) => {
+    setActiveTab(tab as TabId);
+    setShowMenu(false);
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const content = CONTENT[language];
   const navItems = NAV_ITEMS[language];
 
   const NavButton = ({ id, label, icon: Icon, isActive }: { id: TabId; label: string; icon: any; isActive: boolean }) => (
     <button
-      onClick={() => {
-        setActiveTab(id);
-        setShowMenu(false);
-      }}
+      onClick={() => handleNavigate(id)}
       aria-label={`Navigate to ${label}`}
       aria-current={isActive ? 'page' : undefined}
       className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold transition ${
@@ -123,6 +128,8 @@ export default function Home() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'home':
+        return <HomePage onNavigate={handleNavigate} lang={language} />;
       case 'scanner':
         return <Scanner lang={language} />;
       case 'threats':
@@ -154,7 +161,7 @@ export default function Home() {
       case 'aboutai':
         return <AboutAI lang={language} />;
       default:
-        return <Scanner lang={language} />;
+        return <HomePage onNavigate={handleNavigate} lang={language} />;
     }
   };
 
@@ -164,7 +171,10 @@ export default function Home() {
       <header className="border-b border-white/10 backdrop-blur sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleNavigate('home')}
+              className="flex items-center gap-3 hover:opacity-80 transition"
+            >
               <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
                 <Shield className="w-8 h-8" aria-hidden="true" />
               </div>
@@ -174,7 +184,7 @@ export default function Home() {
                 </h1>
                 <p className="text-xs text-gray-400 hidden sm:block">{content.subtitle}</p>
               </div>
-            </div>
+            </button>
 
             <div className="flex items-center gap-4">
               <button
@@ -199,32 +209,24 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Tagline Banner */}
-      <div className="bg-gradient-to-r from-green-600/30 to-emerald-600/30 border-b border-green-500/50 py-2">
-        <div className="max-w-7xl mx-auto px-4">
-          <p className="text-center text-sm font-bold text-white flex items-center justify-center gap-2">
-            <Shield className="w-4 h-4 animate-pulse" aria-hidden="true" />
-            {content.tagline}
-          </p>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:block w-64 flex-shrink-0" aria-label="Main navigation">
-            <div className="sticky top-24 space-y-2 max-h-[calc(100vh-8rem)] overflow-y-auto">
-              {navItems.map((item) => (
-                <NavButton
-                  key={item.id}
-                  id={item.id as TabId}
-                  label={item.label}
-                  icon={item.icon}
-                  isActive={activeTab === item.id}
-                />
-              ))}
-            </div>
-          </nav>
+          {/* Desktop Navigation - Only show if not on home */}
+          {activeTab !== 'home' && (
+            <nav className="hidden lg:block w-64 flex-shrink-0" aria-label="Main navigation">
+              <div className="sticky top-24 space-y-2 max-h-[calc(100vh-8rem)] overflow-y-auto">
+                {navItems.map((item) => (
+                  <NavButton
+                    key={item.id}
+                    id={item.id as TabId}
+                    label={item.label}
+                    icon={item.icon}
+                    isActive={activeTab === item.id}
+                  />
+                ))}
+              </div>
+            </nav>
+          )}
 
           {/* Mobile Navigation */}
           {showMenu && (
@@ -244,18 +246,18 @@ export default function Home() {
           )}
 
           {/* Main Content */}
-          <main className="flex-1 min-w-0" role="main">
+          <main className={`flex-1 min-w-0 ${activeTab === 'home' ? 'max-w-full' : ''}`} role="main">
             {renderContent()}
           </main>
         </div>
       </div>
 
-      {/* Footer Disclaimer */}
+      {/* Footer */}
       <footer className="border-t border-white/10 mt-16">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="bg-green-600/20 backdrop-blur rounded-xl border border-green-500/50 p-4 mb-4">
             <p className="text-sm text-green-200 text-center">
-              <span className="font-bold">✅ NEW: Autonomous Protection!</span> {content.disclaimer}
+              <span className="font-bold">✅ V2.0 - Autonomous Protection Live!</span> {content.disclaimer}
             </p>
           </div>
           <p className="text-center text-gray-400 text-sm">
