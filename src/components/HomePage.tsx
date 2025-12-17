@@ -16,10 +16,10 @@ const CONTENT = {
       protect: 'Protect'
     },
     hero: {
-      title: "Learn to Spot Scams - Free Education Platform",
+      title: "Shield Yourself from Cyber Threats",
       subtitle: "Learn how scammers target you • Protect yourself instantly",
       demoButton: "Try a Demo Scam",
-      demoSubtext: "See how QuantumGuard detects scams in 30 seconds"
+      demoSubtext: "See how QuantumShield detects scams in 30 seconds"
     },
     learn: {
       videos: {
@@ -30,7 +30,7 @@ const CONTENT = {
         title: '🚨 Stop Digital Arrest Scams',
         subtitle: 'The #1 cyber fraud targeting Indians (₹120 crore stolen in 2024)',
         whatIs: 'What is Digital Arrest?',
-        howProtects: 'How QuantumGuard Protects You',
+        howProtects: 'How QuantumShield Protects You',
         learnMore: 'Learn Complete Protection Guide'
       },
       protectionGuide: 'Quick Protection Tips',
@@ -42,8 +42,12 @@ const CONTENT = {
         title: '🛡️ Protection Tools',
         subtitle: 'Check suspicious links, files, and messages instantly'
       },
+      featuredTools: {
+        title: '🛡️ Protection Tools - Try Now!',
+        subtitle: 'Check suspicious content instantly - all analysis happens in your browser'
+      },
       stats: 'Live Protection Stats',
-      howItWorks: 'How QuantumGuard Works',
+      howItWorks: 'How QuantumShield Works',
       ctaButton: '← Watch Safety Videos First'
     }
   },
@@ -53,10 +57,10 @@ const CONTENT = {
       protect: 'सुरक्षा'
     },
     hero: {
-      title: "स्कैम पहचानना सीखें - मुफ्त शिक्षा मंच",
+      title: "साइबर खतरों से अपनी रक्षा करें",
       subtitle: "जानें स्कैमर कैसे निशाना बनाते हैं • तुरंत अपनी रक्षा करें",
       demoButton: "डेमो स्कैम आज़माएं",
-      demoSubtext: "30 सेकंड में देखें QuantumGuard कैसे स्कैम पहचानता है"
+      demoSubtext: "30 सेकंड में देखें QuantumShield कैसे स्कैम पहचानता है"
     },
     learn: {
       videos: {
@@ -67,7 +71,7 @@ const CONTENT = {
         title: '🚨 डिजिटल अरेस्ट स्कैम रोकें',
         subtitle: 'भारतीयों को निशाना बनाने वाला #1 साइबर धोखाधड़ी (2024 में ₹120 करोड़ चोरी)',
         whatIs: 'डिजिटल अरेस्ट क्या है?',
-        howProtects: 'QuantumGuard कैसे सुरक्षा करता है',
+        howProtects: 'QuantumShield कैसे सुरक्षा करता है',
         learnMore: 'पूर्ण सुरक्षा गाइड सीखें'
       },
       protectionGuide: 'त्वरित सुरक्षा सुझाव',
@@ -79,8 +83,12 @@ const CONTENT = {
         title: '🛡️ सुरक्षा उपकरण',
         subtitle: 'संदिग्ध लिंक, फ़ाइलें और संदेशों की तुरंत जांच करें'
       },
+      featuredTools: {
+        title: '🛡️ सुरक्षा उपकरण - अभी आज़माएं!',
+        subtitle: 'संदिग्ध सामग्री तुरंत जांचें - सभी विश्लेषण आपके ब्राउज़र में होता है'
+      },
       stats: 'लाइव सुरक्षा आँकड़े',
-      howItWorks: 'QuantumGuard कैसे काम करता है',
+      howItWorks: 'QuantumShield कैसे काम करता है',
       ctaButton: '← पहले सुरक्षा वीडियो देखें'
     }
   }
@@ -212,14 +220,14 @@ const PROTECTION_TIPS = {
     '❌ Don\'t share OTPs for money transfers',
     '✅ Only install apps from Play Store',
     '✅ Check URLs before clicking',
-    '✅ Use QuantumGuard to verify suspicious content'
+    '✅ Use QuantumShield to verify suspicious content'
   ],
   hi: [
     '❌ WhatsApp/Telegram से APK इंस्टॉल न करें',
     '❌ पैसे ट्रांसफर के लिए OTP साझा न करें',
     '✅ केवल Play Store से ऐप इंस्टॉल करें',
     '✅ क्लिक करने से पहले URL जांचें',
-    '✅ संदिग्ध सामग्री सत्यापित करने के लिए QuantumGuard उपयोग करें'
+    '✅ संदिग्ध सामग्री सत्यापित करने के लिए QuantumShield उपयोग करें'
   ]
 };
 
@@ -283,9 +291,9 @@ export default function HomePage({ onNavigate, lang }: Props) {
   const [activeTab, setActiveTab] = useState<'learn' | 'protect'>('learn');
   const [showDemo, setShowDemo] = useState(false);
   const [stats] = useState({
-    threatsBlocked: 2847391,
-    usersProtected: 124583,
-    activeThreats: 847
+    threatsBlocked: 1247,
+    usersProtected: 856,
+    activeThreats: 23
   });
 
   const content = CONTENT[lang];
@@ -402,7 +410,7 @@ export default function HomePage({ onNavigate, lang }: Props) {
                 </ul>
               </div>
 
-              {/* How QuantumGuard Protects */}
+              {/* How QuantumShield Protects */}
               <div className="bg-black/40 rounded-xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <Shield className="w-6 h-6 text-green-400" />
@@ -485,6 +493,78 @@ export default function HomePage({ onNavigate, lang }: Props) {
       {/* PROTECT TAB CONTENT */}
       {activeTab === 'protect' && (
         <div className="space-y-12">
+          {/* Featured Tools - Quick Access */}
+          <section className="bg-gradient-to-r from-cyan-600/20 to-blue-600/20 backdrop-blur rounded-3xl border-2 border-cyan-500 p-8">
+            <h2 className="text-3xl font-bold mb-4 text-center">
+              {content.protect.featuredTools.title}
+            </h2>
+            <p className="text-gray-300 text-center mb-6">
+              {content.protect.featuredTools.subtitle}
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              <button
+                onClick={() => onNavigate('apk')}
+                className="group bg-white/10 hover:bg-white/20 backdrop-blur rounded-2xl border border-white/20 hover:border-red-500 p-6 transition text-center"
+              >
+                <div className="inline-block p-4 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl mb-4">
+                  <Shield className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-cyan-400 transition">
+                  {lang === 'en' ? 'APK Guardian' : 'APK गार्डियन'}
+                </h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  {lang === 'en' 
+                    ? 'Upload APK files before installing to check for malware'
+                    : 'मैलवेयर की जांच के लिए इंस्टॉल करने से पहले APK फ़ाइलें अपलोड करें'}
+                </p>
+                <span className="text-cyan-400 font-bold">
+                  {lang === 'en' ? 'Check APK →' : 'APK जांचें →'}
+                </span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('spam')}
+                className="group bg-white/10 hover:bg-white/20 backdrop-blur rounded-2xl border border-white/20 hover:border-blue-500 p-6 transition text-center"
+              >
+                <div className="inline-block p-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl mb-4">
+                  <MessageSquare className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-cyan-400 transition">
+                  {lang === 'en' ? 'Spam AI Checker' : 'स्पैम AI चेकर'}
+                </h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  {lang === 'en' 
+                    ? 'Paste suspicious SMS or WhatsApp messages to verify'
+                    : 'सत्यापित करने के लिए संदिग्ध SMS या WhatsApp संदेश पेस्ट करें'}
+                </p>
+                <span className="text-cyan-400 font-bold">
+                  {lang === 'en' ? 'Check Message →' : 'संदेश जांचें →'}
+                </span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('url')}
+                className="group bg-white/10 hover:bg-white/20 backdrop-blur rounded-2xl border border-white/20 hover:border-purple-500 p-6 transition text-center"
+              >
+                <div className="inline-block p-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl mb-4">
+                  <LinkIcon className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-cyan-400 transition">
+                  {lang === 'en' ? 'URL Checker' : 'URL चेकर'}
+                </h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  {lang === 'en' 
+                    ? 'Verify suspicious links before clicking them'
+                    : 'क्लिक करने से पहले संदिग्ध लिंक सत्यापित करें'}
+                </p>
+                <span className="text-cyan-400 font-bold">
+                  {lang === 'en' ? 'Check URL →' : 'URL जांचें →'}
+                </span>
+              </button>
+            </div>
+          </section>
+
           {/* Feature Cards */}
           <section>
             <h2 className="text-3xl font-bold mb-2 text-center">{content.protect.tools.title}</h2>
@@ -519,21 +599,21 @@ export default function HomePage({ onNavigate, lang }: Props) {
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <p className="text-5xl font-bold text-green-400 mb-2">
-                  {stats.threatsBlocked.toLocaleString()}
+                  {stats.threatsBlocked.toLocaleString()}+
                 </p>
-                <p className="text-sm text-gray-300">{lang === 'en' ? 'Threats Blocked' : 'खतरे ब्लॉक किए गए'}</p>
+                <p className="text-sm text-gray-300">{lang === 'en' ? 'Scam Patterns in Database' : 'डेटाबेस में स्कैम पैटर्न'}</p>
               </div>
               <div>
                 <p className="text-5xl font-bold text-cyan-400 mb-2">
-                  {stats.usersProtected.toLocaleString()}
+                  {stats.usersProtected.toLocaleString()}+
                 </p>
-                <p className="text-sm text-gray-300">{lang === 'en' ? 'Users Protected' : 'उपयोगकर्ता सुरक्षित'}</p>
+                <p className="text-sm text-gray-300">{lang === 'en' ? 'Learners This Month' : 'इस महीने सीखने वाले'}</p>
               </div>
               <div>
                 <p className="text-5xl font-bold text-orange-400 mb-2">
                   {stats.activeThreats}
                 </p>
-                <p className="text-sm text-gray-300">{lang === 'en' ? 'Active Threats' : 'सक्रिय खतरे'}</p>
+                <p className="text-sm text-gray-300">{lang === 'en' ? 'Active Threat Alerts' : 'सक्रिय खतरा अलर्ट'}</p>
               </div>
             </div>
           </section>
