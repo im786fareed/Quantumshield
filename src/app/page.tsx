@@ -64,11 +64,11 @@ const NAV_ITEMS = {
 
 const CONTENT = {
   en: {
-    title: 'QuantumGuard',
+    title: 'QuantumShield',
     subtitle: 'AI-Powered Cyber Fraud Prevention',
   },
   hi: {
-    title: 'QuantumGuard',
+    title: 'QuantumShield',
     subtitle: 'AI संचालित साइबर धोखाधड़ी रोकथाम',
   }
 };
@@ -270,7 +270,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a 
-                    href="https://github.com/im786fareed/QuantumGuard" 
+                    href="https://github.com/im786fareed/QuantumShield" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-cyan-400 transition"
@@ -330,8 +330,8 @@ export default function Home() {
               <h3 className="font-bold text-white mb-3">Contact & Report</h3>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>
-                  <a href="mailto:quantumguard.india@gmail.com" className="hover:text-cyan-400 transition">
-                    quantumguard.india@gmail.com
+                  <a href="mailto:QuantumShield.india@gmail.com" className="hover:text-cyan-400 transition">
+                    QuantumShield.india@gmail.com
                   </a>
                 </li>
                 <li>
@@ -364,14 +364,14 @@ export default function Home() {
           {/* Disclaimer */}
           <div className="bg-yellow-600/20 backdrop-blur rounded-xl border border-yellow-500/50 p-4 mb-6">
             <p className="text-sm text-yellow-200 text-center">
-              <span className="font-bold">⚠️ Important:</span> QuantumGuard is an educational tool, not a replacement for antivirus software. 
+              <span className="font-bold">⚠️ Important:</span> QuantumShield is an educational tool, not a replacement for antivirus software. 
               Always report scams to official authorities at <strong>1930</strong> or <strong>cybercrime.gov.in</strong>
             </p>
           </div>
 
           {/* Copyright */}
           <div className="text-center text-gray-400 text-sm border-t border-white/10 pt-6">
-            <p>© 2024 QuantumGuard. {language === 'en' ? 'Free educational platform.' : 'मुफ्त शैक्षिक मंच।'}</p>
+            <p>© 2024 QuantumShield. {language === 'en' ? 'Free educational platform.' : 'मुफ्त शैक्षिक मंच।'}</p>
             <p className="mt-2">Not affiliated with any government agency. Built with ❤️ for India.</p>
           </div>
         </div>
