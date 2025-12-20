@@ -1,6 +1,6 @@
 'use client';
 import InstallPrompt from '@/components/InstallPrompt';
-import { Scan, Link as LinkIcon, MessageSquare, FileSearch, Smartphone, TrendingUp, GraduationCap, Brain, Menu, X, Globe, Shield, Lock, Database, AlertTriangle, Download, Home as HomeIcon } from 'lucide-react';
+import { Scan, Link as LinkIcon, MessageSquare, FileSearch, Smartphone, TrendingUp, GraduationCap, Brain, Menu, X, Globe, Shield, Lock, Database, AlertTriangle, Download, Home as HomeIcon, Camera, Phone } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomePage from '@/components/HomePage';
@@ -19,11 +19,15 @@ import RansomwareDetector from '@/components/RansomwareDetector';
 import ThreatIntelligence from '@/components/ThreatIntelligence';
 import SMSGuardian from '@/components/SMSGuardian';
 import DownloadScanner from '@/components/DownloadScanner';
-
+import EvidenceCollector from '@/components/EvidenceCollector';
+import PoliceReporter from '@/components/PoliceReporter';
+import ScamDatabase from '@/components/ScamDatabase';
+import AICallAnalyzer from '@/components/AICallAnalyzer';
+import EmergencyContact from '@/components/EmergencyContact';
 type Language = 'en' | 'hi';
-type TabId = 'home' | 'scanner' | 'apk' | 'url' | 'spam' | 'file' | 'encryption' | 'breach' | 'ransomware' | 'device' | 'news' | 'education' | 'aboutai' | 'threats' | 'sms' | 'downloads';
+type TabId = 'home' | 'scanner' | 'apk' | 'url' | 'spam' | 'file' | 'encryption' | 'breach' | 'ransomware' | 'device' | 'news' | 'education' | 'aboutai' | 'threats' | 'sms' | 'downloads' | 'evidence' | 'report' | 'scamdb' | 'aianalyzer' | 'emergency';
 
-const NAV_ITEMS = {
+   const NAV_ITEMS = {
   en: [
     { id: 'home', label: 'Home', icon: HomeIcon },
     { id: 'scanner', label: 'AI Scanner', icon: Scan },
@@ -40,7 +44,14 @@ const NAV_ITEMS = {
     { id: 'device', label: 'Device Check', icon: Smartphone },
     { id: 'news', label: 'Latest Threats', icon: TrendingUp },
     { id: 'education', label: 'Learn Safety', icon: GraduationCap },
-    { id: 'aboutai', label: 'AI Tech', icon: Brain }
+    { id: 'aboutai', label: 'AI Tech', icon: Brain },
+    
+    // NEW FEATURES - ADD THESE
+    { id: 'evidence', label: 'Evidence Collector', icon: Camera },
+    { id: 'report', label: 'Police Report', icon: Shield },
+    { id: 'scamdb', label: 'Scam Database', icon: Database },
+    { id: 'aianalyzer', label: 'AI Call Analyzer', icon: Brain },
+    { id: 'emergency', label: 'Emergency Contacts', icon: Phone }
   ],
   hi: [
     { id: 'home', label: 'होम', icon: HomeIcon },
@@ -58,7 +69,14 @@ const NAV_ITEMS = {
     { id: 'device', label: 'डिवाइस जांच', icon: Smartphone },
     { id: 'news', label: 'नवीनतम खतरे', icon: TrendingUp },
     { id: 'education', label: 'सुरक्षा सीखें', icon: GraduationCap },
-    { id: 'aboutai', label: 'AI तकनीक', icon: Brain }
+    { id: 'aboutai', label: 'AI तकनीक', icon: Brain },
+    
+    // NEW FEATURES - ADD THESE (Hindi)
+    { id: 'evidence', label: 'सबूत संग्रहकर्ता', icon: Camera },
+    { id: 'report', label: 'पुलिस रिपोर्ट', icon: Shield },
+    { id: 'scamdb', label: 'घोटाला डेटाबेस', icon: Database },
+    { id: 'aianalyzer', label: 'AI कॉल विश्लेषक', icon: Brain },
+    { id: 'emergency', label: 'आपातकालीन संपर्क', icon: Phone }
   ]
 };
 
@@ -125,43 +143,56 @@ export default function Home() {
   );
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'home':
-        return <HomePage onNavigate={handleNavigate} lang={language} />;
-      case 'scanner':
-        return <Scanner lang={language} />;
-      case 'threats':
-        return <ThreatIntelligence lang={language} />;
-      case 'apk':
-        return <APKGuardian lang={language} />;
-      case 'sms':
-        return <SMSGuardian lang={language} />;
-      case 'downloads':
-        return <DownloadScanner lang={language} />;
-      case 'url':
-        return <UrlChecker lang={language} />;
-      case 'spam':
-        return <SpamChecker lang={language} />;
-      case 'file':
-        return <FileScanner lang={language} />;
-      case 'encryption':
-        return <FileEncryption lang={language} />;
-      case 'breach':
-        return <DataBreachChecker lang={language} />;
-      case 'ransomware':
-        return <RansomwareDetector lang={language} />;
-      case 'device':
-        return <DeviceCheck lang={language} />;
-      case 'news':
-        return <LatestNews lang={language} />;
-      case 'education':
-        return <Education lang={language} />;
-      case 'aboutai':
-        return <AboutAI lang={language} />;
-      default:
-        return <HomePage onNavigate={handleNavigate} lang={language} />;
-    }
-  };
+  switch (activeTab) {
+    case 'home':
+      return <HomePage onNavigate={handleNavigate} lang={language} />;
+    case 'scanner':
+      return <Scanner lang={language} />;
+    case 'threats':
+      return <ThreatIntelligence lang={language} />;
+    case 'apk':
+      return <APKGuardian lang={language} />;
+    case 'sms':
+      return <SMSGuardian lang={language} />;
+    case 'downloads':
+      return <DownloadScanner lang={language} />;
+    case 'url':
+      return <UrlChecker lang={language} />;
+    case 'spam':
+      return <SpamChecker lang={language} />;
+    case 'file':
+      return <FileScanner lang={language} />;
+    case 'encryption':
+      return <FileEncryption lang={language} />;
+    case 'breach':
+      return <DataBreachChecker lang={language} />;
+    case 'ransomware':
+      return <RansomwareDetector lang={language} />;
+    case 'device':
+      return <DeviceCheck lang={language} />;
+    case 'news':
+      return <LatestNews lang={language} />;
+    case 'education':
+      return <Education lang={language} />;
+    case 'aboutai':
+      return <AboutAI lang={language} />;
+    
+    // NEW FEATURES - ADD THESE CASES
+    case 'evidence':
+      return <EvidenceCollector lang={language} />;
+    case 'report':
+      return <PoliceReporter lang={language} />;
+    case 'scamdb':
+      return <ScamDatabase lang={language} />;
+    case 'aianalyzer':
+      return <AICallAnalyzer lang={language} />;
+    case 'emergency':
+      return <EmergencyContact lang={language} />;
+      
+    default:
+      return <HomePage onNavigate={handleNavigate} lang={language} />;
+  }
+};
 
 return (
   <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black text-white">
@@ -282,7 +313,27 @@ return (
                 </li>
               </ul>
             </div>
-
+{/* Emergency Tools */}
+<div>
+  <h3 className="font-bold text-white mb-3">Emergency Tools</h3>
+  <ul className="space-y-2 text-sm text-gray-400">
+    <li>
+      <button onClick={() => handleNavigate('evidence')} className="hover:text-cyan-400 transition">
+        Evidence Collector
+      </button>
+    </li>
+    <li>
+      <button onClick={() => handleNavigate('report')} className="hover:text-cyan-400 transition">
+        Police Report
+      </button>
+    </li>
+    <li>
+      <button onClick={() => handleNavigate('emergency')} className="hover:text-cyan-400 transition">
+        Emergency Contacts
+      </button>
+    </li>
+  </ul>
+</div>
             {/* Resources */}
             <div>
               <h3 className="font-bold text-white mb-3">Resources</h3>

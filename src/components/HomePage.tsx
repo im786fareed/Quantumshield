@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Scan, MessageSquare, Download, Link as LinkIcon, Database, TrendingUp, ArrowRight, PlayCircle, AlertTriangle, Users, Clock, GraduationCap, BookOpen, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, Scan, MessageSquare, Download, Link as LinkIcon, Database, TrendingUp, ArrowRight, PlayCircle, AlertTriangle, Users, Clock, GraduationCap, BookOpen, CheckCircle, XCircle, Camera, Brain, Phone } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import DemoScamModal from './DemoScamModal';
 
@@ -93,6 +93,59 @@ const CONTENT = {
     }
   }
 };
+{/* Emergency Anti-Scam Tools Section */}
+<section className="mb-12">
+  <h2 className="text-3xl font-bold mb-6 text-center">
+    🚨 Emergency Anti-Scam Tools
+  </h2>
+  
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <button
+      onClick={() => onNavigate('evidence')}
+      className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl p-6 hover:scale-105 transition text-left"
+    >
+      <Camera className="w-12 h-12 mb-3" />
+      <h3 className="font-bold text-xl mb-2">Evidence Collector</h3>
+      <p className="text-sm text-gray-200">Collect legal evidence during scam calls</p>
+    </button>
+
+    <button
+      onClick={() => onNavigate('report')}
+      className="bg-gradient-to-br from-red-600 to-orange-600 rounded-xl p-6 hover:scale-105 transition text-left"
+    >
+      <Shield className="w-12 h-12 mb-3" />
+      <h3 className="font-bold text-xl mb-2">Report to Police</h3>
+      <p className="text-sm text-gray-200">File official complaint instantly</p>
+    </button>
+
+    <button
+      onClick={() => onNavigate('scamdb')}
+      className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 hover:scale-105 transition text-left"
+    >
+      <Database className="w-12 h-12 mb-3" />
+      <h3 className="font-bold text-xl mb-2">Scam Database</h3>
+      <p className="text-sm text-gray-200">Check if number is reported scam</p>
+    </button>
+
+    <button
+      onClick={() => onNavigate('aianalyzer')}
+      className="bg-gradient-to-br from-cyan-600 to-blue-600 rounded-xl p-6 hover:scale-105 transition text-left"
+    >
+      <Brain className="w-12 h-12 mb-3" />
+      <h3 className="font-bold text-xl mb-2">AI Call Analyzer</h3>
+      <p className="text-sm text-gray-200">Real-time scam detection during calls</p>
+    </button>
+
+    <button
+      onClick={() => onNavigate('emergency')}
+      className="bg-gradient-to-br from-red-600 to-pink-600 rounded-xl p-6 hover:scale-105 transition text-left"
+    >
+      <Phone className="w-12 h-12 mb-3" />
+      <h3 className="font-bold text-xl mb-2">Emergency Contacts</h3>
+      <p className="text-sm text-gray-200">Find nearest police station & helplines</p>
+    </button>
+  </div>
+</section>
 
 const EDUCATION_VIDEOS = {
   en: [
