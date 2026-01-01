@@ -1,27 +1,30 @@
-export type TabId =
-  | 'home'
-  | 'scanner'
-  | 'apk'
-  | 'url'
-  | 'spam'
-  | 'file'
-  | 'encryption'
-  | 'breach'
-  | 'ransomware'
-  | 'device'
-  | 'news'
-  | 'education'
-  | 'aboutai'
-  | 'threats'
-  | 'sms'
-  | 'downloads'
-  | 'evidence'
-  | 'report'
-  | 'scamdb'
-  | 'aianalyzer'
-  | 'emergency'
-  | 'simprotection'
-  | 'devicescan'
-  | 'whatsapp'
-  | 'awareness'
-  | 'privacy';
+export const TAB_IDS = [
+  'home',
+  'scanner',
+  'threats',
+  'apk',
+  'sms',
+  'downloads',
+  'url',
+  'spam',
+  'file',
+  'encryption',
+  'breach',
+  'ransomware',
+  'device',
+  'news',
+  'education',
+  'aboutai',
+  'evidence',
+  'report',
+  'scamdb',
+  'aianalyzer',
+  'emergency',
+  'simprotection',
+  'devicescan',
+  'whatsapp',
+  'awareness',
+  'privacy',
+] as const;
+
+export type TabId = (typeof TAB_IDS)[number];

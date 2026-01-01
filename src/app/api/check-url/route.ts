@@ -1,64 +1,75 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
-  try {
-    const { url } = await request.json();
+type RateRecord = {
+  count: number;
+  reset: number;
+};
 
-    if (!url) {
-      return NextResponse.json({ error: 'URL required' }, { status: 400 });
-    }
+// Note: In production (Vercel/Serverless), this Map will reset frequently.
+// For stable rate limiting, use Redis.
+const store = new Map<string, RateRecord>();
 
-    // Dangerous patterns commonly found in phishing/scam URLs
-    const dangerousPatterns = [
-      'bit.ly/scam',
-      'phishing',
-      'verify-account',
-      'urgent-update',
-      'suspended-account',
-      'confirm-identity',
-      'prize-winner',
-      'claim-reward',
-      'reset-password',
-      'unusual-activity',
-      'security-alert',
-      'bank-verify',
-      'account-locked',
-      'verify-now',
-      'update-payment',
-      'confirm-details',
-      'tax-refund',
-      'lottery-winner',
-      'free-prize',
-      'claim-now'
-    ];
+// REMOVED 'export' - This is now a private helper function
+function rateLimit(
+  req: NextRequest,
+  options?: {
+    limit?: number;
+    windowMs?: number;
+  }
+) {
+  const limit = options?.limit ?? 30;
+  const windowMs = options?.windowMs ?? 60_000;
 
-    const lowerUrl = url.toLowerCase();
-    const isDangerous = dangerousPatterns.some(pattern => lowerUrl.includes(pattern));
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "anonymous";
 
-    // Additional checks
-    const hasSuspiciousExtension = /\.(xyz|tk|ml|ga|cf|gq)/.test(lowerUrl);
-    const hasIPAddress = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(url);
-    const hasMultipleSubdomains = (url.match(/\./g) || []).length > 3;
-    const isShortenedURL = /(bit\.ly|tinyurl|t\.co|goo\.gl|ow\.ly)/i.test(url);
+  const now = Date.now();
+  const record = store.get(ip);
 
-    const finalDangerous = isDangerous || hasSuspiciousExtension || (hasIPAddress && isShortenedURL);
-
-    return NextResponse.json({
-      url,
-      safe: !finalDangerous,
-      threat: finalDangerous ? 'SUSPICIOUS_PATTERN' : null,
-      checked: new Date().toISOString(),
-      details: {
-        hasSuspiciousPattern: isDangerous,
-        hasSuspiciousExtension,
-        hasIPAddress,
-        isShortenedURL,
-        hasMultipleSubdomains
-      }
+  if (!record || record.reset < now) {
+    store.set(ip, {
+      count: 1,
+      reset: now + windowMs,
     });
+    return null;
+  }
 
+  if (record.count >= limit) {
+    return NextResponse.json(
+      {
+        error: "Too many requests",
+        retryAfter: Math.ceil((record.reset - now) / 1000),
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": Math.ceil(
+            (record.reset - now) / 1000
+          ).toString(),
+        },
+      }
+    );
+  }
+
+  record.count++;
+  store.set(ip, record);
+
+  return null;
+}
+
+// VALID EXPORT: Next.js expects these names
+export async function POST(req: NextRequest) {
+  // 1. Call your rate limiter
+  const limitResponse = rateLimit(req);
+  if (limitResponse) return limitResponse;
+
+  try {
+    const body = await req.json();
+    // Your logic for checking the URL here...
+    
+    return NextResponse.json({ success: true, url: body.url });
   } catch (error) {
-    console.error('URL check error:', error);
-    return NextResponse.json({ error: 'Check failed' }, { status: 500 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
