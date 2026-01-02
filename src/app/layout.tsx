@@ -129,14 +129,20 @@ export default function RootLayout({
               </ul>
             </div>
 
-            <div>
-              <h3 className="font-semibold mb-3">Legal</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>Privacy Policy</li>
-                <li>Terms of Service</li>
-                <li>Disclaimer</li>
-              </ul>
-            </div>
+<div>
+  <h3 className="font-semibold mb-3">Legal</h3>
+  <ul className="space-y-2 text-sm text-gray-400">
+    <li>
+      <a href="/privacy" className="hover:text-white transition">Privacy Policy</a>
+    </li>
+    <li>
+      <a href="/terms" className="hover:text-white transition">Terms of Service</a>
+    </li>
+    <li>
+      <a href="/disclaimer" className="hover:text-white transition">Disclaimer</a>
+    </li>
+  </ul>
+</div>
           </div>
 
           <div className="text-center text-xs text-gray-500 border-t border-white/10 py-4">
