@@ -412,13 +412,31 @@ export default function AICallAnalyzer({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           placeholder={t.manualPlaceholder}
           className="w-full bg-black/50 border border-white/10 rounded-lg p-4 min-h-32 focus:outline-none focus:border-blue-500 mb-3"
         />
-        <button
-          onClick={analyzeManualInput}
-          className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition"
-        >
-          <Brain className="w-5 h-5" />
-          {t.analyzeButton}
-        </button>
+<div className="grid md:grid-cols-2 gap-3">
+          <button
+            onClick={isListening ? stopListening : startListening}
+            className={`${isListening ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700'} px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition`}
+          >
+            {isListening ? (
+              <>
+                <MicOff className="w-5 h-5" />
+                Stop Voice Input
+              </>
+            ) : (
+              <>
+                <Mic className="w-5 h-5" />
+                Speak Instead
+              </>
+            )}
+          </button>
+          <button
+            onClick={analyzeManualInput}
+            className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition"
+          >
+            <Brain className="w-5 h-5" />
+            {t.analyzeButton}
+          </button>
+        </div>
       </div>
 
       {/* Transcript */}
