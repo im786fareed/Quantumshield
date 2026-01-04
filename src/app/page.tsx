@@ -2,6 +2,6 @@
 import HomePage from './home/page';
 
 export default function RootPage() {
-  // This forces the "Defense Terminal" to be the first thing people see
+  // This tells Next.js: "Make the Defense Terminal the default view"
   return <HomePage />;
 }
