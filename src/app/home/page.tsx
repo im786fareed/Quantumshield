@@ -1,12 +1,12 @@
 'use client';
-import { Shield, Mic, Lock, DeviceSmartphone, FileText, Zap, Activity, LayoutGrid, PlayCircle } from 'lucide-react';
+import { Shield, Mic, Lock, Smartphone, FileText, Zap, Activity, LayoutGrid, PlayCircle } from 'lucide-react';
 import ThreatMap from '@/components/ThreatMap';
 import Link from 'next/link';
 
 export default function HomePage() {
   const protectionFeatures = [
     { name: 'AI Call Analyzer', icon: Mic, path: '/aianalyzer', color: 'text-red-400' },
-    { name: 'Device Scanner', icon: DeviceSmartphone, path: '/devicescan', color: 'text-cyan-400' },
+    { name: 'Device Scanner', icon: Smartphone, path: '/devicescan', color: 'text-cyan-400' },
     { name: 'Evidence Vault', icon: Lock, path: '/evidence', color: 'text-emerald-400' },
     { name: 'Privacy Shield', icon: Shield, path: '/privacy', color: 'text-indigo-400' },
     { name: 'Police Reporter', icon: FileText, path: '/reporter', color: 'text-orange-400' },
