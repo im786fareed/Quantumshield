@@ -268,7 +268,7 @@ export default function AICallAnalyzer({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
       );
       
       if (matchedKeywords.length > 0) {
-        riskScore += matchedKeywords.length * 10;
+        riskScore += matchedKeywords.length * 30;
         
         const patternKey = category.replace(/([A-Z])/g, '_$1').toLowerCase().substring(1) as keyof typeof t.scamPatterns;
         detectedPatterns.push(t.scamPatterns[patternKey] || category);
