@@ -11,7 +11,8 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+    // IMPROVISATION: Re-enabled microphone for the AI Call Analyzer voice feature
+    value: "camera=(), microphone=(self), geolocation=(), payment=(), usb=(), interest-cohort=()",
   },
   {
     key: "Content-Security-Policy",
@@ -21,7 +22,8 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com https://r2cdn.perplexity.ai",
-      "connect-src 'self' https://*.vercel.app https://vitals.vercel-insights.com https://*.vercel-insights.com https://r2cdn.perplexity.ai",
+      // IMPROVISATION: Added 1.1.1.1 for the Privacy Shield DNS Test
+      "connect-src 'self' https://*.vercel.app https://vitals.vercel-insights.com https://*.vercel-insights.com https://r2cdn.perplexity.ai https://1.1.1.1",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
