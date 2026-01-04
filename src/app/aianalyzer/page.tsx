@@ -1,19 +1,6 @@
-import type { Metadata } from "next";
-import AICallAnalyzer from "@/components/AICallAnalyzer";
-
-export const metadata: Metadata = {
-  title: "AI Call Analyzer | QuantumShield",
-  description:
-    "Detect scam calls using AI-powered voice and behavior analysis.",
-  openGraph: {
-    title: "AI Call Analyzer – QuantumShield",
-    description: "Detect scam calls using AI intelligence.",
-    url: "https://quantumshield.in/aianalyzer",
-    siteName: "QuantumShield",
-    type: "website",
-  },
-};
+import AICallAnalyzer from '@/components/AICallAnalyzer';
 
 export default function Page() {
+  // We use "en" as a string, which now matches the component fix above
   return <AICallAnalyzer lang="en" />;
 }
