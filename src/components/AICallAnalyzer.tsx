@@ -1,4 +1,10 @@
 'use client';
+// This enables the browser's hidden "ear" to start listening
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.continuous = true;
+recognition.interimResults = true;
+recognition.lang = 'en-IN'; // Optimized for Indian accents
 import { useState, useRef, useEffect } from 'react';
 import { Mic, MicOff, AlertTriangle, Shield, Brain, FileText } from 'lucide-react';
 import { analyzeThreat } from '@/lib/ai/threatEngine'; // Link to the file above

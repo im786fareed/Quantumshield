@@ -11,19 +11,20 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    // IMPROVISATION: Re-enabled microphone for the AI Call Analyzer voice feature
-    value: "camera=(), microphone=(self), geolocation=(), payment=(), usb=(), interest-cohort=()",
+    // IMPROVISATION: Added 'display-capture' for Evidence Collector and 'microphone' for AI Analyzer
+    value: "camera=(), microphone=(self), display-capture=(self), geolocation=(), payment=(), usb=(), interest-cohort=()",
   },
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://s.ytimg.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com https://r2cdn.perplexity.ai",
-      // IMPROVISATION: Added 1.1.1.1 for the Privacy Shield DNS Test
+      // IMPROVISATION: Added YouTube and DNS test connections
       "connect-src 'self' https://*.vercel.app https://vitals.vercel-insights.com https://*.vercel-insights.com https://r2cdn.perplexity.ai https://1.1.1.1",
+      "frame-src 'self' https://www.youtube.com https://youtube.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
