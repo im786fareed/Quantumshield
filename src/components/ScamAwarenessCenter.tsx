@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { AlertTriangle, TrendingUp, Shield, ExternalLink, PlayCircle, Newspaper, Users, Phone } from 'lucide-react';
+import { AlertTriangle, TrendingUp, Shield, ExternalLink, PlayCircle, Newspaper, Phone } from 'lucide-react';
 
 interface ScamAlert {
   id: string;
@@ -16,11 +16,16 @@ interface Video {
   id: string;
   title: string;
   description: string;
-  url: string;
+  videoId: string;
   duration: string;
 }
 
-export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
+// Props interface - FIX FOR BUILD ERROR
+interface ScamAwarenessCenterProps {
+  lang?: 'en' | 'hi';
+}
+
+export default function ScamAwarenessCenter({ lang = 'en' }: ScamAwarenessCenterProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const content = {
@@ -76,31 +81,24 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
       videos: [
         {
           id: '1',
-          title: 'What is Digital Arrest Scam?',
-          description: 'Learn how scammers impersonate police and trap victims',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '5:30'
+          title: 'Digital Arrest Alert - Expert Debate',
+          description: 'Comprehensive discussion on digital arrest scams by cybersecurity experts',
+          videoId: 'GWLkfkMnU70',
+          duration: '45:30'
         },
         {
           id: '2',
-          title: 'How to Protect from WhatsApp Hacking',
-          description: 'Enable 2-step verification and recognize pairing attempts',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '4:15'
+          title: 'Financial Safety Training - Official NCERT & I4C',
+          description: 'Government-approved training on protecting yourself from financial fraud',
+          videoId: '7at69Ttn4jc',
+          duration: '32:15'
         },
         {
           id: '3',
-          title: 'UPI Safety Tips',
-          description: 'Avoid QR code scams and verify payment requests',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '6:00'
-        },
-        {
-          id: '4',
-          title: 'Recognize Job Offer Scams',
-          description: 'Red flags in fake job postings and offers',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '7:20'
+          title: 'Scam Trends 2026 - Rising Fraud Cases',
+          description: 'Latest scam patterns and fraud trends emerging in India',
+          videoId: '3VgukEZ24mY',
+          duration: '28:45'
         }
       ],
       
@@ -151,7 +149,7 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
           type: 'डिजिटल अरेस्ट',
           severity: 'critical' as const,
           amount: '₹120 करोड़ का नुकसान',
-          description: 'घोटालेबाज पुलिस/CBI अधिकारियों का रूप धारण करते हैं, दावा करते हैं कि पीड़ित अपराध में शामिल है, तत्काल पैसे की मांग करते हैं।',
+          description: 'घोटालेबाज पुलिस/CBI अधिकारियों का रूप धारण करते हैं, दावा करते हैं कि पीड़ित अपराध में शामिल है।',
           date: 'दिसंबर 2024'
         },
         {
@@ -160,7 +158,7 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
           type: 'खाता अधिग्रहण',
           severity: 'high' as const,
           amount: '₹50 करोड़ का नुकसान',
-          description: 'हमलावर पीड़ित के व्हाट्सएप को अपने डिवाइस से पेयर करते हैं, संदेश, संपर्क एक्सेस करते हैं और पैसे की मांग करते हैं।',
+          description: 'हमलावर पीड़ित के व्हाट्सएप को अपने डिवाइस से पेयर करते हैं।',
           date: 'नवंबर 2024'
         },
         {
@@ -169,7 +167,7 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
           type: 'भुगतान धोखाधड़ी',
           severity: 'high' as const,
           amount: '₹95 करोड़ का नुकसान',
-          description: 'SMS/व्हाट्सएप के माध्यम से नकली QR कोड भेजे जाते हैं जो रिफंड का दावा करते हैं, वास्तव में भुगतान की मांग करते हैं।',
+          description: 'नकली QR कोड SMS/व्हाट्सएप के माध्यम से भेजे जाते हैं।',
           date: 'दिसंबर 2024'
         },
         {
@@ -178,42 +176,35 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
           type: 'रोजगार धोखाधड़ी',
           severity: 'medium' as const,
           amount: '₹100 करोड़ का नुकसान',
-          description: '"अंतर्राष्ट्रीय कंपनियों" से नकली नौकरी की पेशकश प्रसंस्करण, प्रशिक्षण या उपकरण के लिए अग्रिम शुल्क की मांग करती हैं।',
+          description: 'नकली नौकरी की पेशकश अग्रिम शुल्क की मांग करती हैं।',
           date: 'नवंबर 2024'
         }
       ],
       
       educationalVideos: 'शैक्षिक वीडियो',
-      videosDescription: 'विशेषज्ञों से सीखें कि घोटालों की पहचान कैसे करें और उनसे कैसे बचें',
+      videosDescription: 'विशेषज्ञों से सीखें कि घोटालों की पहचान कैसे करें',
       
       videos: [
         {
           id: '1',
-          title: 'डिजिटल अरेस्ट घोटाला क्या है?',
-          description: 'जानें कि घोटालेबाज पुलिस का रूप कैसे धारण करते हैं',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '5:30'
+          title: 'डिजिटल अरेस्ट अलर्ट - विशेषज्ञ बहस',
+          description: 'साइबर सुरक्षा विशेषज्ञों द्वारा डिजिटल अरेस्ट घोटाले पर व्यापक चर्चा',
+          videoId: 'GWLkfkMnU70',
+          duration: '45:30'
         },
         {
           id: '2',
-          title: 'व्हाट्सएप हैकिंग से कैसे बचें',
-          description: '2-चरण सत्यापन सक्षम करें और पेयरिंग प्रयासों को पहचानें',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '4:15'
+          title: 'वित्तीय सुरक्षा प्रशिक्षण - आधिकारिक NCERT और I4C',
+          description: 'वित्तीय धोखाधड़ी से खुद को बचाने के लिए सरकार द्वारा अनुमोदित प्रशिक्षण',
+          videoId: '7at69Ttn4jc',
+          duration: '32:15'
         },
         {
           id: '3',
-          title: 'UPI सुरक्षा टिप्स',
-          description: 'QR कोड घोटालों से बचें और भुगतान अनुरोधों को सत्यापित करें',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '6:00'
-        },
-        {
-          id: '4',
-          title: 'नौकरी की पेशकश घोटालों को पहचानें',
-          description: 'नकली नौकरी पोस्टिंग और ऑफ़र में लाल झंडे',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          duration: '7:20'
+          title: 'घोटाला रुझान 2026 - बढ़ते धोखाधड़ी मामले',
+          description: 'भारत में उभरते नवीनतम घोटाला पैटर्न और धोखाधड़ी रुझान',
+          videoId: '3VgukEZ24mY',
+          duration: '28:45'
         }
       ],
       
@@ -221,13 +212,13 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
       
       preventionTips: 'रोकथाम टिप्स',
       tips: [
-        'OTP, CVV, या पासवर्ड किसी के साथ साझा न करें - यहां तक कि "बैंक अधिकारियों" के साथ भी',
+        'OTP, CVV, या पासवर्ड किसी के साथ साझा न करें',
         'पुलिस/CBI कभी भी फोन कॉल पर लोगों को गिरफ्तार नहीं करते',
-        'वेबसाइट से आधिकारिक नंबरों पर कॉल करके कॉलर की पहचान सत्यापित करें',
+        'वेबसाइट से आधिकारिक नंबरों पर कॉल करके सत्यापित करें',
         'सभी खातों पर 2-कारक प्रमाणीकरण सक्षम करें',
         'अवांछित SMS/ईमेल में लिंक पर क्लिक न करें',
         'संदिग्ध नंबरों को तुरंत 1930 पर रिपोर्ट करें',
-        'प्रत्येक खाते के लिए मजबूत, अद्वितीय पासवर्ड का उपयोग करें',
+        'मजबूत, अद्वितीय पासवर्ड का उपयोग करें',
         'अपने फोन के OS और ऐप्स को अपडेट रखें'
       ],
       
@@ -293,7 +284,7 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
         </div>
       </div>
 
-      {/* Educational Videos - FIXED */}
+      {/* Educational Videos - EMBEDDED YOUTUBE */}
       <div className="bg-white/5 rounded-xl p-6 mb-6">
         <h2 className="font-bold text-2xl mb-2 flex items-center gap-2">
           <PlayCircle className="w-6 h-6 text-blue-400" />
@@ -301,28 +292,37 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
         </h2>
         <p className="text-gray-400 mb-4">{t.videosDescription}</p>
         
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-6">
           {t.videos.map((video) => (
-             <a
-              key={video.id}
-              href={video.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-black/50 border border-white/10 rounded-xl p-4 hover:border-blue-500/50 transition group">
-              <div className="flex items-start gap-3">
-                <PlayCircle className="w-12 h-12 text-red-500 shrink-0 group-hover:scale-110 transition" />
-                <div className="flex-1">
-                  <h3 className="font-bold mb-1">{video.title}</h3>
-                  <p className="text-sm text-gray-400 mb-2">{video.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">{video.duration}</span>
-                    <span className="text-xs text-blue-400 group-hover:text-blue-300">
-                      Watch on YouTube →
-                    </span>
-                  </div>
+            <div key={video.id} className="bg-black/50 rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition">
+              {/* Embedded YouTube Video */}
+              <div className="relative aspect-video">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${video.videoId}?rel=0`}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title={video.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              </div>
+              
+              {/* Video Info */}
+              <div className="p-4">
+                <h3 className="font-bold mb-1">{video.title}</h3>
+                <p className="text-sm text-gray-400 mb-2">{video.description}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500">{video.duration}</span>
+                  <a
+                    href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                    Watch on YouTube
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
               </div>
-            </a>
+            </div>
           ))}
         </div>
 
@@ -331,9 +331,6 @@ export default function ScamAwarenessCenter({ lang = 'en' }: { lang?: 'en' | 'hi
           <div className="text-center py-8">
             <PlayCircle className="w-16 h-16 text-gray-600 mx-auto mb-3" />
             <p className="text-gray-400">Educational videos coming soon!</p>
-            <p className="text-sm text-gray-500 mt-2">
-              Follow our YouTube channel for cybersecurity tips
-            </p>
           </div>
         )}
       </div>

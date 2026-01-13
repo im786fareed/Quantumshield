@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+
+// Your Custom Components
 import Logo from "@/components/Logo";
 import InstallPrompt from "@/components/InstallPrompt";
 import CommandPalette from "@/components/CommandPalette";
+import ConsentPopup from "@/components/ConsentPopup"; // The Legal Layer
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -21,14 +24,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="antialiased bg-black text-white min-h-screen font-sans">
+      <body className="antialiased bg-black text-white min-h-screen font-sans flex flex-col">
+        {/* GLOBAL SECURITY LAYERS */}
+        <ConsentPopup />
         <InstallPrompt />
         <CommandPalette />
 
         {/* TOP NAVIGATION HEADER */}
         <header className="border-b border-white/10 bg-black/60 backdrop-blur sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            {/* Logo and App Name - Clicking this takes user to the Defense Terminal */}
             <Link href="/" className="flex items-center gap-3 group">
               <Logo className="w-9 h-9 transition-transform group-hover:scale-110" />
               <div>
@@ -39,7 +43,6 @@ export default function RootLayout({
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="flex gap-6 items-center">
               <Link href="/" className="hidden md:block text-xs font-bold hover:text-blue-400 transition uppercase tracking-widest">
                 Home
@@ -57,7 +60,7 @@ export default function RootLayout({
           </div>
         </header>
 
-        {/* MAIN CONTENT AREA: This is where your Feature Grid and Map load */}
+        {/* MAIN CONTENT AREA */}
         <main className="flex-1">
           {children}
         </main>
@@ -68,27 +71,19 @@ export default function RootLayout({
             <div>
               <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                 <Logo className="w-7 h-7" />
-                <span className="font-semibold uppercase tracking-widest text-xs">QuantumShield</span>
+                <span className="font-semibold uppercase tracking-widest text-xs text-white">QuantumShield</span>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">
-                AI-powered cyber protection helping users stay safe from scams,
-                fraud, and digital traces. Shielding the nation from cyber threats.
+                Shielding the nation from cyber threats through 
+                on-device AI analysis and zero-storage vaults.
               </p>
             </div>
 
             <div>
               <h3 className="font-bold text-xs uppercase text-gray-500 mb-4 tracking-widest">Direct Support</h3>
               <ul className="space-y-3 text-sm text-gray-400">
-                <li>
-                  <a href="mailto:quantumshield4india@gmail.com" className="hover:text-white transition">
-                    Email Security Team
-                  </a>
-                </li>
-                <li>
-                  <a href="tel:1930" className="hover:text-white transition">
-                    Cyber Crime Helpline (1930)
-                  </a>
-                </li>
+                <li><a href="mailto:quantumshield4india@gmail.com" className="hover:text-white transition">Email Security Team</a></li>
+                <li><a href="tel:1930" className="hover:text-white transition">Cyber Crime Helpline (1930)</a></li>
               </ul>
             </div>
 
@@ -107,6 +102,7 @@ export default function RootLayout({
           </div>
         </footer>
 
+        {/* ANALYTICS (Client-Side) */}
         <Analytics />
         <SpeedInsights />
       </body>
