@@ -107,6 +107,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     { id: 'breach', name: 'Breach Checker', nameHi: 'ब्रीच', description: 'Check leaks', descriptionHi: 'लीक जांच', icon: AlertTriangle, path: '/breach', category: 'security' },
     { id: 'ransomware', name: 'Ransomware', nameHi: 'रैनसमवेयर', description: 'Protection', descriptionHi: 'सुरक्षा', icon: Shield, path: '/ransomware', category: 'security' },
     { id: 'device', name: 'Device Health', nameHi: 'डिवाइस', description: 'Security check', descriptionHi: 'जांच', icon: Activity, path: '/device', category: 'security' },
+    { id: 'systemguardian', name: 'AI System Guardian', nameHi: 'AI सिस्टम गार्जियन', description: 'AI integrity monitor', descriptionHi: 'AI अखंडता', icon: Shield, path: '/system-guardian', category: 'security' },
     { id: 'awareness', name: 'Scam Awareness', nameHi: 'जागरूकता', description: 'Latest alerts', descriptionHi: 'अलर्ट', icon: Newspaper, path: '/awareness', category: 'learn' },
     { id: 'education', name: 'Learn Safety', nameHi: 'सीखें', description: 'Videos', descriptionHi: 'वीडियो', icon: BookOpen, path: '/education', category: 'learn' },
     { id: 'news', name: 'Latest Alerts', nameHi: 'अलर्ट', description: 'Updates', descriptionHi: 'अपडेट', icon: Bell, path: '/news', category: 'learn' },
@@ -141,20 +142,30 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
               <p className="text-yellow-100 text-sm mb-2">{t.betaText}</p>
               <p className="text-yellow-100 text-xs">
                 {t.betaDisclaimer}{' '}
-                <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" className="underline font-bold">
+                <a
+                  href="https://cybercrime.gov.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-bold">
                   cybercrime.gov.in
                 </a>
               </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a href="mailto:quantumshield4india@gmail.com?subject=Bug" className="text-sm bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg font-semibold">
+            <a
+              href="mailto:quantumshield4india@gmail.com?subject=Bug"
+              className="text-sm bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg font-semibold">
               📧 {t.reportIssues}
             </a>
-            <a href="mailto:quantumshield4india@gmail.com?subject=Feedback" className="text-sm bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold">
+            <a
+              href="mailto:quantumshield4india@gmail.com?subject=Feedback"
+              className="text-sm bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold">
               💬 {t.sendFeedback}
             </a>
-            <a href="mailto:quantumshield4india@gmail.com?subject=Join" className="text-sm bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">
+            <a
+              href="mailto:quantumshield4india@gmail.com?subject=Join"
+              className="text-sm bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">
               💚 {t.joinCommunity}
             </a>
           </div>
@@ -191,7 +202,11 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
             {getByCat('emergency').map(tool => {
               const Icon = tool.icon;
               return (
-                <a key={tool.id} href={tool.path} className="bg-gradient-to-br from-red-600/20 to-orange-600/20 border border-red-500/50 rounded-xl p-6 hover:border-red-400 transition group">
+                
+		<a
+                  key={tool.id}
+		  href={tool.path}
+                  className="bg-gradient-to-br from-red-600/20 to-orange-600/20 border border-red-500/50 rounded-xl p-6 hover:border-red-400 transition group">
                   <Icon className="w-12 h-12 text-red-400 mb-3 group-hover:scale-110 transition" />
                   <h3 className="font-bold text-lg mb-2">{language === 'en' ? tool.name : tool.nameHi}</h3>
                   <p className="text-sm text-gray-400">{language === 'en' ? tool.description : tool.descriptionHi}</p>
@@ -208,7 +223,11 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
             {getByCat('protection').map(tool => {
               const Icon = tool.icon;
               return (
-                <a key={tool.id} href={tool.path} className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/50 rounded-xl p-6 hover:border-blue-400 transition group">
+                
+		<a
+                  key={tool.id}
+		  href={tool.path}
+                  className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/50 rounded-xl p-6 hover:border-blue-400 transition group">
                   <Icon className="w-12 h-12 text-blue-400 mb-3 group-hover:scale-110 transition" />
                   <h3 className="font-bold text-lg mb-2">{language === 'en' ? tool.name : tool.nameHi}</h3>
                   <p className="text-sm text-gray-400">{language === 'en' ? tool.description : tool.descriptionHi}</p>
@@ -223,7 +242,9 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
           <p className="text-gray-400 mb-6">{t.threatsDesc}</p>
           <div className="grid md:grid-cols-2 gap-4">
             {threats.map(threat => (
-              <div key={threat.id} className={`border rounded-xl p-4 ${getSeverityColor(threat.severity)}`}>
+              <div
+                key={threat.id}
+                className={`border rounded-xl p-4 ${getSeverityColor(threat.severity)}`}>
                 <div className="flex justify-between mb-2">
                   <h3 className="font-bold text-lg">{threat.name}</h3>
                   <span className="text-xl font-bold text-red-400">{threat.amount}</span>
@@ -246,7 +267,11 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
                   {getByCat(cat).map(tool => {
                     const Icon = tool.icon;
                     return (
-                      <a key={tool.id} href={tool.path} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 transition flex items-start gap-3">
+                      
+			<a
+                        key={tool.id}
+			href={tool.path}
+                        className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 transition flex items-start gap-3">
                         <Icon className="w-6 h-6 text-blue-400 shrink-0 mt-1" />
                         <div>
                           <h4 className="font-semibold mb-1">{language === 'en' ? tool.name : tool.nameHi}</h4>
