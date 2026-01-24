@@ -1,9 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { 
-  Shield, AlertTriangle, Phone, FileText, Database, Mic, 
-  Lock, Scan, MessageSquare, Download, 
-  Smartphone, Globe, TrendingUp,
+  Shield, AlertTriangle, Phone, FileText, Mic, 
+  Lock, Scan, Smartphone, Globe, TrendingUp,
   Brain, BookOpen, Newspaper, Activity, Bell
 } from 'lucide-react';
 
@@ -31,7 +30,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       joinCommunity: 'Join Community',
       title: '🛡️ QuantumShield',
       subtitle: 'AI-Powered Cyber Protection',
-      tagline: 'Real-Time Scam Detection Platform',
+      tagline: 'Consolidated Threat Detection Platform',
       statsUsers: '10,000+',
       statsUsersLabel: 'Protected Users',
       statsThreats: '50,000+',
@@ -39,7 +38,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       statsSaved: '₹365Cr+',
       statsSavedLabel: 'Losses Prevented',
       emergencyTools: '🚨 Emergency Tools',
-      emergencyDesc: 'Immediate action for active scams',
+      emergencyDesc: 'Immediate recording and analysis',
       protectionTools: '🛡️ Protection Tools',
       protectionDesc: 'Proactive security measures',
       topThreats: '⚠️ Top Threats in India',
@@ -48,7 +47,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       allToolsDesc: 'Complete protection toolkit',
       catEmergency: '🚨 Emergency Tools',
       catProtection: '🛡️ Protection Tools',
-      catScanners: '🔍 Scanners',
+      catScanners: '🔍 Advanced Scanners',
       catSecurity: '🔐 Security',
       catLearn: '📚 Learn & Discover'
     },
@@ -61,7 +60,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       joinCommunity: 'समुदाय में शामिल',
       title: '🛡️ क्वांटमशील्ड',
       subtitle: 'AI-संचालित साइबर सुरक्षा',
-      tagline: 'रीयल-टाइम घोटाला पहचान',
+      tagline: 'एकीकृत खतरा पहचान मंच',
       statsUsers: '10,000+',
       statsUsersLabel: 'संरक्षित उपयोगकर्ता',
       statsThreats: '50,000+',
@@ -69,7 +68,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       statsSaved: '₹365 करोड़+',
       statsSavedLabel: 'नुकसान रोके',
       emergencyTools: '🚨 आपातकालीन उपकरण',
-      emergencyDesc: 'तत्काल कार्रवाई',
+      emergencyDesc: 'तत्काल रिकॉर्डिंग और विश्लेषण',
       protectionTools: '🛡️ सुरक्षा उपकरण',
       protectionDesc: 'सक्रिय सुरक्षा',
       topThreats: '⚠️ शीर्ष खतरे',
@@ -78,7 +77,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       allToolsDesc: 'पूर्ण टूलकिट',
       catEmergency: '🚨 आपातकालीन',
       catProtection: '🛡️ सुरक्षा',
-      catScanners: '🔍 स्कैनर',
+      catScanners: '🔍 उन्नत स्कैनर',
       catSecurity: '🔐 सुरक्षा',
       catLearn: '📚 सीखें'
     }
@@ -87,32 +86,23 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   const t = content[language];
 
   const allTools: Tool[] = [
-    { id: 'evidence', name: 'Evidence Collector', nameHi: 'सबूत संग्राहक', description: 'Screenshots, recordings', descriptionHi: 'स्क्रीनशॉट, रिकॉर्डिंग', icon: FileText, path: '/evidence', category: 'emergency' },
-    { id: 'reporter', name: 'Police Report', nameHi: 'पुलिस रिपोर्ट', description: 'FIR documents', descriptionHi: 'FIR दस्तावेज़', icon: FileText, path: '/reporter', category: 'emergency' },
+    // EMERGENCY TOOLS
+    { id: 'evidence', name: 'Evidence Vault', nameHi: 'सबूत वॉल्ट', description: 'Record video evidence (Mobile Optimized)', descriptionHi: 'वीडियो सबूत रिकॉर्ड करें', icon: FileText, path: '/evidence', category: 'emergency' },
     { id: 'emergency', name: 'Emergency Contacts', nameHi: 'आपातकालीन संपर्क', description: 'Quick 1930 access', descriptionHi: '1930 पहुंच', icon: Phone, path: '/emergency', category: 'emergency' },
-    { id: 'scamdb', name: 'Scam Database', nameHi: 'घोटाला डेटाबेस', description: 'Search scam numbers', descriptionHi: 'घोटाले नंबर', icon: Database, path: '/scamdb', category: 'emergency' },
-    { id: 'aianalyzer', name: 'AI Call Analyzer', nameHi: 'AI कॉल विश्लेषक', description: 'Real-time detection', descriptionHi: 'रीयल-टाइम पहचान', icon: Mic, path: '/aianalyzer', category: 'emergency' },
+    { id: 'aianalyzer', name: 'AI Call Analyzer', nameHi: 'AI कॉल विश्लेषक', description: 'Real-time voice scam detection', descriptionHi: 'रीयल-टाइम कॉल पहचान', icon: Mic, path: '/aianalyzer', category: 'emergency' },
+    
+    // PROTECTION & SCANNING (CONSOLIDATED)
+    { id: 'universal-scan', name: 'AI Universal Scanner', nameHi: 'AI यूनिवर्सल स्कैनर', description: 'Scan URLs, Files, APKs & Steganography', descriptionHi: 'URL, फ़ाइल और इमेज स्कैन', icon: Scan, path: '/scanner', category: 'scanners' },
     { id: 'simprotection', name: 'SIM Protection', nameHi: 'SIM सुरक्षा', description: 'Detect SIM swap', descriptionHi: 'SIM स्वैप', icon: Smartphone, path: '/simprotection', category: 'protection' },
-    { id: 'devicescan', name: 'Device Scanner', nameHi: 'डिवाइस स्कैनर', description: 'Malware scan', descriptionHi: 'मैलवेयर', icon: Scan, path: '/devicescan', category: 'protection' },
-    { id: 'whatsapp', name: 'WhatsApp Safety', nameHi: 'व्हाट्सएप', description: 'Pairing detection', descriptionHi: 'पेयरिंग', icon: MessageSquare, path: '/whatsapp', category: 'protection' },
     { id: 'privacy', name: 'Privacy Shield', nameHi: 'गोपनीयता', description: 'App permissions', descriptionHi: 'ऐप अनुमति', icon: Lock, path: '/privacy', category: 'protection' },
-    { id: 'scanner', name: 'AI Scanner', nameHi: 'AI स्कैनर', description: 'Image analysis', descriptionHi: 'छवि विश्लेषण', icon: Brain, path: '/scanner', category: 'scanners' },
-    { id: 'apk', name: 'APK Guardian', nameHi: 'APK गार्जियन', description: 'Scan apps', descriptionHi: 'ऐप्स स्कैन', icon: Shield, path: '/apk', category: 'scanners' },
-    { id: 'url', name: 'URL Checker', nameHi: 'URL चेकर', description: 'Website safety', descriptionHi: 'वेबसाइट', icon: Globe, path: '/url', category: 'scanners' },
-    { id: 'spam', name: 'Spam AI', nameHi: 'स्पैम AI', description: 'Spam calls', descriptionHi: 'स्पैम कॉल', icon: Bell, path: '/spam', category: 'scanners' },
-    { id: 'file', name: 'File Scanner', nameHi: 'फ़ाइल', description: 'Scan files', descriptionHi: 'फ़ाइलें', icon: FileText, path: '/file', category: 'scanners' },
-    { id: 'sms', name: 'SMS Guardian', nameHi: 'SMS', description: 'Filter SMS', descriptionHi: 'SMS फ़िल्टर', icon: MessageSquare, path: '/sms', category: 'scanners' },
-    { id: 'downloads', name: 'Downloads', nameHi: 'डाउनलोड', description: 'Track downloads', descriptionHi: 'ट्रैक', icon: Download, path: '/downloads', category: 'scanners' },
-    { id: 'encryption', name: 'Encryption', nameHi: 'एन्क्रिप्शन', description: 'Encrypt files', descriptionHi: 'फ़ाइलें', icon: Lock, path: '/encryption', category: 'security' },
-    { id: 'breach', name: 'Breach Checker', nameHi: 'ब्रीच', description: 'Check leaks', descriptionHi: 'लीक जांच', icon: AlertTriangle, path: '/breach', category: 'security' },
-    { id: 'ransomware', name: 'Ransomware', nameHi: 'रैनसमवेयर', description: 'Protection', descriptionHi: 'सुरक्षा', icon: Shield, path: '/ransomware', category: 'security' },
+    
+    // SECURITY (CONSOLIDATED)
+    { id: 'systemguardian', name: 'System Guardian', nameHi: 'सिस्टम गार्जियन', description: 'Breach Check & Ransomware Protection', descriptionHi: 'ब्रीच और रैनसमवेयर सुरक्षा', icon: Shield, path: '/system-guardian', category: 'security' },
     { id: 'device', name: 'Device Health', nameHi: 'डिवाइस', description: 'Security check', descriptionHi: 'जांच', icon: Activity, path: '/device', category: 'security' },
-    { id: 'systemguardian', name: 'AI System Guardian', nameHi: 'AI सिस्टम गार्जियन', description: 'AI integrity monitor', descriptionHi: 'AI अखंडता', icon: Shield, path: '/system-guardian', category: 'security' },
+    
+    // LEARN
     { id: 'awareness', name: 'Scam Awareness', nameHi: 'जागरूकता', description: 'Latest alerts', descriptionHi: 'अलर्ट', icon: Newspaper, path: '/awareness', category: 'learn' },
-    { id: 'education', name: 'Learn Safety', nameHi: 'सीखें', description: 'Videos', descriptionHi: 'वीडियो', icon: BookOpen, path: '/education', category: 'learn' },
-    { id: 'news', name: 'Latest Alerts', nameHi: 'अलर्ट', description: 'Updates', descriptionHi: 'अपडेट', icon: Bell, path: '/news', category: 'learn' },
-    { id: 'threats', name: 'Threat Intel', nameHi: 'खतरा', description: 'Trends', descriptionHi: 'रुझान', icon: TrendingUp, path: '/threats', category: 'learn' },
-    { id: 'aboutai', name: 'AI Tech', nameHi: 'AI', description: 'How it works', descriptionHi: 'कैसे काम करता', icon: Brain, path: '/aboutai', category: 'learn' }
+    { id: 'education', name: 'Learn Safety', nameHi: 'सीखें', description: 'Videos', descriptionHi: 'वीडियो', icon: BookOpen, path: '/education', category: 'learn' }
   ];
 
   const threats = [
@@ -142,32 +132,16 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
               <p className="text-yellow-100 text-sm mb-2">{t.betaText}</p>
               <p className="text-yellow-100 text-xs">
                 {t.betaDisclaimer}{' '}
-                <a
-                  href="https://cybercrime.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold">
+                <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" className="underline font-bold">
                   cybercrime.gov.in
                 </a>
               </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a
-              href="mailto:quantumshield4india@gmail.com?subject=Bug"
-              className="text-sm bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg font-semibold">
-              📧 {t.reportIssues}
-            </a>
-            <a
-              href="mailto:quantumshield4india@gmail.com?subject=Feedback"
-              className="text-sm bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold">
-              💬 {t.sendFeedback}
-            </a>
-            <a
-              href="mailto:quantumshield4india@gmail.com?subject=Join"
-              className="text-sm bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">
-              💚 {t.joinCommunity}
-            </a>
+            <a href="mailto:quantumshield4india@gmail.com?subject=Bug" className="text-sm bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg font-semibold">📧 {t.reportIssues}</a>
+            <a href="mailto:quantumshield4india@gmail.com?subject=Feedback" className="text-sm bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold">💬 {t.sendFeedback}</a>
+            <a href="mailto:quantumshield4india@gmail.com?subject=Join" className="text-sm bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">💚 {t.joinCommunity}</a>
           </div>
         </div>
       </div>
@@ -195,6 +169,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
           </div>
         </div>
 
+        {/* EMERGENCY */}
         <div className="mb-12">
           <h2 className="text-3xl font-bold mb-2">{t.emergencyTools}</h2>
           <p className="text-gray-400 mb-6">{t.emergencyDesc}</p>
@@ -202,11 +177,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
             {getByCat('emergency').map(tool => {
               const Icon = tool.icon;
               return (
-                
-		<a
-                  key={tool.id}
-		  href={tool.path}
-                  className="bg-gradient-to-br from-red-600/20 to-orange-600/20 border border-red-500/50 rounded-xl p-6 hover:border-red-400 transition group">
+                <a key={tool.id} href={tool.path} className="bg-gradient-to-br from-red-600/20 to-orange-600/20 border border-red-500/50 rounded-xl p-6 hover:border-red-400 transition group">
                   <Icon className="w-12 h-12 text-red-400 mb-3 group-hover:scale-110 transition" />
                   <h3 className="font-bold text-lg mb-2">{language === 'en' ? tool.name : tool.nameHi}</h3>
                   <p className="text-sm text-gray-400">{language === 'en' ? tool.description : tool.descriptionHi}</p>
@@ -216,35 +187,33 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
           </div>
         </div>
 
+        {/* CONSOLIDATED SCANNERS */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-2">{t.protectionTools}</h2>
-          <p className="text-gray-400 mb-6">{t.protectionDesc}</p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {getByCat('protection').map(tool => {
+          <h2 className="text-3xl font-bold mb-2">{t.catScanners}</h2>
+          <p className="text-gray-400 mb-6">Unified threat detection for links, files, and images.</p>
+          <div className="grid md:grid-cols-1 gap-4">
+            {getByCat('scanners').map(tool => {
               const Icon = tool.icon;
               return (
-                
-		<a
-                  key={tool.id}
-		  href={tool.path}
-                  className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/50 rounded-xl p-6 hover:border-blue-400 transition group">
-                  <Icon className="w-12 h-12 text-blue-400 mb-3 group-hover:scale-110 transition" />
-                  <h3 className="font-bold text-lg mb-2">{language === 'en' ? tool.name : tool.nameHi}</h3>
-                  <p className="text-sm text-gray-400">{language === 'en' ? tool.description : tool.descriptionHi}</p>
+                <a key={tool.id} href={tool.path} className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/50 rounded-xl p-8 hover:border-purple-400 transition group flex items-center gap-6">
+                  <Icon className="w-16 h-16 text-purple-400 group-hover:scale-110 transition" />
+                  <div>
+                    <h3 className="font-bold text-2xl mb-2">{language === 'en' ? tool.name : tool.nameHi}</h3>
+                    <p className="text-lg text-gray-300">{language === 'en' ? tool.description : tool.descriptionHi}</p>
+                  </div>
                 </a>
               );
             })}
           </div>
         </div>
 
+        {/* THREATS SECTION */}
         <div className="mb-12">
           <h2 className="text-3xl font-bold mb-2">{t.topThreats}</h2>
           <p className="text-gray-400 mb-6">{t.threatsDesc}</p>
           <div className="grid md:grid-cols-2 gap-4">
             {threats.map(threat => (
-              <div
-                key={threat.id}
-                className={`border rounded-xl p-4 ${getSeverityColor(threat.severity)}`}>
+              <div key={threat.id} className={`border rounded-xl p-4 ${getSeverityColor(threat.severity)}`}>
                 <div className="flex justify-between mb-2">
                   <h3 className="font-bold text-lg">{threat.name}</h3>
                   <span className="text-xl font-bold text-red-400">{threat.amount}</span>
@@ -255,11 +224,12 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
           </div>
         </div>
 
+        {/* ALL OTHER TOOLS */}
         <div>
           <h2 className="text-3xl font-bold mb-2">{t.allTools}</h2>
           <p className="text-gray-400 mb-6">{t.allToolsDesc}</p>
-          {['emergency', 'protection', 'scanners', 'security', 'learn'].map((cat, idx) => {
-            const titles = [t.catEmergency, t.catProtection, t.catScanners, t.catSecurity, t.catLearn];
+          {['protection', 'security', 'learn'].map((cat, idx) => {
+            const titles = [t.catProtection, t.catSecurity, t.catLearn];
             return (
               <div key={cat} className="mb-8">
                 <h3 className="text-2xl font-bold mb-4">{titles[idx]}</h3>
@@ -267,11 +237,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
                   {getByCat(cat).map(tool => {
                     const Icon = tool.icon;
                     return (
-                      
-			<a
-                        key={tool.id}
-			href={tool.path}
-                        className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 transition flex items-start gap-3">
+                      <a key={tool.id} href={tool.path} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 transition flex items-start gap-3">
                         <Icon className="w-6 h-6 text-blue-400 shrink-0 mt-1" />
                         <div>
                           <h4 className="font-semibold mb-1">{language === 'en' ? tool.name : tool.nameHi}</h4>

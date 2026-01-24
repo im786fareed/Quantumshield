@@ -1,15 +1,15 @@
 const CACHE_NAME = 'quantumshield-v1.1';
 const urlsToCache = [
   '/',
-  '/digital-arrest',
-  '/url-checker',
-  '/learn',
+  '/scanner',
+  '/aianalyzer',
+  '/evidence',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png'
 ];
 
-// Install - cache static assets
+// 1. INSTALL - Cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -18,80 +18,73 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate - clean old caches
+// 2. ACTIVATE - Clean old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames
-            .filter((name) => name !== CACHE_NAME)
-            .map((name) => caches.delete(name))
-        );
-      })
-      .then(() => self.clients.claim())
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
-// Fetch - serve from cache, fallback to network
+// 3. FETCH - Serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const { url, method } = request;
-
-  // Skip non-GET requests (POST, PUT, DELETE, etc.)
-  if (method !== 'GET') {
-    return;
-  }
-
-  // Skip chrome-extension:// and other unsupported schemes
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    return;
-  }
-
-  // Skip API calls (let them go to network)
-  if (url.includes('/api/')) {
-    return;
-  }
+  if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http')) return;
+  if (event.request.url.includes('/api/')) return;
 
   event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-
-        // Otherwise fetch from network
-        return fetch(request)
-          .then((response) => {
-            // Don't cache if not a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            // Cache the new response
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                // Only cache GET requests with http/https
-                if (request.method === 'GET' && 
-                    (url.startsWith('http://') || url.startsWith('https://'))) {
-                  cache.put(request, responseToCache).catch((err) => {
-                    console.log('Cache put failed:', err);
-                  });
-                }
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // Return offline page if available
-            return caches.match('/offline').then((offlineResponse) => {
-              return offlineResponse || new Response('Offline - Please check your connection');
-            });
-          });
-      })
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request).then((response) => {
+        if (!response || response.status !== 200 || response.type !== 'basic') return response;
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+        return response;
+      });
+    })
   );
+});
+
+// 4. PUSH - High-Priority Heads-up Notifications for Scam Alerts
+self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : { title: '🚨 SCAM ALERT', body: 'Suspicious activity detected!' };
+  
+  const options = {
+    body: data.body,
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 200, 110, 200], // Urgent SOS vibration pattern
+    tag: 'scam-alert',
+    renotify: true,
+    requireInteraction: true, // IMPORTANT: Alert stays on screen until dismissed
+    priority: 2, // Forces "Heads-up" behavior on Android
+    data: { url: data.url || '/evidence' },
+    actions: [
+      { action: 'open_vault', title: '🛡️ Record Evidence' },
+      { action: 'close', title: 'Dismiss' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// 5. NOTIFICATION CLICK - Handle user interaction
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data.url;
+
+  if (event.action !== 'close') {
+    event.waitUntil(
+      clients.matchAll({ type: 'window' }).then((clientList) => {
+        for (const client of clientList) {
+          if (client.url === targetUrl && 'focus' in client) return client.focus();
+        }
+        if (clients.openWindow) return clients.openWindow(targetUrl);
+      })
+    );
+  }
 });
