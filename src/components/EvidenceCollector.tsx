@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Video, Download, Trash2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Monitor, Download, Trash2, ShieldCheck, AlertCircle } from 'lucide-react';
 
 // Fixed Prop interface to match your page.tsx call
 interface Props {
@@ -23,14 +23,19 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const micStreamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const previewRef = useRef<HTMLVideoElement | null>(null);
+  // FIX: use a ref to track duration — state closures inside recorder.onstop
+  // always capture the initial value (0), causing the "0:00 duration" bug.
+  const durationRef = useRef(0);
 
   // Cleanup URLs and streams when component unmounts
   useEffect(() => {
     return () => {
-      if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current?.getTracks().forEach(track => track.stop());
+      micStreamRef.current?.getTracks().forEach(track => track.stop());
       videoRecordings.forEach(rec => URL.revokeObjectURL(rec.url));
     };
   }, [videoRecordings]);
@@ -39,24 +44,41 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
     try {
       setError('');
       chunksRef.current = [];
+      durationRef.current = 0;
       setCurrentDuration(0);
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-        audio: true
+      // Step 1: capture the screen (+ system audio when user checks "Share tab audio")
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 30 },
+        audio: true, // request system audio — Chrome shows "Also share system audio" checkbox
       });
 
-      streamRef.current = stream;
+      // Step 2: capture microphone separately
+      const micStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+
+      micStreamRef.current = micStream;
+
+      // FIX: system-audio tracks first, then mic — wrong order causes audio sync issues
+      const combinedStream = new MediaStream([
+        ...screenStream.getVideoTracks(),
+        ...screenStream.getAudioTracks(), // system audio (may be empty if user declined)
+        ...micStream.getAudioTracks(),    // microphone
+      ]);
+
+      streamRef.current = combinedStream;
       if (previewRef.current) {
-        previewRef.current.srcObject = stream;
+        previewRef.current.srcObject = screenStream; // show screen preview, not mic
       }
 
-      // FIX: Use VP8 codec for best mobile compatibility
-      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') 
-        ? 'video/webm;codecs=vp8,opus' 
+      // FIX: Use VP8 codec for best cross-browser compatibility
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
+        ? 'video/webm;codecs=vp8,opus'
         : 'video/webm';
 
-      const recorder = new MediaRecorder(stream, { mimeType });
+      const recorder = new MediaRecorder(combinedStream, { mimeType });
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
@@ -66,29 +88,41 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: mimeType });
         const url = URL.createObjectURL(blob);
-        
+
         const newEntry: VideoRecording = {
           id: Date.now().toString(),
           blob,
           url,
           timestamp: new Date().toLocaleString(),
-          duration: currentDuration // Fixes the 0:00 metadata bug manually
+          duration: durationRef.current, // FIX: read from ref, not stale state closure
         };
 
         setVideoRecordings(prev => [newEntry, ...prev]);
-        stream.getTracks().forEach(track => track.stop());
+        combinedStream.getTracks().forEach(track => track.stop());
+        screenStream.getTracks().forEach(track => track.stop());
+        micStream.getTracks().forEach(track => track.stop());
       };
 
-      recorder.start(1000); 
+      // Handle user clicking "Stop sharing" in the browser's native UI
+      screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+        if (mediaRecorderRef.current?.state === 'recording') stopRecording();
+      });
+
+      recorder.start(1000);
       setIsVideoRecording(true);
-      
-      // Track duration manually because mobile metadata headers often fail
+
+      // Track duration with ref AND state: ref fixes the closure bug; state drives the UI
       timerRef.current = setInterval(() => {
-        setCurrentDuration(prev => prev + 1);
+        durationRef.current += 1;
+        setCurrentDuration(durationRef.current);
       }, 1000);
 
     } catch (err) {
-      setError('Camera/Mic access denied. Please enable permissions.');
+      setError(
+        lang === 'en'
+          ? 'Screen capture denied. Allow screen sharing and microphone access, then retry.'
+          : 'स्क्रीन कैप्चर अस्वीकृत। स्क्रीन शेयरिंग और माइक्रोफ़ोन अनुमति दें।'
+      );
     }
   };
 
@@ -97,6 +131,7 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
       mediaRecorderRef.current.stop();
       setIsVideoRecording(false);
       if (timerRef.current) clearInterval(timerRef.current);
+      micStreamRef.current?.getTracks().forEach(track => track.stop());
     }
   };
 
@@ -119,11 +154,11 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
 
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
         {!isVideoRecording ? (
-          <button 
+          <button
             onClick={startRecording}
             className="w-full py-4 bg-red-600 hover:bg-red-700 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
           >
-            <Video size={20} /> {lang === 'en' ? 'START RECORDING' : 'रिकॉर्डिंग शुरू करें'}
+            <Monitor size={20} /> {lang === 'en' ? 'START SCREEN RECORDING' : 'स्क्रीन रिकॉर्डिंग शुरू करें'}
           </button>
         ) : (
           <div className="space-y-4">

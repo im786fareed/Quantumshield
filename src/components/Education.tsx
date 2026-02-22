@@ -1,22 +1,15 @@
 ﻿'use client';
 
-import { BookOpen, Shield, Phone, Link2, Mail, Play } from 'lucide-react';
+import { BookOpen, Shield, Play } from 'lucide-react';
 import { useState } from 'react';
+import VideoCard, { VideoItem } from './VideoCard';
+import VideoModal from './VideoModal';
 
 interface Props {
   lang: 'en' | 'hi';
 }
 
-interface Video {
-  id: string;
-  title: string;
-  titleHi: string;
-  youtubeId: string;
-  category: 'phone' | 'message' | 'browsing';
-  isNew?: boolean;
-}
-
-const VIDEOS: Video[] = [
+const VIDEOS: VideoItem[] = [
   { id: '1', title: 'How to Report Cybercrime in India - 1930', titleHi: 'साइबर क्राइम रिपोर्ट करें - 1930', youtubeId: 'qi1Kz3_cTBg', category: 'browsing' },
   { id: '2', title: 'Report Cybercrime Process Guide', titleHi: 'रिपोर्ट प्रक्रिया', youtubeId: 'GOrBC-_hFRQ', category: 'browsing' },
   { id: '3', title: 'Digital Arrest Scam Awareness', titleHi: 'डिजिटल अरेस्ट स्कैम', youtubeId: 'JGoVuPTtRgg', category: 'phone' },
@@ -105,14 +98,8 @@ const CONTENT = {
 };
 
 export default function Education({ lang }: Props) {
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const content = CONTENT[lang];
-
-  const getCategoryIcon = (category: string) => {
-    if (category === 'phone') return Phone;
-    if (category === 'message') return Mail;
-    return Link2;
-  };
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -148,19 +135,7 @@ export default function Education({ lang }: Props) {
         </div>
       </div>
 
-      {selectedVideo && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedVideo(null)}>
-          <div className="bg-gradient-to-b from-gray-900 to-black rounded-2xl border border-white/20 max-w-4xl w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center p-4 border-b border-white/10">
-              <h3 className="text-xl font-bold">{lang === 'en' ? selectedVideo.title : selectedVideo.titleHi}</h3>
-              <button onClick={() => setSelectedVideo(null)} className="text-3xl hover:text-red-400 transition">×</button>
-            </div>
-            <div className="aspect-video">
-              <iframe width="100%" height="100%" src={'https://www.youtube.com/embed/' + selectedVideo.youtubeId + '?autoplay=1'} title={selectedVideo.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" className="w-full h-full" />
-            </div>
-          </div>
-        </div>
-      )}
+      <VideoModal video={selectedVideo} lang={lang} onClose={() => setSelectedVideo(null)} />
 
       <div>
         <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
@@ -168,35 +143,16 @@ export default function Education({ lang }: Props) {
           {content.videos} ({VIDEOS.length} videos)
         </h3>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {VIDEOS.map((video) => {
-            const CategoryIcon = getCategoryIcon(video.category);
-            return (
-              <div key={video.id} className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-hidden hover:border-cyan-400/50 transition-all group cursor-pointer relative" onClick={() => setSelectedVideo(video)}>
-                {video.isNew && (
-                  <div className="absolute top-3 right-3 z-10 px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse">{content.newBadge}</div>
-                )}
-                <div className="relative aspect-video bg-black">
-                  <img src={'https://img.youtube.com/vi/' + video.youtubeId + '/maxresdefault.jpg'} alt={video.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center group-hover:bg-black/30 transition">
-                    <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition">
-                      <Play className="w-8 h-8 text-white ml-1" />
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CategoryIcon className="w-5 h-5 text-cyan-400" />
-                    <span className="text-xs text-cyan-400 uppercase font-bold">{video.category}</span>
-                  </div>
-                  <h4 className="text-lg font-bold mb-4">{lang === 'en' ? video.title : video.titleHi}</h4>
-                  <button className="w-full px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold hover:shadow-xl transition flex items-center justify-center gap-2">
-                    <Play className="w-4 h-4" />
-                    {content.watchNow}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+          {VIDEOS.map(video => (
+            <VideoCard
+              key={video.id}
+              video={video}
+              lang={lang}
+              onPlay={setSelectedVideo}
+              watchNow={content.watchNow}
+              newBadge={content.newBadge}
+            />
+          ))}
         </div>
       </div>
 
