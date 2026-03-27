@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
-import { 
-  Shield, AlertTriangle, Phone, FileText, Mic, 
+import {
+  Shield, AlertTriangle, Phone, FileText, Mic,
   Lock, Scan, Smartphone, Globe, TrendingUp,
-  Brain, BookOpen, Newspaper, Activity, Bell
+  Brain, BookOpen, Newspaper, Activity, Bell,
+  Zap, CreditCard, Scale
 } from 'lucide-react';
 
 interface Tool {
@@ -49,7 +50,8 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       catProtection: '🛡️ Protection Tools',
       catScanners: '🔍 Advanced Scanners',
       catSecurity: '🔐 Security',
-      catLearn: '📚 Learn & Discover'
+      catLearn: '📚 Learn & Discover',
+      catPerformance: '⚡ Performance & Anti-Fraud',
     },
     hi: {
       betaTitle: '⚠️ बीटा संस्करण',
@@ -79,7 +81,8 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       catProtection: '🛡️ सुरक्षा',
       catScanners: '🔍 उन्नत स्कैनर',
       catSecurity: '🔐 सुरक्षा',
-      catLearn: '📚 सीखें'
+      catLearn: '📚 सीखें',
+      catPerformance: '⚡ परफॉर्मेंस और एंटी-फ्रॉड',
     }
   };
 
@@ -102,7 +105,12 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     
     // LEARN
     { id: 'awareness', name: 'Scam Awareness', nameHi: 'जागरूकता', description: 'Latest alerts', descriptionHi: 'अलर्ट', icon: Newspaper, path: '/awareness', category: 'learn' },
-    { id: 'education', name: 'Learn Safety', nameHi: 'सीखें', description: 'Videos', descriptionHi: 'वीडियो', icon: BookOpen, path: '/education', category: 'learn' }
+    { id: 'education', name: 'Learn Safety', nameHi: 'सीखें', description: 'Videos', descriptionHi: 'वीडियो', icon: BookOpen, path: '/education', category: 'learn' },
+
+    // PERFORMANCE & ANTI-FRAUD (NEW)
+    { id: 'tuneup', name: 'System Tune-Up', nameHi: 'सिस्टम ट्यून-अप', description: 'One-tap: RAM clear, cache wipe, security sweep', descriptionHi: 'एक टैप: RAM, कैश, सुरक्षा जांच', icon: Zap, path: '/tuneup', category: 'performance' },
+    { id: 'upi-guard', name: 'UPI & QR Guard', nameHi: 'UPI और QR गार्ड', description: 'Detect fake UPI IDs & QR fraud before you pay', descriptionHi: 'भुगतान से पहले नकली UPI ID पकड़ें', icon: CreditCard, path: '/upi-guard', category: 'performance' },
+    { id: 'legal-aid', name: 'Cyber Legal First Aid', nameHi: 'साइबर कानूनी सहायता', description: 'Digital Arrest response guide + FIR checklist + your rights', descriptionHi: 'डिजिटल अरेस्ट गाइड + FIR चेकलिस्ट + अधिकार', icon: Scale, path: '/legal-aid', category: 'performance' },
   ];
 
   const threats = [
@@ -221,6 +229,24 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
                 <p className="text-sm text-gray-300">{threat.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* NEW: PERFORMANCE & ANTI-FRAUD */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold mb-2">{t.catPerformance}</h2>
+          <p className="text-gray-400 mb-6">Daily utility tools that boost speed AND security — the features that keep you coming back.</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            {getByCat('performance').map(tool => {
+              const Icon = tool.icon;
+              return (
+                <a key={tool.id} href={tool.path} className="bg-gradient-to-br from-green-600/20 to-teal-600/20 border border-green-500/50 rounded-xl p-6 hover:border-green-400 transition group">
+                  <Icon className="w-10 h-10 text-green-400 mb-3 group-hover:scale-110 transition" />
+                  <h3 className="font-bold text-lg mb-2">{language === 'en' ? tool.name : tool.nameHi}</h3>
+                  <p className="text-sm text-gray-400">{language === 'en' ? tool.description : tool.descriptionHi}</p>
+                </a>
+              );
+            })}
           </div>
         </div>
 
