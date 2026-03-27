@@ -32,12 +32,12 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       title: '🛡️ QuantumShield',
       subtitle: 'AI-Powered Cyber Protection',
       tagline: 'Consolidated Threat Detection Platform',
-      statsUsers: '10,000+',
-      statsUsersLabel: 'Protected Users',
-      statsThreats: '50,000+',
-      statsThreatsLabel: 'Threats Blocked',
-      statsSaved: '₹365Cr+',
-      statsSavedLabel: 'Losses Prevented',
+      statsCases: '28.15 Lakh',
+      statsCasesLabel: 'Cybercrime Cases in India (2025)',
+      statsLost: '₹22,495 Cr',
+      statsLostLabel: 'Lost to Fraud in India (2025)',
+      statsSaved: '₹8,189 Cr',
+      statsSavedLabel: 'Saved by I4C Helpline (2025)',
       emergencyTools: '🚨 Emergency Tools',
       emergencyDesc: 'Immediate recording and analysis',
       protectionTools: '🛡️ Protection Tools',
@@ -63,12 +63,12 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       title: '🛡️ क्वांटमशील्ड',
       subtitle: 'AI-संचालित साइबर सुरक्षा',
       tagline: 'एकीकृत खतरा पहचान मंच',
-      statsUsers: '10,000+',
-      statsUsersLabel: 'संरक्षित उपयोगकर्ता',
-      statsThreats: '50,000+',
-      statsThreatsLabel: 'खतरे अवरुद्ध',
-      statsSaved: '₹365 करोड़+',
-      statsSavedLabel: 'नुकसान रोके',
+      statsCases: '28.15 लाख',
+      statsCasesLabel: 'भारत में साइबर मामले (2025)',
+      statsLost: '₹22,495 करोड़',
+      statsLostLabel: 'भारत में नुकसान (2025)',
+      statsSaved: '₹8,189 करोड़',
+      statsSavedLabel: 'I4C हेल्पलाइन ने बचाए (2025)',
       emergencyTools: '🚨 आपातकालीन उपकरण',
       emergencyDesc: 'तत्काल रिकॉर्डिंग और विश्लेषण',
       protectionTools: '🛡️ सुरक्षा उपकरण',
@@ -162,19 +162,20 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
           <p className="text-2xl font-bold text-gray-300 mb-2">{t.subtitle}</p>
           <p className="text-gray-400 mb-8">{t.tagline}</p>
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/50 rounded-xl p-4">
-              <div className="text-3xl font-bold text-blue-400">{t.statsUsers}</div>
-              <div className="text-sm text-gray-400">{t.statsUsersLabel}</div>
+            <div className="bg-gradient-to-br from-red-600/20 to-orange-600/20 border border-red-500/50 rounded-xl p-4">
+              <div className="text-3xl font-bold text-red-400">{t.statsCases}</div>
+              <div className="text-sm text-gray-400">{t.statsCasesLabel}</div>
             </div>
-            <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-500/50 rounded-xl p-4">
-              <div className="text-3xl font-bold text-purple-400">{t.statsThreats}</div>
-              <div className="text-sm text-gray-400">{t.statsThreatsLabel}</div>
+            <div className="bg-gradient-to-br from-orange-600/20 to-yellow-600/20 border border-orange-500/50 rounded-xl p-4">
+              <div className="text-3xl font-bold text-orange-400">{t.statsLost}</div>
+              <div className="text-sm text-gray-400">{t.statsLostLabel}</div>
             </div>
             <div className="bg-gradient-to-br from-green-600/20 to-teal-600/20 border border-green-500/50 rounded-xl p-4">
               <div className="text-3xl font-bold text-green-400">{t.statsSaved}</div>
               <div className="text-sm text-gray-400">{t.statsSavedLabel}</div>
             </div>
           </div>
+          <p className="text-[11px] text-gray-600 mt-2">Source: I4C / MHA Annual Cybercrime Report, February 2026</p>
         </div>
 
         {/* EMERGENCY */}
