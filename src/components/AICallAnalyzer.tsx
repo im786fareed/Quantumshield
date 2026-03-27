@@ -1,31 +1,19 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Brain, AlertTriangle, CheckCircle, Phone, Loader, Video, FileText, Shield, Users, CreditCard, Clock, UserX, FileWarning, Smartphone } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  Mic, MicOff, Brain, AlertTriangle, CheckCircle,
+  Phone, Shield, Users, CreditCard, Clock,
+  UserX, Smartphone, Activity, Zap, Volume2, FileText
+} from 'lucide-react';
+import BackToHome from './BackToHome';
 
-// Declare global types for SpeechRecognition
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-}
-
-interface CallContext {
-  callerNumber?: string;
-  callerName?: string;
-  isUnknownNumber: boolean;
-  isWhatsAppCall: boolean;
-  callSource: 'regular' | 'whatsapp' | 'unknown';
-}
-
-interface CallMetrics {
-  duration: number;
-  bankingKeywordsCount: number;
-  urgencyScore: number;
-  behavioralFlags: string[];
-  pdfShared: boolean;
-  transactionMentioned: boolean;
-  personalInfoRequested: boolean;
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface TranscriptLine {
+  id: number;
+  text: string;
+  ts: number;           // seconds from call start
+  isFinal: boolean;
+  lang?: string;
 }
 
 interface AIAnalysis {
@@ -39,963 +27,742 @@ interface AIAnalysis {
   criticalWarnings: string[];
 }
 
+// ─── MTI-Aware Pattern Library ────────────────────────────────────────────────
+// Covers: pure English · Hinglish phonetics · Hindi Romanised
+// Each entry is lowercased for matching
+const PATTERNS = {
+  digitalArrest: [
+    'digital arrest','digitally arrested','cyber arrest','online arrest',
+    'virtual arrest','video call arrest','digital giraftari',
+    'aapko digitally arrest kar rahe','aap arrested hain','aapki giraftari',
+  ],
+  authorityClaim: [
+    'police','cbi','ed','income tax','customs','officer','ips','ias',
+    'investigation','authority','government','enforcement directorate',
+    'revenue department','cyber cell','narcotics','cbdt','sebi',
+    // Hindi romanised
+    'sarkar','adhikari','vibhag','jaanch','kedriya','puchh taach',
+  ],
+  urgencyPressure: [
+    'urgent','immediately','right now','within minutes','last chance',
+    'time running out','hurry','quick','abhi','turant','jaldi',
+    'warna','nahi to','baad mein mushkil','ek ghante mein',
+    'before it\'s too late','do not waste time','act now','deadline',
+  ],
+  legalThreat: [
+    'arrest','warrant','court','legal action','jail','police station',
+    'fir','case registered','criminal','summons','chargesheet',
+    'prosecution','judicial','magistrate',
+    // Hinglish
+    'giraftari','muqadma','case darz','pakad lenge','hawalat',
+    'qanooni kaaryavahi','kaid','jail bhejenge',
+  ],
+  financialRequest: [
+    'transfer money','payment','fine','penalty','bail','transaction',
+    'upi','neft','rtgs','send money','deposit','wire transfer','imps',
+    'google pay','phonepe','paytm','bank account','routing',
+    // Hinglish
+    'paise bhejo','paise transfer karo','amount bhejo','paisa do',
+    'rupaye','lakh','crore','ek hajar','das hajar',
+    'account mein daalo','turant transfer',
+  ],
+  informationRequest: [
+    'otp','cvv','pin','password','card number','account number',
+    'aadhaar','pan card','date of birth','verify','share your',
+    'tell me your','confirm your','mother\'s maiden',
+    // Hinglish
+    'otp batao','pin batao','number share karo','number dijiye',
+    'aadhaar number','aadhaar batao','pan batao','verify karo',
+    'apna number do','mobile number do','details do',
+  ],
+  packageScam: [
+    'courier','parcel','package','shipment','delivery','seized',
+    'fedex','dhl','customs clearance','contraband','drug','narcotics',
+    'illegal item','foreign parcel',
+    // Hinglish
+    'parsel','dabba','courier pakda gaya','customs mein roka',
+  ],
+  silenceControl: [
+    'don\'t tell anyone','keep secret','confidential','don\'t disconnect',
+    'stay on line','don\'t hang up','keep this private','tell no one',
+    'remain on call','do not leave','record kar rahe','sab sun rahe',
+    // Hinglish
+    'kisi ko mat batana','line mat kato','phone rakhna mat',
+    'chup rehna','secret rakho','abhi mat jaana',
+  ],
+  kashmirBiharMTI: [
+    // Common MTI misrecognised forms that ASR might produce
+    'i am from cyber department','from cyber','from cbi','from it department',
+    'ek minute','do minute','teen minute','char minute',
+    'mera naam','meri id','mera number','main officer',
+    'hamare pass information','aapke against case','case file hua',
+    'notice send hua','notice bheja','court se notice',
+  ],
+};
+
+// Banking keywords for metric counting
+const BANKING_KW = [
+  'bank','account','transfer','payment','upi','neft','rtgs','transaction',
+  'money','amount','rupees','lakh','crore','withdraw','deposit','balance',
+  'paisa','paise','rupay','bhejo','daalo','amount','fund',
+];
+
+// ─── Scoring weights ───────────────────────────────────────────────────────────
+const WEIGHTS: Record<string, number> = {
+  digitalArrest: 70,
+  authorityClaim: 18,
+  urgencyPressure: 15,
+  legalThreat: 18,
+  financialRequest: 25,
+  informationRequest: 25,
+  packageScam: 20,
+  silenceControl: 20,
+  kashmirBiharMTI: 12,
+};
+
+// ─── Language rotation for MTI resilience ─────────────────────────────────────
+// Rotates between en-IN and hi-IN so Hinglish is captured by both engines
+const LANG_ROTATION = ['en-IN', 'hi-IN', 'en-IN', 'en-IN'];
+
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function AICallAnalyzer() {
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [fullTranscript, setFullTranscript] = useState('');
+  // ── UI state ──
+  const [phase, setPhase] = useState<'setup' | 'listening' | 'done'>('setup');
+  const [callerType, setCallerType] = useState<'unknown' | 'known'>('unknown');
+  const [callSource, setCallSource] = useState<'regular' | 'whatsapp'>('regular');
+  const [transcriptLines, setTranscriptLines] = useState<TranscriptLine[]>([]);
+  const [liveText, setLiveText] = useState('');          // interim text shown live
   const [analysis, setAnalysis] = useState<AIAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isScamDetected, setIsScamDetected] = useState(false);
-  const [autoRecording, setAutoRecording] = useState(false);
-  
-  // Call context tracking
-  const [callContext, setCallContext] = useState<CallContext>({
-    isUnknownNumber: false,
-    isWhatsAppCall: false,
-    callSource: 'unknown'
-  });
-  
-  // Call metrics tracking
-  const [callMetrics, setCallMetrics] = useState<CallMetrics>({
-    duration: 0,
-    bankingKeywordsCount: 0,
-    urgencyScore: 0,
-    behavioralFlags: [],
-    pdfShared: false,
-    transactionMentioned: false,
-    personalInfoRequested: false
-  });
+  const [elapsedSec, setElapsedSec] = useState(0);
+  const [wordCount, setWordCount] = useState(0);
+  const [riskScore, setRiskScore] = useState(0);
+  const [micStatus, setMicStatus] = useState<'off'|'on'|'error'>('off');
 
-  const recognitionRef = useRef<any>(null);
-  const callStartTimeRef = useRef<number>(0);
-  const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const analysisIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastAnalysisRef = useRef<string>('');
+  // ── Stable refs (no stale closures) ──
+  const recognitionRef   = useRef<any>(null);
+  const isListeningRef   = useRef(false);          // THE fix: ref never goes stale
+  const fullTextRef      = useRef('');             // THE fix: always current transcript
+  const callStartRef     = useRef(0);
+  const lineIdRef        = useRef(0);
+  const langIdxRef       = useRef(0);
+  const analysisTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const clockTimerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const transcriptRef    = useRef<HTMLDivElement>(null);
 
-  // Enhanced scam detection patterns
-  const SCAM_PATTERNS = {
-    digitalArrest: [
-      'digital arrest', 'digitally arrested', 'cyber arrest',
-      'online arrest', 'virtual arrest', 'e-arrest', 'video call arrest'
-    ],
-    authorityClaim: [
-      'police', 'CBI', 'ED', 'income tax', 'customs', 'officer',
-      'investigation', 'department', 'authority', 'government',
-      'enforcement directorate', 'revenue department'
-    ],
-    urgencyPressure: [
-      'urgent', 'immediately', 'right now', 'within minutes',
-      'before it\'s too late', 'last chance', 'time running out',
-      'hurry', 'quick', 'fast'
-    ],
-    legalThreat: [
-      'arrest', 'warrant', 'court', 'legal action', 'jail',
-      'police station', 'FIR', 'case registered', 'criminal',
-      'summons', 'chargesheet', 'prosecution'
-    ],
-    financialRequest: [
-      'transfer money', 'payment', 'fine', 'penalty', 'bail',
-      'account', 'bank', 'transaction', 'UPI', 'NEFT', 'RTGS',
-      'send money', 'deposit', 'wire transfer'
-    ],
-    informationRequest: [
-      'OTP', 'CVV', 'PIN', 'password', 'card number', 'account number',
-      'details', 'verify', 'confirm', 'share', 'aadhaar', 'PAN'
-    ],
-    packageScam: [
-      'courier', 'parcel', 'package', 'shipment', 'delivery',
-      'seized', 'FedEx', 'DHL', 'customs clearance', 'contraband'
-    ],
-    suspiciousBehavior: [
-      'don\'t tell anyone', 'keep secret', 'confidential',
-      'don\'t disconnect', 'stay on line', 'video call',
-      'don\'t hang up', 'keep this private'
-    ],
-    pdfDocument: [
-      'PDF', 'document', 'form', 'file', 'attachment', 'link',
-      'download', 'click here', 'open the file', 'confirmation form'
-    ]
-  };
-
-  const BANKING_KEYWORDS = [
-    'bank', 'account', 'transfer', 'payment', 'UPI', 'NEFT', 'RTGS',
-    'transaction', 'money', 'amount', 'rupees', 'lakh', 'crore',
-    'withdraw', 'deposit', 'balance'
-  ];
-
-  const PERSONAL_INFO_KEYWORDS = [
-    'OTP', 'CVV', 'PIN', 'password', 'aadhaar', 'PAN', 'card number',
-    'account number', 'date of birth', 'address', 'email'
-  ];
-
+  // ── Auto-scroll transcript ──
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
-      recognitionRef.current.lang = 'en-IN';
-
-      recognitionRef.current.onresult = (event: any) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' ';
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-
-        if (finalTranscript) {
-          setFullTranscript(prev => prev + finalTranscript);
-          updateCallMetrics(fullTranscript + finalTranscript);
-        }
-
-        setTranscript(interimTranscript || finalTranscript);
-      };
-
-      recognitionRef.current.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        if (event.error !== 'no-speech') {
-          stopListening();
-        }
-      };
-
-      recognitionRef.current.onend = () => {
-        if (isListening) {
-          try {
-            recognitionRef.current.start();
-          } catch (err) {
-            console.error('Failed to restart:', err);
-          }
-        }
-      };
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
     }
+  }, [transcriptLines]);
 
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
+  // ── Core: score the full text ──────────────────────────────────────────────
+  const scoreText = useCallback((text: string): AIAnalysis => {
+    const lower = text.toLowerCase();
+    const detected: string[] = [];
+    const warnings: string[] = [];
+    let total = 0;
+    let scamType = 'Suspicious Call';
+    const isUnknown = callerType === 'unknown';
+
+    Object.entries(PATTERNS).forEach(([cat, phrases]) => {
+      const hits = phrases.filter(p => lower.includes(p));
+      if (!hits.length) return;
+
+      detected.push(`${cat}: "${hits.slice(0, 3).join('", "')}"`);
+      let w = (WEIGHTS[cat] ?? 10) * hits.length;
+
+      if (cat === 'digitalArrest') {
+        scamType = 'Digital Arrest Scam';
+        warnings.push('DIGITAL ARREST does NOT exist in Indian law — 100% scam');
+        w = 70;
       }
-      if (durationIntervalRef.current) {
-        clearInterval(durationIntervalRef.current);
+      if (cat === 'authorityClaim' && lower.includes('cbi')) {
+        warnings.push('CBI never contacts via phone for arrests — verify physically');
       }
-      if (analysisIntervalRef.current) {
-        clearInterval(analysisIntervalRef.current);
+      if (cat === 'informationRequest') {
+        warnings.push('Banks & Police NEVER ask OTP / PIN / Aadhaar over call');
       }
-    };
-  }, [isListening]);
-
-  // Update call metrics based on conversation
-  const updateCallMetrics = (text: string) => {
-    const lowerText = text.toLowerCase();
-    
-    // Count banking keywords
-    const bankingCount = BANKING_KEYWORDS.filter(keyword => 
-      lowerText.includes(keyword)
-    ).length;
-
-    // Calculate urgency score
-    const urgencyWords = SCAM_PATTERNS.urgencyPressure.filter(word =>
-      lowerText.includes(word.toLowerCase())
-    ).length;
-
-    // Check for PDF/document sharing
-    const pdfMentioned = SCAM_PATTERNS.pdfDocument.some(word =>
-      lowerText.includes(word.toLowerCase())
-    );
-
-    // Check for transaction mentions
-    const transactionWords = ['transfer', 'send', 'payment', 'transaction', 'deposit'];
-    const transactionMentioned = transactionWords.some(word =>
-      lowerText.includes(word)
-    );
-
-    // Check for personal info requests
-    const personalInfoRequested = PERSONAL_INFO_KEYWORDS.some(keyword =>
-      lowerText.includes(keyword.toLowerCase())
-    );
-
-    // Detect behavioral flags with CONTEXT
-    const flags: string[] = [];
-    
-    // CONTEXTUAL DURATION CHECK - Only flag if unknown number + long call
-    if (callContext.isUnknownNumber && callMetrics.duration > 180) {
-      flags.push('⚠️ Long call from unknown number (>3 min)');
-    }
-    
-    // CONTEXTUAL BANKING CHECK - Only flag if unknown + multiple banking refs
-    if (callContext.isUnknownNumber && bankingCount > 3) {
-      flags.push('💳 Multiple banking references from unknown caller');
-    }
-    
-    if (urgencyWords > 2) {
-      flags.push('⚡ High urgency pressure tactics detected');
-    }
-
-    // Check for digital arrest specifically
-    const hasDigitalArrest = SCAM_PATTERNS.digitalArrest.some(phrase =>
-      lowerText.includes(phrase.toLowerCase())
-    );
-    
-    if (hasDigitalArrest) {
-      flags.push('🚨 DIGITAL ARREST SCAM DETECTED');
-    }
-
-    // PDF sharing from unknown number
-    if (callContext.isUnknownNumber && pdfMentioned) {
-      flags.push('📄 PDF/Document shared from unknown number');
-    }
-
-    // Banking transaction request from unknown
-    if (callContext.isUnknownNumber && transactionMentioned) {
-      flags.push('💸 Transaction/Payment requested by unknown caller');
-    }
-
-    // Personal info request from unknown
-    if (callContext.isUnknownNumber && personalInfoRequested) {
-      flags.push('🔐 Personal information requested by unknown caller');
-    }
-
-    // WhatsApp-specific checks
-    if (callContext.isWhatsAppCall) {
-      if (callMetrics.duration > 300) { // 5 minutes on WhatsApp with stranger
-        flags.push('📱 Extended WhatsApp call with unknown contact');
+      if (cat === 'financialRequest') {
+        warnings.push('NEVER transfer money to resolve a "legal case" via call');
+        if (scamType === 'Suspicious Call') scamType = 'Financial Fraud Call';
       }
-      if (pdfMentioned) {
-        flags.push('📱 Document shared on WhatsApp call');
-      }
-    }
-
-    setCallMetrics(prev => ({
-      ...prev,
-      bankingKeywordsCount: bankingCount,
-      urgencyScore: Math.min(urgencyWords * 20, 100),
-      behavioralFlags: flags,
-      pdfShared: pdfMentioned,
-      transactionMentioned,
-      personalInfoRequested
-    }));
-  };
-
-  // Enhanced AI analysis with contextual intelligence
-  const performAIAnalysis = async (text: string) => {
-    if (!text || text.length < 20 || lastAnalysisRef.current === text) return;
-    
-    lastAnalysisRef.current = text;
-    setIsAnalyzing(true);
-
-    try {
-      const lowerText = text.toLowerCase();
-      const detectedPatterns: string[] = [];
-      const criticalWarnings: string[] = [];
-      let totalScore = 0;
-      let scamType = 'Unknown';
-
-      // Pattern detection with CONTEXTUAL scoring
-      Object.entries(SCAM_PATTERNS).forEach(([category, patterns]) => {
-        const matches = patterns.filter(pattern => 
-          lowerText.includes(pattern.toLowerCase())
-        );
-        
-        if (matches.length > 0) {
-          detectedPatterns.push(`${category}: ${matches.join(', ')}`);
-          
-          // BASE SCORING
-          let categoryScore = 0;
-          
-          if (category === 'digitalArrest') {
-            categoryScore = 60; // Instant critical
-            scamType = 'Digital Arrest Scam';
-            criticalWarnings.push('DIGITAL ARREST is ALWAYS a scam - Police never arrest via phone/video');
-          } else if (category === 'authorityClaim') {
-            categoryScore = 15;
-            if (scamType === 'Unknown') scamType = 'Authority Impersonation';
-          } else if (category === 'legalThreat') {
-            categoryScore = 15;
-          } else if (category === 'financialRequest') {
-            categoryScore = 20;
-          } else if (category === 'informationRequest') {
-            categoryScore = 20;
-          } else if (category === 'pdfDocument') {
-            categoryScore = 10;
-          } else {
-            categoryScore = 10;
-          }
-
-          // CONTEXTUAL MULTIPLIERS
-          if (callContext.isUnknownNumber) {
-            categoryScore *= 1.5; // 50% increase for unknown callers
-          }
-
-          if (callContext.isWhatsAppCall && category === 'financialRequest') {
-            categoryScore *= 1.3; // WhatsApp + money = higher risk
-          }
-
-          totalScore += categoryScore;
-        }
-      });
-
-      // CONTEXTUAL BEHAVIORAL SCORING
-      // Only add these scores if caller is unknown
-      if (callContext.isUnknownNumber) {
-        if (callMetrics.duration > 300) { // 5 minutes
-          totalScore += 20;
-          detectedPatterns.push('Extended call from unknown number');
-          criticalWarnings.push('Long calls from strangers asking for money/info are red flags');
-        }
-
-        if (callMetrics.bankingKeywordsCount > 5) {
-          totalScore += 25;
-          detectedPatterns.push('Excessive banking discussion with stranger');
-        }
-
-        if (callMetrics.pdfShared) {
-          totalScore += 15;
-          detectedPatterns.push('Document shared by unknown caller');
-          criticalWarnings.push('Never open documents or click links from unknown numbers');
-        }
-
-        if (callMetrics.transactionMentioned) {
-          totalScore += 20;
-          detectedPatterns.push('Payment/transaction requested by stranger');
-          criticalWarnings.push('NEVER transfer money to unknown persons, regardless of reason');
-        }
-
-        if (callMetrics.personalInfoRequested) {
-          totalScore += 25;
-          detectedPatterns.push('Personal information requested by unknown caller');
-          criticalWarnings.push('Banks/Police NEVER ask for OTP, CVV, PIN, or passwords');
-        }
+      if (cat === 'silenceControl') {
+        warnings.push('Scammers demand secrecy to prevent victims from seeking help');
       }
 
-      // WhatsApp-specific scoring
-      if (callContext.isWhatsAppCall && callContext.isUnknownNumber) {
-        totalScore += 10; // Unknown WhatsApp calls are inherently more suspicious
-        detectedPatterns.push('WhatsApp call from unknown/unverified contact');
-      }
+      // Unknown caller multiplier
+      if (isUnknown) w = Math.round(w * 1.5);
+      // WhatsApp + money = extra risk
+      if (callSource === 'whatsapp' && cat === 'financialRequest') w = Math.round(w * 1.3);
 
-      if (callMetrics.urgencyScore > 60) {
-        totalScore += 15;
-        detectedPatterns.push('High urgency/pressure tactics');
-      }
-
-      // Calculate final risk score (cap at 100)
-      const riskScore = Math.min(totalScore, 100);
-      const isScam = riskScore > 40;
-      const confidence = Math.min((riskScore / 100) * 100, 99);
-
-      // Generate contextual reasoning
-      let reasoning = '';
-      if (riskScore > 80) {
-        reasoning = callContext.isUnknownNumber 
-          ? 'CRITICAL THREAT: Multiple scam indicators from UNKNOWN NUMBER. This is almost certainly a scam.'
-          : 'CRITICAL THREAT: Multiple scam indicators detected. Verify caller identity immediately.';
-      } else if (riskScore > 60) {
-        reasoning = callContext.isUnknownNumber
-          ? 'HIGH RISK: Suspicious patterns from UNKNOWN NUMBER. Strong likelihood of scam.'
-          : 'HIGH RISK: Several suspicious patterns detected. Exercise extreme caution.';
-      } else if (riskScore > 40) {
-        reasoning = 'MODERATE RISK: Some concerning patterns detected. Stay vigilant.';
-      } else {
-        reasoning = callContext.isUnknownNumber
-          ? 'LOW RISK: Unknown number but no clear scam patterns yet. Remain cautious.'
-          : 'LOW RISK: No clear scam patterns detected. Continue normal conversation.';
-      }
-
-      // Generate contextual recommendations
-      const recommendations: string[] = [];
-      if (isScam) {
-        recommendations.push('🚨 HANG UP IMMEDIATELY');
-        
-        if (callContext.isUnknownNumber) {
-          recommendations.push('UNKNOWN CALLER detected - Do NOT trust');
-        }
-        
-        if (callContext.isWhatsAppCall) {
-          recommendations.push('Block this WhatsApp contact immediately');
-          recommendations.push('Report number on WhatsApp');
-        }
-        
-        recommendations.push('Do NOT share any personal information');
-        recommendations.push('Do NOT make any payments or transfers');
-        
-        if (detectedPatterns.some(p => p.toLowerCase().includes('digital'))) {
-          recommendations.push('🚨 DIGITAL ARREST IS 100% SCAM - Police never arrest via phone');
-        }
-        
-        if (callMetrics.pdfShared) {
-          recommendations.push('DO NOT open any documents/links sent by this caller');
-        }
-        
-        recommendations.push('Report to cybercrime.gov.in or call 1930');
-        recommendations.push('Block this number immediately');
-        
-        if (!autoRecording) {
-          recommendations.push('⚠️ Evidence collection recommended');
-        }
-      } else {
-        if (callContext.isUnknownNumber) {
-          recommendations.push('Unknown number - Stay alert and cautious');
-          recommendations.push('Verify caller identity before sharing information');
-        }
-        recommendations.push('Do not share sensitive information');
-        recommendations.push('Independently verify any claims made');
-      }
-
-      const aiAnalysis: AIAnalysis = {
-        isScam,
-        confidence,
-        scamType,
-        riskScore,
-        reasoning,
-        detectedPatterns,
-        recommendations,
-        criticalWarnings
-      };
-
-      setAnalysis(aiAnalysis);
-      setIsScamDetected(isScam);
-
-      // Auto-trigger screen recording if scam detected from unknown number
-      if (isScam && callContext.isUnknownNumber && !autoRecording) {
-        startAutoRecording();
-      }
-
-    } catch (error) {
-      console.error('Analysis error:', error);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  const startAutoRecording = () => {
-    setAutoRecording(true);
-    console.log('🎥 Auto-recording initiated due to scam detection');
-  };
-
-  // Call context setup dialog
-  const setupCallContext = () => {
-    const isUnknown = confirm('Is this an UNKNOWN NUMBER (not in your contacts)?');
-    const isWhatsApp = confirm('Is this a WhatsApp call?');
-    
-    let callerNumber = '';
-    let callerName = '';
-    
-    if (!isUnknown) {
-      callerName = prompt('Enter caller name (optional):') || 'Known Contact';
-    } else {
-      callerNumber = prompt('Enter caller number (optional):') || 'Unknown';
-    }
-
-    setCallContext({
-      callerNumber,
-      callerName,
-      isUnknownNumber: isUnknown,
-      isWhatsAppCall: isWhatsApp,
-      callSource: isWhatsApp ? 'whatsapp' : 'regular'
+      total += w;
     });
 
-    return true;
-  };
+    // Banking density bonus
+    const bankHits = BANKING_KW.filter(k => lower.includes(k)).length;
+    if (isUnknown && bankHits > 4) { total += 20; detected.push('High banking keyword density'); }
 
-  const startListening = () => {
-    // Setup call context first
-    const contextSet = setupCallContext();
-    if (!contextSet) return;
+    const rs   = Math.min(total, 100);
+    const isScam = rs > 38;
+    const conf = Math.min(rs + 5, 99);
 
-    if (recognitionRef.current) {
-      try {
-        setTranscript('');
-        setFullTranscript('');
-        setAnalysis(null);
-        setIsScamDetected(false);
-        setAutoRecording(false);
-        lastAnalysisRef.current = '';
-        
-        setCallMetrics({
-          duration: 0,
-          bankingKeywordsCount: 0,
-          urgencyScore: 0,
-          behavioralFlags: [],
-          pdfShared: false,
-          transactionMentioned: false,
-          personalInfoRequested: false
-        });
-
-        recognitionRef.current.start();
-        setIsListening(true);
-        
-        callStartTimeRef.current = Date.now();
-        
-        durationIntervalRef.current = setInterval(() => {
-          const duration = Math.floor((Date.now() - callStartTimeRef.current) / 1000);
-          setCallMetrics(prev => ({ ...prev, duration }));
-        }, 1000);
-
-        analysisIntervalRef.current = setInterval(() => {
-          if (fullTranscript) {
-            performAIAnalysis(fullTranscript);
-          }
-        }, 3000);
-
-      } catch (err) {
-        console.error('Failed to start:', err);
-        alert('Failed to start speech recognition. Make sure you\'re using Chrome or Edge browser.');
-      }
+    const recs: string[] = [];
+    if (isScam) {
+      recs.push('🚨 HANG UP IMMEDIATELY');
+      recs.push('Do NOT share any personal information or OTP');
+      recs.push('Do NOT make any payment or transfer');
+      recs.push('Call back the official number to verify (find it independently)');
+      recs.push('Report at cybercrime.gov.in or call 1930');
+      if (callSource === 'whatsapp') recs.push('Block & report this WhatsApp contact');
     } else {
-      alert('Speech recognition not supported in this browser. Please use Chrome or Edge.');
-    }
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
-    
-    if (durationIntervalRef.current) {
-      clearInterval(durationIntervalRef.current);
-    }
-    
-    if (analysisIntervalRef.current) {
-      clearInterval(analysisIntervalRef.current);
+      recs.push(isUnknown ? 'Unknown number — stay alert, verify identity' : 'No immediate scam patterns');
+      recs.push('Never share OTP, PIN, Aadhaar, or bank details over phone');
+      recs.push('Verify any official claim by calling the organisation directly');
     }
 
-    if (fullTranscript) {
-      performAIAnalysis(fullTranscript);
-    }
-  };
+    let reasoning = '';
+    if (rs > 80) reasoning = 'CRITICAL — Multiple high-confidence scam indicators. End call immediately.';
+    else if (rs > 55) reasoning = 'HIGH RISK — Scam patterns detected. Do NOT comply with demands.';
+    else if (rs > 38) reasoning = 'MODERATE RISK — Suspicious patterns. Stay cautious.';
+    else if (isUnknown) reasoning = 'LOW RISK — No clear scam patterns yet. Remain alert.';
+    else reasoning = 'No scam patterns detected in conversation so far.';
 
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+    return { isScam, confidence: conf, scamType, riskScore: rs, reasoning, detectedPatterns: detected, recommendations: recs, criticalWarnings: [...new Set(warnings)] };
+  }, [callerType, callSource]);
 
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 mb-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">🧠 AI Call Analyzer Pro</h1>
-        <p className="text-purple-100">Contextual scam detection with unknown caller intelligence</p>
-      </div>
+  // ── Build recognition instance ──────────────────────────────────────────────
+  const buildRecognition = useCallback(() => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return null;
 
-      {/* Call Context Info */}
-      {isListening && (
-        <div className="bg-blue-600/20 border border-blue-500/50 rounded-xl p-4 mb-6">
-          <h3 className="font-semibold text-blue-400 mb-3 flex items-center gap-2">
-            <Phone className="w-5 h-5" />
-            Call Context
-          </h3>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="bg-black/30 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Caller Status</p>
-              <p className={`font-semibold ${
-                callContext.isUnknownNumber ? 'text-red-400' : 'text-green-400'
-              }`}>
-                {callContext.isUnknownNumber ? (
-                  <>
-                    <UserX className="w-4 h-4 inline mr-1" />
-                    Unknown Number
-                  </>
-                ) : (
-                  <>
-                    <Users className="w-4 h-4 inline mr-1" />
-                    {callContext.callerName || 'Known Contact'}
-                  </>
-                )}
-              </p>
-            </div>
-            <div className="bg-black/30 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Call Source</p>
-              <p className="font-semibold text-white">
-                {callContext.isWhatsAppCall ? (
-                  <>
-                    <Smartphone className="w-4 h-4 inline mr-1 text-green-400" />
-                    WhatsApp Call
-                  </>
-                ) : (
-                  <>
-                    <Phone className="w-4 h-4 inline mr-1 text-blue-400" />
-                    Regular Call
-                  </>
-                )}
-              </p>
-            </div>
-            <div className="bg-black/30 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Analysis Mode</p>
-              <p className="font-semibold text-purple-400">
-                {callContext.isUnknownNumber ? 'High Vigilance' : 'Standard'}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+    const r = new SR();
+    r.continuous      = true;
+    r.interimResults  = true;
+    r.maxAlternatives = 3;   // pick best of 3 for MTI
+    r.lang            = LANG_ROTATION[langIdxRef.current % LANG_ROTATION.length];
 
-      {/* Critical Scam Alert Banner */}
-      {isScamDetected && (
-        <div className="bg-red-600 border-4 border-red-400 rounded-xl p-6 mb-6 animate-pulse shadow-2xl shadow-red-500/50">
-          <div className="flex items-start gap-4">
-            <AlertTriangle className="w-16 h-16 text-white shrink-0 animate-bounce" />
-            <div>
-              <h3 className="font-bold text-white text-3xl mb-3">🚨 SCAM DETECTED - HANG UP NOW!</h3>
-              {callContext.isUnknownNumber && (
-                <p className="text-red-100 text-lg mb-2 font-bold">
-                  ⚠️ UNKNOWN NUMBER + Scam Patterns = HIGH DANGER
-                </p>
-              )}
-              <p className="text-red-100 text-xl mb-2 font-semibold">
-                {analysis?.scamType || 'Scam Call Detected'}
-              </p>
-              <p className="text-white mb-4">
-                {analysis?.reasoning}
-              </p>
-              
-              {analysis?.criticalWarnings && analysis.criticalWarnings.length > 0 && (
-                <div className="bg-red-900/60 rounded-lg p-3 mb-4">
-                  <p className="font-bold text-red-200 mb-2">🚨 CRITICAL ALERTS:</p>
-                  {analysis.criticalWarnings.map((warning, index) => (
-                    <p key={index} className="text-red-100 text-sm mb-1">• {warning}</p>
-                  ))}
-                </div>
-              )}
-              
-              {autoRecording && (
-                <div className="bg-red-900/50 rounded-lg p-3 mb-4 flex items-center gap-3">
-                  <Video className="w-5 h-5 text-red-200 animate-pulse" />
-                  <span className="text-red-100 font-semibold">
-                    🎥 Evidence recording activated
-                  </span>
-                </div>
-              )}
+    r.onstart = () => setMicStatus('on');
 
-              <div className="bg-red-900/50 rounded-lg p-4">
-                <p className="font-semibold text-sm mb-2 text-red-100">⚠️ DO THIS NOW:</p>
-                <ul className="space-y-2">
-                  {analysis?.recommendations.map((rec, index) => (
-                    <li key={index} className="text-sm flex items-start gap-2 text-white">
-                      <span className="text-red-300 font-bold">→</span>
-                      {rec}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Enhanced Call Metrics Dashboard */}
-      <div className="grid md:grid-cols-5 gap-4 mb-6">
-        <div className={`rounded-lg p-4 border ${
-          callContext.isUnknownNumber && callMetrics.duration > 180
-            ? 'bg-red-600/20 border-red-500/50'
-            : 'bg-white/5 border-white/10'
-        }`}>
-          <div className="flex items-center gap-2 mb-2">
-            <Clock className="w-4 h-4 text-blue-400" />
-            <span className="text-xs text-gray-400">Duration</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {formatDuration(callMetrics.duration)}
-          </p>
-          {callContext.isUnknownNumber && callMetrics.duration > 180 && (
-            <p className="text-xs text-red-400 mt-1">⚠️ Long unknown call</p>
-          )}
-        </div>
-
-        <div className={`rounded-lg p-4 border ${
-          callContext.isUnknownNumber && callMetrics.bankingKeywordsCount > 3
-            ? 'bg-yellow-600/20 border-yellow-500/50'
-            : 'bg-white/5 border-white/10'
-        }`}>
-          <div className="flex items-center gap-2 mb-2">
-            <CreditCard className="w-4 h-4 text-yellow-400" />
-            <span className="text-xs text-gray-400">Banking Refs</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {callMetrics.bankingKeywordsCount}
-          </p>
-        </div>
-
-        <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-4 h-4 text-orange-400" />
-            <span className="text-xs text-gray-400">Urgency</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {callMetrics.urgencyScore}%
-          </p>
-        </div>
-
-        <div className={`rounded-lg p-4 border ${
-          callMetrics.pdfShared && callContext.isUnknownNumber
-            ? 'bg-purple-600/20 border-purple-500/50'
-            : 'bg-white/5 border-white/10'
-        }`}>
-          <div className="flex items-center gap-2 mb-2">
-            <FileWarning className="w-4 h-4 text-purple-400" />
-            <span className="text-xs text-gray-400">PDF Shared</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {callMetrics.pdfShared ? 'YES' : 'NO'}
-          </p>
-          {callMetrics.pdfShared && callContext.isUnknownNumber && (
-            <p className="text-xs text-purple-400 mt-1">⚠️ From stranger</p>
-          )}
-        </div>
-
-        <div className={`rounded-lg p-4 border ${
-          callMetrics.behavioralFlags.length > 0
-            ? 'bg-red-600/20 border-red-500/50'
-            : 'bg-white/5 border-white/10'
-        }`}>
-          <div className="flex items-center gap-2 mb-2">
-            <Shield className="w-4 h-4 text-red-400" />
-            <span className="text-xs text-gray-400">Red Flags</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {callMetrics.behavioralFlags.length}
-          </p>
-        </div>
-      </div>
-
-      {/* Behavioral Flags */}
-      {callMetrics.behavioralFlags.length > 0 && (
-        <div className="bg-orange-600/20 border border-orange-500/50 rounded-xl p-4 mb-6">
-          <h3 className="font-semibold text-orange-400 mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
-            Contextual Red Flags Detected
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {callMetrics.behavioralFlags.map((flag, index) => (
-              <span
-                key={index}
-                className="bg-orange-600/30 border border-orange-500/50 text-orange-200 px-3 py-1 rounded-full text-sm font-semibold">
-                {flag}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Recording Control */}
-      <div className="bg-white/5 rounded-xl p-8 mb-6 text-center border border-white/10">
-        <div className="mb-6">
-          {!isListening ? (
-            <button
-              onClick={startListening}
-              className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 px-12 py-6 rounded-full font-bold text-xl transition shadow-lg shadow-green-500/50 inline-flex items-center gap-3 hover:scale-105">
-              <Mic className="w-8 h-8" />
-              Start Contextual AI Analysis
-            </button>
-          ) : (
-            <button
-              onClick={stopListening}
-              className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 px-12 py-6 rounded-full font-bold text-xl transition shadow-lg shadow-red-500/50 inline-flex items-center gap-3 animate-pulse">
-              <MicOff className="w-8 h-8" />
-              Stop Analysis
-            </button>
-          )}
-        </div>
-
-        {isListening && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-center gap-2 text-green-400">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
-              <span className="font-semibold">
-                {callContext.isUnknownNumber ? 'High Alert Mode Active' : 'Standard Monitoring Active'}
-              </span>
-            </div>
-            {isAnalyzing && (
-              <div className="flex items-center justify-center gap-2 text-blue-400">
-                <Loader className="w-4 h-4 animate-spin" />
-                <span className="text-sm">Contextual AI Processing...</span>
-              </div>
-            )}
-          </div>
-        )}
-
-        <p className="text-sm text-gray-400 mt-4">
-          {isListening 
-            ? 'AI is analyzing call context, caller behavior, and conversation patterns in real-time'
-            : 'You\'ll be asked to specify if this is an unknown number or WhatsApp call for contextual analysis'
+    r.onresult = (e: any) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        // Pick the best alternative (highest confidence)
+        let bestText = e.results[i][0].transcript;
+        let bestConf = e.results[i][0].confidence || 0;
+        for (let a = 1; a < e.results[i].length; a++) {
+          if ((e.results[i][a].confidence || 0) > bestConf) {
+            bestConf = e.results[i][a].confidence;
+            bestText = e.results[i][a].transcript;
           }
-        </p>
-      </div>
+        }
 
-      {/* Live Transcript */}
-      {fullTranscript && (
-        <div className="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
-          <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-            <Phone className="w-5 h-5 text-blue-400" />
-            Live Conversation Transcript
-          </h3>
-          <div className="bg-black/50 rounded-lg p-4 max-h-64 overflow-y-auto">
-            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">
-              {fullTranscript}
-              {transcript && <span className="text-blue-400">{transcript}</span>}
-            </p>
+        if (e.results[i].isFinal) {
+          // Append to the stable ref IMMEDIATELY (no stale closure)
+          fullTextRef.current += bestText + ' ';
+          setWordCount(fullTextRef.current.split(/\s+/).filter(Boolean).length);
+
+          const elapsed = Math.floor((Date.now() - callStartRef.current) / 1000);
+          const line: TranscriptLine = {
+            id:      ++lineIdRef.current,
+            text:    bestText.trim(),
+            ts:      elapsed,
+            isFinal: true,
+            lang:    r.lang,
+          };
+          setTranscriptLines(prev => [...prev, line]);
+          setLiveText('');
+        } else {
+          interim += bestText;
+        }
+      }
+      if (interim) setLiveText(interim);
+    };
+
+    r.onerror = (e: any) => {
+      // 'no-speech' is not fatal — just means silence, keep going
+      if (e.error === 'no-speech' || e.error === 'audio-capture') return;
+      if (e.error === 'not-allowed') {
+        setMicStatus('error');
+        stopEverything();
+      }
+    };
+
+    // ── THE KEY FIX: use ref, not closure ──────────────────────────────────
+    r.onend = () => {
+      if (!isListeningRef.current) return;   // intentional stop
+      // Rotate language for next session (MTI resilience)
+      langIdxRef.current = (langIdxRef.current + 1) % LANG_ROTATION.length;
+      // Restart immediately
+      try {
+        const next = buildRecognition();
+        if (next) {
+          recognitionRef.current = next;
+          next.start();
+        }
+      } catch (_) {
+        /* ignore AbortError if already starting */
+      }
+    };
+
+    return r;
+  }, []);    // no deps — uses only refs and stable callbacks
+
+  // ── Analysis loop — uses ref, never stale ──────────────────────────────────
+  const runAnalysis = useCallback(() => {
+    const text = fullTextRef.current.trim();
+    if (text.length < 15) return;           // too short to analyse
+    setIsAnalyzing(true);
+    const result = scoreText(text);
+    setAnalysis(result);
+    setRiskScore(result.riskScore);
+    setIsAnalyzing(false);
+  }, [scoreText]);
+
+  // ── Start / Stop ───────────────────────────────────────────────────────────
+  const startListening = useCallback(() => {
+    const rec = buildRecognition();
+    if (!rec) {
+      alert('Speech recognition is not supported. Please use Chrome or Edge on desktop.');
+      return;
+    }
+    // Reset all state
+    fullTextRef.current      = '';
+    isListeningRef.current   = true;
+    langIdxRef.current       = 0;
+    lineIdRef.current        = 0;
+    callStartRef.current     = Date.now();
+    setTranscriptLines([]);
+    setLiveText('');
+    setAnalysis(null);
+    setRiskScore(0);
+    setWordCount(0);
+    setElapsedSec(0);
+    setPhase('listening');
+
+    recognitionRef.current = rec;
+    rec.start();
+
+    // Clock
+    clockTimerRef.current = setInterval(() => {
+      setElapsedSec(Math.floor((Date.now() - callStartRef.current) / 1000));
+    }, 1000);
+
+    // Analysis — reads ref, never stale
+    analysisTimerRef.current = setInterval(runAnalysis, 2500);
+  }, [buildRecognition, runAnalysis]);
+
+  const stopEverything = useCallback(() => {
+    isListeningRef.current = false;
+    recognitionRef.current?.stop();
+    if (clockTimerRef.current)    clearInterval(clockTimerRef.current);
+    if (analysisTimerRef.current) clearInterval(analysisTimerRef.current);
+    setMicStatus('off');
+    setLiveText('');
+    setPhase('done');
+    // Final analysis on full text
+    const text = fullTextRef.current.trim();
+    if (text.length > 10) {
+      const result = scoreText(text);
+      setAnalysis(result);
+      setRiskScore(result.riskScore);
+    }
+  }, [scoreText]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isListeningRef.current = false;
+      recognitionRef.current?.stop();
+      if (clockTimerRef.current)    clearInterval(clockTimerRef.current);
+      if (analysisTimerRef.current) clearInterval(analysisTimerRef.current);
+    };
+  }, []);
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+  const riskColor = riskScore > 70 ? 'text-red-400' :
+                    riskScore > 45 ? 'text-orange-400' :
+                    riskScore > 20 ? 'text-yellow-400' : 'text-green-400';
+
+  const riskBg    = riskScore > 70 ? 'bg-red-500' :
+                    riskScore > 45 ? 'bg-orange-500' :
+                    riskScore > 20 ? 'bg-yellow-500' : 'bg-green-500';
+
+  // ─────────────────────────────────────────────────────────────────────────
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-4xl mx-auto p-4 md:p-6">
+        <BackToHome />
+
+        {/* ── Header ── */}
+        <div className="mb-6 text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600/30 to-blue-600/30 border border-purple-500/50 mb-4">
+            <Brain className="w-10 h-10 text-purple-400" />
           </div>
+          <h1 className="text-4xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+            AI Call Analyzer
+          </h1>
+          <p className="text-gray-400 text-sm">
+            Real-time scam detection · Hinglish + English · MTI-resilient · Continuous transcription
+          </p>
         </div>
-      )}
 
-      {/* AI Analysis Results */}
-      {analysis && (
-        <div className={`rounded-xl p-6 mb-6 border-2 ${
-          analysis.isScam
-            ? 'bg-red-600/20 border-red-500'
-            : 'bg-green-600/20 border-green-500'
-        }`}>
-          <div className="flex items-start gap-4 mb-4">
-            <div className={`p-3 rounded-full ${
-              analysis.isScam ? 'bg-red-600/30' : 'bg-green-600/30'
-            }`}>
-              {analysis.isScam ? (
-                <AlertTriangle className="w-10 h-10 text-red-400" />
-              ) : (
-                <CheckCircle className="w-10 h-10 text-green-400" />
-              )}
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className={`font-bold text-2xl ${
-                  analysis.isScam ? 'text-red-400' : 'text-green-400'
-                }`}>
-                  Risk Score: {analysis.riskScore}%
-                </h3>
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  analysis.isScam 
-                    ? 'bg-red-600/30 text-red-200' 
-                    : 'bg-green-600/30 text-green-200'
-                }`}>
-                  {analysis.confidence.toFixed(0)}% Confidence
-                </span>
-                {callContext.isUnknownNumber && (
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-600/30 text-orange-200">
-                    Unknown Caller
-                  </span>
-                )}
+        {/* ══════════ PHASE: SETUP ══════════ */}
+        {phase === 'setup' && (
+          <div className="space-y-5">
+            {/* Caller type */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <h3 className="font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-widest text-gray-400">
+                <UserX className="w-4 h-4" /> Caller Type
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {(['unknown','known'] as const).map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setCallerType(t)}
+                    className={`p-4 rounded-xl border-2 transition font-bold capitalize ${
+                      callerType === t
+                        ? t === 'unknown' ? 'bg-red-500/20 border-red-500 text-red-300' : 'bg-green-500/20 border-green-500 text-green-300'
+                        : 'border-white/10 hover:border-white/30 text-gray-400'
+                    }`}
+                  >
+                    {t === 'unknown' ? '🔴 Unknown Number' : '🟢 Known Contact'}
+                  </button>
+                ))}
               </div>
-              <p className="text-gray-300 mb-2">{analysis.reasoning}</p>
-              {analysis.scamType !== 'Unknown' && (
-                <p className="text-sm">
-                  <span className="text-gray-400">Detected Type:</span>{' '}
-                  <span className="font-semibold text-red-400">{analysis.scamType}</span>
+              {callerType === 'unknown' && (
+                <p className="mt-3 text-xs text-orange-300 bg-orange-500/10 rounded-lg px-3 py-2">
+                  ⚠️ High-vigilance mode — scoring multipliers active for unknown callers
                 </p>
               )}
             </div>
-          </div>
 
-          {analysis.detectedPatterns.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <p className="font-semibold mb-3 text-white flex items-center gap-2">
-                <Brain className="w-4 h-4" />
-                AI Detected Patterns (Context-Aware):
-              </p>
-              <div className="grid md:grid-cols-2 gap-2">
-                {analysis.detectedPatterns.map((pattern, index) => (
-                  <div key={index} className="bg-black/30 rounded p-2">
-                    <p className="text-xs text-gray-300">{pattern}</p>
+            {/* Call source */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <h3 className="font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-widest text-gray-400">
+                <Phone className="w-4 h-4" /> Call Source
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {(['regular','whatsapp'] as const).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setCallSource(s)}
+                    className={`p-4 rounded-xl border-2 transition font-bold ${
+                      callSource === s
+                        ? 'bg-blue-500/20 border-blue-500 text-blue-300'
+                        : 'border-white/10 hover:border-white/30 text-gray-400'
+                    }`}
+                  >
+                    {s === 'regular' ? '📞 Regular Call' : '💬 WhatsApp Call'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* What this detects */}
+            <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-2xl p-5">
+              <h3 className="font-bold mb-3 text-purple-300 flex items-center gap-2">
+                <Shield className="w-4 h-4" /> What This Analyzes
+              </h3>
+              <div className="grid grid-cols-2 gap-2 text-sm text-gray-300">
+                {[
+                  'Digital Arrest scam scripts','Authority impersonation (CBI/ED/Police)',
+                  'Urgency pressure tactics','Legal threat keywords',
+                  'Financial demand signals','OTP/Aadhaar/PIN requests',
+                  'Courier/parcel scam phrases','Hinglish & MTI speech patterns',
+                  'Silence/secrecy pressure','Courier parcel scam',
+                ].map((f, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <CheckCircle className="w-3 h-3 text-green-400 shrink-0" />
+                    <span>{f}</span>
                   </div>
                 ))}
               </div>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Key Intelligence Notice */}
-      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/50 rounded-xl p-6 mb-6">
-        <h3 className="font-bold text-xl mb-4 text-blue-400 flex items-center gap-2">
-          <Brain className="w-6 h-6" />
-          🎯 Contextual Intelligence Features
-        </h3>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div className="bg-black/30 rounded-lg p-4">
-            <h4 className="font-semibold text-white mb-2">✅ Smart Context Detection</h4>
-            <ul className="space-y-1 text-gray-300">
-              <li>• Unknown number = Higher scrutiny</li>
-              <li>• 3-min call from friend = Normal ✓</li>
-              <li>• 3-min call from stranger = Red flag 🚩</li>
-              <li>• WhatsApp calls tracked separately</li>
-            </ul>
-          </div>
-          <div className="bg-black/30 rounded-lg p-4">
-            <h4 className="font-semibold text-white mb-2">🔍 Advanced Monitoring</h4>
-            <ul className="space-y-1 text-gray-300">
-              <li>• PDF/document sharing detection</li>
-              <li>• Banking transaction mentions</li>
-              <li>• Personal info requests (OTP, CVV, etc)</li>
-              <li>• Contextual behavioral scoring</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+            {micStatus === 'error' && (
+              <div className="bg-red-500/10 border border-red-500/40 rounded-xl p-4 text-red-300 text-sm">
+                🎤 Microphone access denied. Please allow microphone permissions and reload.
+              </div>
+            )}
 
-      {/* How it Works */}
-      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-        <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
-          <Shield className="w-6 h-6 text-purple-400" />
-          How Contextual Analysis Works
-        </h3>
-        <div className="space-y-3 text-sm text-gray-300">
-          <div className="flex items-start gap-3">
-            <span className="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
-            <div>
-              <p className="font-semibold text-white">Call Context Setup</p>
-              <p>You specify if caller is unknown and call type (WhatsApp/regular)</p>
-            </div>
+            <button
+              onClick={startListening}
+              className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 font-black text-xl flex items-center justify-center gap-3 transition shadow-lg shadow-purple-600/30 hover:scale-[1.02]"
+            >
+              <Mic className="w-7 h-7" />
+              Start Analyzing Call
+            </button>
+            <p className="text-center text-xs text-gray-600">
+              Mic listens to your side + any audio near the device. Place near speaker for best results.
+            </p>
           </div>
-          <div className="flex items-start gap-3">
-            <span className="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
-            <div>
-              <p className="font-semibold text-white">Real-Time Monitoring</p>
-              <p>Speech-to-text conversion with scam pattern detection</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
-            <div>
-              <p className="font-semibold text-white">Contextual Scoring</p>
-              <p>Risk multipliers applied based on caller status (unknown = 1.5x risk)</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>
-            <div>
-              <p className="font-semibold text-white">Behavioral Analysis</p>
-              <p>Duration, banking refs, PDF sharing evaluated WITH context</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">5</span>
-            <div>
-              <p className="font-semibold text-white">Instant Alerts</p>
-              <p>Auto-recording triggers if scam detected from unknown number</p>
-            </div>
-          </div>
-        </div>
+        )}
 
-        <div className="mt-4 pt-4 border-t border-white/10">
-          <p className="text-xs text-gray-500 mb-3">
-            <strong>Example Scenarios:</strong>
-          </p>
-          <div className="grid md:grid-cols-2 gap-2 text-xs">
-            <div className="bg-green-900/30 border border-green-500/30 rounded p-2">
-              <p className="text-green-400 font-semibold">✓ Safe: Known Contact</p>
-              <p className="text-gray-400">5-min call + banking words = Normal conversation</p>
+        {/* ══════════ PHASE: LISTENING ══════════ */}
+        {phase === 'listening' && (
+          <div className="space-y-5">
+            {/* Live status bar */}
+            <div className={`rounded-2xl p-4 border-2 flex items-center justify-between flex-wrap gap-3 transition-all ${
+              analysis?.isScam
+                ? 'bg-red-600/20 border-red-500 animate-pulse'
+                : 'bg-purple-600/10 border-purple-500/40'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-red-500 animate-ping" />
+                <span className="font-bold text-lg">
+                  {analysis?.isScam ? '🚨 SCAM DETECTED' : '🎙 Analyzing...'}
+                </span>
+              </div>
+              <div className="flex items-center gap-5 text-sm">
+                <span className="flex items-center gap-1 text-gray-400">
+                  <Clock className="w-4 h-4" /> {fmt(elapsedSec)}
+                </span>
+                <span className="flex items-center gap-1 text-gray-400">
+                  <FileText className="w-4 h-4" /> {wordCount} words
+                </span>
+                <span className={`font-black text-xl ${riskColor}`}>
+                  {riskScore}<span className="text-sm font-normal text-gray-500">/100</span>
+                </span>
+              </div>
             </div>
-            <div className="bg-red-900/30 border border-red-500/30 rounded p-2">
-              <p className="text-red-400 font-semibold">✗ Danger: Unknown Number</p>
-              <p className="text-gray-400">5-min call + banking words = HIGH RISK SCAM</p>
+
+            {/* Risk bar */}
+            <div className="bg-white/5 rounded-full h-3 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-700 ${riskBg}`}
+                style={{ width: `${Math.max(riskScore, 2)}%` }}
+              />
+            </div>
+
+            {/* Scam alert */}
+            {analysis?.isScam && (
+              <div className="bg-red-600 border-4 border-red-400 rounded-2xl p-5 shadow-2xl shadow-red-500/40">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="w-12 h-12 text-white shrink-0 animate-bounce" />
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-black mb-1">🚨 SCAM — HANG UP NOW</h3>
+                    <p className="font-bold text-red-100 mb-1">{analysis.scamType}</p>
+                    <p className="text-sm text-red-200 mb-3">{analysis.reasoning}</p>
+                    {analysis.criticalWarnings.length > 0 && (
+                      <div className="bg-red-900/50 rounded-xl p-3 mb-3 space-y-1">
+                        {analysis.criticalWarnings.map((w, i) => (
+                          <p key={i} className="text-sm text-red-100">⚠️ {w}</p>
+                        ))}
+                      </div>
+                    )}
+                    <div className="space-y-1">
+                      {analysis.recommendations.map((r, i) => (
+                        <p key={i} className="text-sm text-white">→ {r}</p>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex gap-3 flex-wrap">
+                      <a href="tel:1930" className="bg-white text-red-700 font-black px-4 py-2 rounded-xl text-sm hover:bg-yellow-100 transition">
+                        📞 Call 1930
+                      </a>
+                      <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer"
+                         className="bg-red-900 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-800 transition">
+                        Report Online
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Live transcript feed */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                <span className="text-sm font-bold flex items-center gap-2 text-gray-300">
+                  <Volume2 className="w-4 h-4 text-purple-400" />
+                  Live Transcript
+                  <span className="text-xs text-gray-600 font-normal">(EN + HI · MTI mode)</span>
+                </span>
+                {isAnalyzing && (
+                  <span className="text-xs text-purple-400 flex items-center gap-1">
+                    <Activity className="w-3 h-3 animate-pulse" /> Analyzing…
+                  </span>
+                )}
+              </div>
+              <div
+                ref={transcriptRef}
+                className="h-52 overflow-y-auto px-4 py-3 space-y-2 font-mono text-sm"
+              >
+                {transcriptLines.length === 0 && !liveText && (
+                  <p className="text-gray-600 animate-pulse">Listening… speak near the microphone</p>
+                )}
+                {transcriptLines.map(line => (
+                  <div key={line.id} className="flex gap-3 items-start">
+                    <span className="text-gray-600 text-xs shrink-0 mt-0.5 w-10 text-right">{fmt(line.ts)}</span>
+                    <span className="text-gray-200 leading-relaxed">{line.text}</span>
+                  </div>
+                ))}
+                {liveText && (
+                  <div className="flex gap-3 items-start opacity-60">
+                    <span className="text-gray-600 text-xs shrink-0 mt-0.5 w-10 text-right">…</span>
+                    <span className="text-blue-300 italic">{liveText}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Detected patterns (live) */}
+            {analysis && analysis.detectedPatterns.length > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <h4 className="text-sm font-bold uppercase text-gray-400 mb-3 tracking-widest">Detected Patterns</h4>
+                <div className="flex flex-wrap gap-2">
+                  {analysis.detectedPatterns.map((p, i) => (
+                    <span key={i} className="text-xs bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-full px-3 py-1">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Stop button */}
+            <button
+              onClick={stopEverything}
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 font-black text-lg flex items-center justify-center gap-3 transition"
+            >
+              <MicOff className="w-6 h-6" />
+              Stop & Get Final Report
+            </button>
+          </div>
+        )}
+
+        {/* ══════════ PHASE: DONE ══════════ */}
+        {phase === 'done' && (
+          <div className="space-y-5">
+            {/* Final verdict card */}
+            <div className={`rounded-2xl p-6 border-2 ${
+              analysis?.isScam
+                ? 'bg-red-600/10 border-red-500'
+                : 'bg-green-600/10 border-green-500'
+            }`}>
+              <div className="flex items-center gap-4 mb-4">
+                {analysis?.isScam
+                  ? <AlertTriangle className="w-12 h-12 text-red-400" />
+                  : <CheckCircle className="w-12 h-12 text-green-400" />
+                }
+                <div>
+                  <h2 className="text-2xl font-black">
+                    {analysis?.isScam ? '🚨 SCAM CONFIRMED' : '✅ No Major Threats Detected'}
+                  </h2>
+                  <p className="text-gray-300">{analysis?.scamType}</p>
+                </div>
+              </div>
+
+              {/* Score */}
+              <div className="mb-4">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-400">Risk Score</span>
+                  <span className={`font-black ${riskColor}`}>{riskScore}/100</span>
+                </div>
+                <div className="bg-black/40 rounded-full h-4 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-1000 ${riskBg}`}
+                    style={{ width: `${Math.max(riskScore, 2)}%` }}
+                  />
+                </div>
+              </div>
+
+              <p className="text-gray-300 mb-4">{analysis?.reasoning}</p>
+
+              {/* Critical warnings */}
+              {(analysis?.criticalWarnings?.length ?? 0) > 0 && (
+                <div className="bg-red-900/30 rounded-xl p-3 mb-4 space-y-1">
+                  {analysis!.criticalWarnings.map((w, i) => (
+                    <p key={i} className="text-sm text-red-200">⚠️ {w}</p>
+                  ))}
+                </div>
+              )}
+
+              {/* Recommendations */}
+              <div className="space-y-1 mb-5">
+                {analysis?.recommendations.map((r, i) => (
+                  <p key={i} className="text-sm">→ {r}</p>
+                ))}
+              </div>
+
+              {/* Call stats */}
+              <div className="grid grid-cols-3 gap-3 text-center border-t border-white/10 pt-4">
+                <div>
+                  <div className="text-xl font-black text-blue-400">{fmt(elapsedSec)}</div>
+                  <div className="text-xs text-gray-500">Duration</div>
+                </div>
+                <div>
+                  <div className="text-xl font-black text-purple-400">{wordCount}</div>
+                  <div className="text-xs text-gray-500">Words captured</div>
+                </div>
+                <div>
+                  <div className={`text-xl font-black ${riskColor}`}>{analysis?.confidence ?? 0}%</div>
+                  <div className="text-xs text-gray-500">Confidence</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Full transcript review */}
+            {transcriptLines.length > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-white/10">
+                  <span className="text-sm font-bold text-gray-300">Full Transcript</span>
+                </div>
+                <div className="max-h-64 overflow-y-auto px-4 py-3 space-y-2 font-mono text-sm">
+                  {transcriptLines.map(line => (
+                    <div key={line.id} className="flex gap-3 items-start">
+                      <span className="text-gray-600 text-xs shrink-0 mt-0.5 w-10 text-right">{fmt(line.ts)}</span>
+                      <span className="text-gray-200">{line.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Detected patterns summary */}
+            {(analysis?.detectedPatterns?.length ?? 0) > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <h4 className="text-sm font-bold uppercase text-gray-400 mb-3 tracking-widest">Scam Indicators Found</h4>
+                <div className="flex flex-wrap gap-2">
+                  {analysis!.detectedPatterns.map((p, i) => (
+                    <span key={i} className="text-xs bg-red-500/20 text-red-300 border border-red-500/30 rounded-full px-3 py-1">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-3 flex-wrap">
+              {analysis?.isScam && (
+                <>
+                  <a href="tel:1930" className="flex-1 text-center bg-red-600 hover:bg-red-500 font-black py-3 rounded-xl transition">
+                    📞 Call 1930
+                  </a>
+                  <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer"
+                     className="flex-1 text-center bg-orange-600 hover:bg-orange-500 font-black py-3 rounded-xl transition">
+                    File Report
+                  </a>
+                </>
+              )}
+              <button
+                onClick={() => { setPhase('setup'); setAnalysis(null); setRiskScore(0); setTranscriptLines([]); setElapsedSec(0); setWordCount(0); }}
+                className="flex-1 bg-white/10 hover:bg-white/20 font-bold py-3 rounded-xl transition"
+              >
+                Analyze Another Call
+              </button>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Info footer */}
+        <p className="mt-8 text-center text-xs text-gray-700">
+          All processing is 100% on-device · No audio or transcript is ever uploaded · Chrome/Edge recommended
+        </p>
       </div>
     </div>
   );
