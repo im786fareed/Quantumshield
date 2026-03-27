@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">QuantumShield</string>
+    <string name="title_activity_main">QuantumShield</string>
+    <string name="package_name">com.quantumshield.app</string>
+    <string name="custom_url_scheme">com.quantumshield.app</string>
+</resources>
