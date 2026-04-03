@@ -1,0 +1,406 @@
+{
+  "version": "2026.1",
+  "last_updated": "2026-04-03",
+  "countries": [
+    {
+      "code": "IN", "name": "India", "flag": "🇮🇳", "region": "Asia",
+      "cyber_hotline": "1930", "cyber_portal": "https://cybercrime.gov.in",
+      "police": "112", "ambulance": "108", "fire": "101",
+      "cyber_agency": "I4C / Ministry of Home Affairs",
+      "report_url": "https://cybercrime.gov.in",
+      "top_scams": ["Digital Arrest", "KYC Fraud", "Investment/Trading Scam", "OTP Fraud", "Fake CBI Call"],
+      "scam_alert": "Digital Arrest scams impersonating CBI/Customs/ED are at peak levels (₹1,935 Cr lost in 2025). Never stay on a call with an 'official' demanding secrecy.",
+      "languages": ["hi", "en"]
+    },
+    {
+      "code": "US", "name": "United States", "flag": "🇺🇸", "region": "Americas",
+      "cyber_hotline": "1-877-382-4357", "cyber_portal": "https://www.ic3.gov",
+      "police": "911", "ambulance": "911", "fire": "911",
+      "cyber_agency": "FBI Internet Crime Complaint Center (IC3)",
+      "report_url": "https://reportfraud.ftc.gov",
+      "top_scams": ["Social Security Scam", "IRS Impersonation", "Tech Support Fraud", "Romance Scam", "Grandparent Scam"],
+      "scam_alert": "IRS and Social Security impersonation calls are the #1 phone scam in the US. The IRS never calls demanding immediate payment.",
+      "languages": ["en"]
+    },
+    {
+      "code": "GB", "name": "United Kingdom", "flag": "🇬🇧", "region": "Europe",
+      "cyber_hotline": "0300 123 2040", "cyber_portal": "https://www.actionfraud.police.uk",
+      "police": "999", "ambulance": "999", "fire": "999",
+      "cyber_agency": "Action Fraud / National Fraud Intelligence Bureau",
+      "report_url": "https://www.actionfraud.police.uk/reporting-fraud-and-cyber-crime",
+      "top_scams": ["HMRC Tax Scam", "Royal Mail Parcel Fraud", "NHS Vaccine Phishing", "Bank Transfer Fraud", "WhatsApp Family Emergency"],
+      "scam_alert": "Authorised Push Payment (APP) fraud is the UK's biggest scam. Banks must now reimburse victims under 2024 PSR regulations.",
+      "languages": ["en"]
+    },
+    {
+      "code": "SG", "name": "Singapore", "flag": "🇸🇬", "region": "Asia",
+      "cyber_hotline": "1799", "cyber_portal": "https://www.scamshield.gov.sg",
+      "police": "999", "ambulance": "995", "fire": "995",
+      "cyber_agency": "Singapore Police Force Anti-Scam Command",
+      "report_url": "https://eservices.police.gov.sg/content/policehubhome/homepage/police-reports.html",
+      "top_scams": ["Job Scam", "Investment Scam", "Phishing", "E-Commerce Scam", "China Official Impersonation"],
+      "scam_alert": "Singapore lost SGD $1.1B to scams in 2024. The ScamShield app blocks known scammer numbers automatically.",
+      "languages": ["en", "zh", "ms", "ta"]
+    },
+    {
+      "code": "AE", "name": "United Arab Emirates", "flag": "🇦🇪", "region": "Middle East",
+      "cyber_hotline": "800 CYBER (800 29237)", "cyber_portal": "https://www.ecrime.ae",
+      "police": "999", "ambulance": "998", "fire": "997",
+      "cyber_agency": "Dubai Police eCrime / TDRA",
+      "report_url": "https://www.ecrime.ae",
+      "top_scams": ["Investment Fraud", "WhatsApp Hijack", "Fake Job Offer", "Romance Scam", "Cryptocurrency Scam"],
+      "scam_alert": "UAE sees high rates of fake investment platforms and WhatsApp account hijacking. Always verify via official government portals.",
+      "languages": ["ar", "en"]
+    },
+    {
+      "code": "AU", "name": "Australia", "flag": "🇦🇺", "region": "Oceania",
+      "cyber_hotline": "1300 292 371", "cyber_portal": "https://www.cyber.gov.au",
+      "police": "000", "ambulance": "000", "fire": "000",
+      "cyber_agency": "Australian Cyber Security Centre (ACSC) / Scamwatch",
+      "report_url": "https://www.scamwatch.gov.au/report-a-scam",
+      "top_scams": ["Phishing", "Remote Access Scam", "Investment Scam", "ATO Tax Scam", "NBN Scam"],
+      "scam_alert": "Australians lost AUD $2.74B to scams in 2023. ATO (Tax Office) never contacts you via WhatsApp or demands gift card payments.",
+      "languages": ["en"]
+    },
+    {
+      "code": "CA", "name": "Canada", "flag": "🇨🇦", "region": "Americas",
+      "cyber_hotline": "1-888-495-8501", "cyber_portal": "https://www.antifraudcentre.ca",
+      "police": "911", "ambulance": "911", "fire": "911",
+      "cyber_agency": "Canadian Anti-Fraud Centre (CAFC)",
+      "report_url": "https://www.antifraudcentre-centreantifraude.ca/report-signalez-eng.htm",
+      "top_scams": ["CRA Tax Scam", "CERB/EI Fraud", "Romance Scam", "Grandparent Scam", "Cryptocurrency Fraud"],
+      "scam_alert": "The Canada Revenue Agency (CRA) never demands payment via gift cards, Bitcoin, or wire transfer.",
+      "languages": ["en", "fr"]
+    },
+    {
+      "code": "DE", "name": "Germany", "flag": "🇩🇪", "region": "Europe",
+      "cyber_hotline": "0800 1001001", "cyber_portal": "https://www.bsi.bund.de",
+      "police": "110", "ambulance": "112", "fire": "112",
+      "cyber_agency": "Bundeskriminalamt (BKA) / BSI",
+      "report_url": "https://www.bka.de/DE/Kontakt/kontakt.html",
+      "top_scams": ["Phishing Email", "Online Shopping Fraud", "CEO Fraud", "Romance Scam", "Investment Fraud"],
+      "scam_alert": "Germany sees a high rate of CEO Fraud (Geschäftsführerbetrug) targeting businesses. Always verify wire transfer requests by callback.",
+      "languages": ["de"]
+    },
+    {
+      "code": "FR", "name": "France", "flag": "🇫🇷", "region": "Europe",
+      "cyber_hotline": "0805 805 817", "cyber_portal": "https://www.cybermalveillance.gouv.fr",
+      "police": "17", "ambulance": "15", "fire": "18",
+      "cyber_agency": "Cybermalveillance.gouv.fr / ANSSI",
+      "report_url": "https://www.signal.spam.fr",
+      "top_scams": ["Phishing", "Online Shopping Scam", "Bank Card Fraud", "Tech Support Scam", "CPF Fraud"],
+      "scam_alert": "CPF (Compte Personnel de Formation) training scams cost France €43.6M in 2022. Never click unsolicited SMS links.",
+      "languages": ["fr"]
+    },
+    {
+      "code": "JP", "name": "Japan", "flag": "🇯🇵", "region": "Asia",
+      "cyber_hotline": "#9110", "cyber_portal": "https://www.npa.go.jp/cyber/",
+      "police": "110", "ambulance": "119", "fire": "119",
+      "cyber_agency": "National Police Agency Cyber Division",
+      "report_url": "https://www.npa.go.jp/cyber/soudan.htm",
+      "top_scams": ["Ore-ore Fraud (Grandparent Scam)", "Investment Fraud", "Phishing", "Online Dating Scam", "Fake Pop-up Virus Alert"],
+      "scam_alert": "Japan's 'Ore-ore sagi' (It's me fraud) targeting elderly people cost ¥45.7B in 2024. Scammers impersonate grandchildren.",
+      "languages": ["ja"]
+    },
+    {
+      "code": "KR", "name": "South Korea", "flag": "🇰🇷", "region": "Asia",
+      "cyber_hotline": "182", "cyber_portal": "https://www.police.go.kr",
+      "police": "112", "ambulance": "119", "fire": "119",
+      "cyber_agency": "Korean National Police Agency Cyber Bureau",
+      "report_url": "https://ecrm.police.go.kr",
+      "top_scams": ["Voice Phishing (Boicing)", "Online Fraud", "Romance Scam", "Fake Job Offer", "Investment Scam"],
+      "scam_alert": "Korea's 'Boicing' voice phishing targeting bank accounts cost ₩825B in 2024. Never transfer money based on phone instructions alone.",
+      "languages": ["ko"]
+    },
+    {
+      "code": "MY", "name": "Malaysia", "flag": "🇲🇾", "region": "Asia",
+      "cyber_hotline": "997", "cyber_portal": "https://www.ccid.rmp.gov.my",
+      "police": "999", "ambulance": "999", "fire": "994",
+      "cyber_agency": "PDRM Commercial Crime Investigation Department (CCID)",
+      "report_url": "https://semakmule.rmp.gov.my",
+      "top_scams": ["Macau Scam", "Investment Scam", "Parcel Scam", "Love Scam", "Job Scam"],
+      "scam_alert": "Malaysia's 'Macau Scam' involves fake police/bank calls demanding fund transfers. Check Semak Mule to verify suspicious accounts.",
+      "languages": ["ms", "en", "zh"]
+    },
+    {
+      "code": "ID", "name": "Indonesia", "flag": "🇮🇩", "region": "Asia",
+      "cyber_hotline": "110", "cyber_portal": "https://www.lapor.go.id",
+      "police": "110", "ambulance": "119", "fire": "113",
+      "cyber_agency": "Badan Siber dan Sandi Negara (BSSN)",
+      "report_url": "https://patrolisiber.id",
+      "top_scams": ["Online Shopping Fraud", "Pinjol (Illegal Loan App)", "Investment Scam", "SIM Swap", "Phishing"],
+      "scam_alert": "Illegal fintech (Pinjol) apps threaten borrowers with personal data exposure. Only use OJK-registered lending apps.",
+      "languages": ["id"]
+    },
+    {
+      "code": "PH", "name": "Philippines", "flag": "🇵🇭", "region": "Asia",
+      "cyber_hotline": "1326", "cyber_portal": "https://dict.gov.ph",
+      "police": "911", "ambulance": "911", "fire": "911",
+      "cyber_agency": "PNP Anti-Cybercrime Group (ACG)",
+      "report_url": "https://acg.pnp.gov.ph/e-complaint/",
+      "top_scams": ["SMS Phishing (Smishing)", "Online Selling Scam", "Investment Scam", "Romance Scam", "SIM Swap"],
+      "scam_alert": "Philippines is a top target for SIM swap attacks. Never share OTPs. Globe and Smart have free SIM lock features.",
+      "languages": ["fil", "en"]
+    },
+    {
+      "code": "TH", "name": "Thailand", "flag": "🇹🇭", "region": "Asia",
+      "cyber_hotline": "1441", "cyber_portal": "https://www.thaipoliceonline.com",
+      "police": "191", "ambulance": "1669", "fire": "199",
+      "cyber_agency": "Technology Crime Suppression Division (TCSD)",
+      "report_url": "https://www.thaipoliceonline.com",
+      "top_scams": ["Investment Scam (Pig Butchering)", "Call Center Gang Scam", "Online Shopping Fraud", "Romance Scam", "Parcel Scam"],
+      "scam_alert": "Thailand is a base of operations for 'Pig Butchering' crypto romance scams that target victims globally over months.",
+      "languages": ["th"]
+    },
+    {
+      "code": "ZA", "name": "South Africa", "flag": "🇿🇦", "region": "Africa",
+      "cyber_hotline": "0800 222 321", "cyber_portal": "https://www.sabric.co.za",
+      "police": "10111", "ambulance": "10177", "fire": "10111",
+      "cyber_agency": "South African Banking Risk Centre (SABRIC) / SAPS",
+      "report_url": "https://www.sabric.co.za/stay-safe/report-crime/",
+      "top_scams": ["Banking App Fraud", "SIM Swap", "Vishing", "Advance Fee Fraud (419)", "Online Shopping Scam"],
+      "scam_alert": "South Africa loses R2.2B annually to banking fraud. SIM swap attacks on RICA-registered numbers are a major threat.",
+      "languages": ["en", "zu", "af"]
+    },
+    {
+      "code": "NG", "name": "Nigeria", "flag": "🇳🇬", "region": "Africa",
+      "cyber_hotline": "08057000001", "cyber_portal": "https://efcc.gov.ng",
+      "police": "199", "ambulance": "199", "fire": "199",
+      "cyber_agency": "Economic and Financial Crimes Commission (EFCC)",
+      "report_url": "https://efcc.gov.ng/report-to-efcc/",
+      "top_scams": ["Advance Fee Fraud (419)", "Romance Scam", "Business Email Compromise", "Fake Investment", "Lottery Scam"],
+      "scam_alert": "Nigeria's EFCC has arrested thousands in 2025 crackdowns. Report BEC (Business Email Compromise) immediately as it is reversible within hours.",
+      "languages": ["en"]
+    },
+    {
+      "code": "BR", "name": "Brazil", "flag": "🇧🇷", "region": "Americas",
+      "cyber_hotline": "197", "cyber_portal": "https://www.delegaciaeletronica.policiacivil.sp.gov.br",
+      "police": "190", "ambulance": "192", "fire": "193",
+      "cyber_agency": "Polícia Civil / ANATEL",
+      "report_url": "https://www.consumidor.gov.br",
+      "top_scams": ["PIX Fraud", "WhatsApp Account Hijack", "Fake Bank App", "Boleto Fraud", "Virtual Kidnapping"],
+      "scam_alert": "Brazil's PIX instant payment system sees 1,000+ fraud cases daily. Never share PIX keys with strangers; verify recipients carefully.",
+      "languages": ["pt"]
+    },
+    {
+      "code": "MX", "name": "Mexico", "flag": "🇲🇽", "region": "Americas",
+      "cyber_hotline": "800 2255 020", "cyber_portal": "https://www.gob.mx/policia-cibernética",
+      "police": "911", "ambulance": "911", "fire": "911",
+      "cyber_agency": "Policía Cibernética / CONDUSEF",
+      "report_url": "https://www.condusef.gob.mx",
+      "top_scams": ["Virtual Kidnapping", "WhatsApp Scam", "SPEI Bank Fraud", "Fake Government Call", "Romance Scam"],
+      "scam_alert": "Virtual Kidnapping calls (claiming a family member is held hostage) are rampant in Mexico. Hang up and call the family member directly.",
+      "languages": ["es"]
+    },
+    {
+      "code": "IT", "name": "Italy", "flag": "🇮🇹", "region": "Europe",
+      "cyber_hotline": "800 796 677", "cyber_portal": "https://www.commissariatodips.it",
+      "police": "112", "ambulance": "118", "fire": "115",
+      "cyber_agency": "Polizia Postale e delle Comunicazioni",
+      "report_url": "https://www.commissariatodips.it/segnalazioni/",
+      "top_scams": ["Phishing", "Online Shopping Fraud", "Bank Impersonation", "Romance Scam", "Fake Tech Support"],
+      "scam_alert": "Italy's Polizia Postale handles 40,000+ cybercrime reports annually. Report phishing immediately at commissariatodips.it.",
+      "languages": ["it"]
+    },
+    {
+      "code": "ES", "name": "Spain", "flag": "🇪🇸", "region": "Europe",
+      "cyber_hotline": "900 150 310", "cyber_portal": "https://www.incibe.es",
+      "police": "112", "ambulance": "112", "fire": "112",
+      "cyber_agency": "INCIBE / Guardia Civil Delitos Telemáticos",
+      "report_url": "https://www.incibe.es/linea-de-ayuda-en-ciberseguridad",
+      "top_scams": ["Phishing SMS", "Online Shopping Fraud", "Fake Rental", "CEO Fraud", "WhatsApp Scam"],
+      "scam_alert": "Spain's INCIBE helpline is free 24/7. Report smishing (SMS phishing) which has tripled since 2023.",
+      "languages": ["es"]
+    },
+    {
+      "code": "NL", "name": "Netherlands", "flag": "🇳🇱", "region": "Europe",
+      "cyber_hotline": "0900 8844", "cyber_portal": "https://www.fraudehelpdesk.nl",
+      "police": "112", "ambulance": "112", "fire": "112",
+      "cyber_agency": "Fraudehelpdesk / Team High Tech Crime",
+      "report_url": "https://www.fraudehelpdesk.nl/fraude-melden/",
+      "top_scams": ["Marktplaats Scam", "Bank Helpdesk Fraud", "WhatsApp Friend-in-Need", "Phishing", "Investment Fraud"],
+      "scam_alert": "Netherlands 'Helpdesk Fraud' (banks calling to 'protect' your account) is the top scam. Banks never ask you to transfer money for safety.",
+      "languages": ["nl"]
+    },
+    {
+      "code": "CH", "name": "Switzerland", "flag": "🇨🇭", "region": "Europe",
+      "cyber_hotline": "0800 040 040", "cyber_portal": "https://www.ncsc.admin.ch",
+      "police": "117", "ambulance": "144", "fire": "118",
+      "cyber_agency": "National Cyber Security Centre (NCSC)",
+      "report_url": "https://www.antiphishing.ch",
+      "top_scams": ["Investment Fraud", "Fake Police Call", "CEO Fraud", "Romance Scam", "Parcel Phishing"],
+      "scam_alert": "Switzerland's NCSC reported CHF 629M in fraud losses in 2024. Fake police calls impersonating Kantonspolizei are increasing.",
+      "languages": ["de", "fr", "it"]
+    },
+    {
+      "code": "NZ", "name": "New Zealand", "flag": "🇳🇿", "region": "Oceania",
+      "cyber_hotline": "0508 NETSAFE (638 723)", "cyber_portal": "https://www.netsafe.org.nz",
+      "police": "111", "ambulance": "111", "fire": "111",
+      "cyber_agency": "Netsafe / NZ Police",
+      "report_url": "https://report.netsafe.org.nz",
+      "top_scams": ["Investment Scam", "Remote Access Scam", "Online Shopping Fraud", "Phishing", "Romance Scam"],
+      "scam_alert": "New Zealanders lost NZD $198M to scams in 2024. Contact Netsafe for free advice before sending any money.",
+      "languages": ["en", "mi"]
+    },
+    {
+      "code": "HK", "name": "Hong Kong", "flag": "🇭🇰", "region": "Asia",
+      "cyber_hotline": "2382 0000", "cyber_portal": "https://www.cybercrime.hk",
+      "police": "999", "ambulance": "999", "fire": "999",
+      "cyber_agency": "Cyber Security and Technology Crime Bureau (CSTCB)",
+      "report_url": "https://www.police.gov.hk/ppp_en/04_crime_matters/tcd/tcd.html",
+      "top_scams": ["Phone Deception (Mainland China Official)", "Investment Scam", "Online Shopping Fraud", "Romance Scam", "SIM Swap"],
+      "scam_alert": "HK lost HKD $5.79B to scams in 2024. Phone deception scams impersonating Mainland China officials are the top threat.",
+      "languages": ["zh", "en"]
+    },
+    {
+      "code": "SA", "name": "Saudi Arabia", "flag": "🇸🇦", "region": "Middle East",
+      "cyber_hotline": "19911", "cyber_portal": "https://www.citc.gov.sa",
+      "police": "911", "ambulance": "911", "fire": "911",
+      "cyber_agency": "National Cybersecurity Authority (NCA) / CITC",
+      "report_url": "https://www.mycert.org.sa",
+      "top_scams": ["Investment Fraud", "Fake Government Services", "WhatsApp Scam", "E-Commerce Fraud", "Job Offer Scam"],
+      "scam_alert": "Saudi Arabia's NCA offers free cybersecurity training. Zakat/Sadaqah donation scams spike during Ramadan.",
+      "languages": ["ar"]
+    },
+    {
+      "code": "PK", "name": "Pakistan", "flag": "🇵🇰", "region": "Asia",
+      "cyber_hotline": "9911", "cyber_portal": "https://www.fia.gov.pk/en/ccpo",
+      "police": "15", "ambulance": "115", "fire": "16",
+      "cyber_agency": "FIA Cybercrime Wing",
+      "report_url": "https://www.fia.gov.pk/en/complaints",
+      "top_scams": ["Prize/Lottery Scam", "Banking App Fraud", "Social Media Hack", "Job Scam", "Fake Investment"],
+      "scam_alert": "FIA Cybercrime Wing has a dedicated helpline 9911. Report within 24 hours for maximum chances of fund recovery.",
+      "languages": ["ur", "en"]
+    },
+    {
+      "code": "BD", "name": "Bangladesh", "flag": "🇧🇩", "region": "Asia",
+      "cyber_hotline": "999", "cyber_portal": "https://www.cirt.gov.bd",
+      "police": "999", "ambulance": "199", "fire": "199",
+      "cyber_agency": "Bangladesh e-Government CIRT / CID Cyber Crime",
+      "report_url": "https://www.cirt.gov.bd/incidents/report",
+      "top_scams": ["bKash Fraud", "Facebook Hack", "Loan App Scam", "Job Scam", "Phishing"],
+      "scam_alert": "bKash PIN should never be shared with anyone. Mobile financial service fraud is the most common cybercrime in Bangladesh.",
+      "languages": ["bn"]
+    },
+    {
+      "code": "KE", "name": "Kenya", "flag": "🇰🇪", "region": "Africa",
+      "cyber_hotline": "0800 721 9999", "cyber_portal": "https://www.ca.go.ke",
+      "police": "999", "ambulance": "999", "fire": "999",
+      "cyber_agency": "Communications Authority of Kenya / DCI",
+      "report_url": "https://ke-cirt.go.ke/report-incident/",
+      "top_scams": ["M-Pesa Fraud", "SIM Swap", "Fake Investment", "Loan App Scam", "Social Engineering"],
+      "scam_alert": "M-Pesa PIN should never be shared. SIM swap attacks targeting M-Pesa accounts are the most common financial cyber threat in Kenya.",
+      "languages": ["sw", "en"]
+    },
+    {
+      "code": "EG", "name": "Egypt", "flag": "🇪🇬", "region": "Middle East",
+      "cyber_hotline": "08008880000", "cyber_portal": "https://www.tra.gov.eg",
+      "police": "122", "ambulance": "123", "fire": "180",
+      "cyber_agency": "NTRA Information Security Division",
+      "report_url": "https://www.mcit.gov.eg",
+      "top_scams": ["Phone Scam", "Online Shopping Fraud", "Bank Card Fraud", "WhatsApp Hack", "Fake Prize"],
+      "scam_alert": "Egypt's cybercrime law (Law 175/2018) provides for victim protection. Report to NTRA within 72 hours of incident.",
+      "languages": ["ar"]
+    },
+    {
+      "code": "TR", "name": "Turkey", "flag": "🇹🇷", "region": "Europe/Asia",
+      "cyber_hotline": "182", "cyber_portal": "https://www.usom.gov.tr",
+      "police": "155", "ambulance": "112", "fire": "110",
+      "cyber_agency": "BTK / USOM National Cyber Incident Response Center",
+      "report_url": "https://www.usom.gov.tr/ihbar",
+      "top_scams": ["SMS Phishing", "Online Shopping Fraud", "Bank Fraud", "Investment Scam", "WhatsApp Scam"],
+      "scam_alert": "USOM (National Cyber Incident Response Center) offers real-time threat intelligence. Report phishing URLs for immediate takedown.",
+      "languages": ["tr"]
+    },
+    {
+      "code": "RU", "name": "Russia", "flag": "🇷🇺", "region": "Europe/Asia",
+      "cyber_hotline": "8-800-2000-122", "cyber_portal": "https://mvd.ru",
+      "police": "102", "ambulance": "103", "fire": "101",
+      "cyber_agency": "Ministry of Internal Affairs (MVD) K Department",
+      "report_url": "https://mvd.ru/request_main",
+      "top_scams": ["Online Marketplace Fraud", "Bank Card Fraud", "Investment Scam", "Social Engineering", "Fake Online Store"],
+      "scam_alert": "Russia's MVD K Department handles cybercrime. Online marketplace fraud (Avito/OZON scams) is the most common digital crime.",
+      "languages": ["ru"]
+    },
+    {
+      "code": "PL", "name": "Poland", "flag": "🇵🇱", "region": "Europe",
+      "cyber_hotline": "116 123", "cyber_portal": "https://incydent.cert.pl",
+      "police": "112", "ambulance": "112", "fire": "112",
+      "cyber_agency": "CERT Polska / CSIRT NASK",
+      "report_url": "https://incydent.cert.pl",
+      "top_scams": ["OLX/Allegro Scam", "BLIK Fraud", "Phishing", "Bank Fraud", "Investment Scam"],
+      "scam_alert": "BLIK payment code fraud is Poland's fastest-growing scam. Never share BLIK codes received via phone — even with 'friends.'",
+      "languages": ["pl"]
+    },
+    {
+      "code": "SE", "name": "Sweden", "flag": "🇸🇪", "region": "Europe",
+      "cyber_hotline": "020-120 78 00", "cyber_portal": "https://polisen.se/utsatt-for-brott/anmala-brott/",
+      "police": "112", "ambulance": "112", "fire": "112",
+      "cyber_agency": "Swedish Police / NCSC Sweden",
+      "report_url": "https://polisen.se/utsatt-for-brott/anmala-brott/",
+      "top_scams": ["BankID Fraud", "Investment Scam", "Online Shopping Fraud", "Romance Scam", "Vishing"],
+      "scam_alert": "BankID impersonation is Sweden's top scam. Legitimate services will never ask you to share your BankID with anyone.",
+      "languages": ["sv"]
+    },
+    {
+      "code": "NO", "name": "Norway", "flag": "🇳🇴", "region": "Europe",
+      "cyber_hotline": "02800", "cyber_portal": "https://www.politi.no/nettsvindel/",
+      "police": "112", "ambulance": "113", "fire": "110",
+      "cyber_agency": "Kripos / NSM National Cyber Security Centre",
+      "report_url": "https://www.politi.no/nettsvindel/",
+      "top_scams": ["Vipps Fraud", "BankID Scam", "Investment Fraud", "Online Shopping", "Romance Scam"],
+      "scam_alert": "Vipps payment fraud is Norway's fastest-growing scam. Enable Vipps payment limits and two-factor authentication.",
+      "languages": ["no"]
+    },
+    {
+      "code": "GH", "name": "Ghana", "flag": "🇬🇭", "region": "Africa",
+      "cyber_hotline": "292", "cyber_portal": "https://cybersecurity.gov.gh",
+      "police": "191", "ambulance": "193", "fire": "192",
+      "cyber_agency": "Cyber Security Authority (CSA) Ghana",
+      "report_url": "https://cybersecurity.gov.gh/report-cyber-incident/",
+      "top_scams": ["MoMo (Mobile Money) Fraud", "Romance Scam", "Advance Fee", "Fake Job Offer", "Online Shopping"],
+      "scam_alert": "Ghana's CSA helpline 292 is free. MTN MoMo PIN must never be shared. Sextortion scams targeting students are increasing.",
+      "languages": ["en"]
+    },
+    {
+      "code": "LK", "name": "Sri Lanka", "flag": "🇱🇰", "region": "Asia",
+      "cyber_hotline": "1987", "cyber_portal": "https://cert.gov.lk",
+      "police": "119", "ambulance": "110", "fire": "111",
+      "cyber_agency": "Sri Lanka CERT|CC",
+      "report_url": "https://cert.gov.lk/en/report-incident.html",
+      "top_scams": ["Banking App Fraud", "Online Shopping Scam", "Social Media Hack", "Fake Investment", "Romance Scam"],
+      "scam_alert": "CERT|CC Sri Lanka provides 24/7 incident response. Report to 1987 immediately for banking fraud for possible reversal.",
+      "languages": ["si", "ta", "en"]
+    },
+    {
+      "code": "NP", "name": "Nepal", "flag": "🇳🇵", "region": "Asia",
+      "cyber_hotline": "1145", "cyber_portal": "https://www.nepalpolice.gov.np",
+      "police": "100", "ambulance": "102", "fire": "101",
+      "cyber_agency": "Nepal Police Cyber Bureau",
+      "report_url": "https://www.nepalpolice.gov.np/departments/cyber-bureau",
+      "top_scams": ["Social Media Scam", "Online Banking Fraud", "Job Scam", "Fake Online Store", "Loan App Fraud"],
+      "scam_alert": "Nepal Cyber Bureau 1145 is a free helpline. eSewa and Khalti fraud reports should also be filed with the payment service provider.",
+      "languages": ["ne"]
+    },
+    {
+      "code": "MW", "name": "Malawi", "flag": "🇲🇼", "region": "Africa",
+      "cyber_hotline": "115", "cyber_portal": "https://www.macra.org.mw",
+      "police": "997", "ambulance": "998", "fire": "999",
+      "cyber_agency": "Malawi Communications Regulatory Authority (MACRA)",
+      "report_url": "https://www.macra.org.mw/contact/",
+      "top_scams": ["Mobile Money Fraud", "SIM Swap", "Romance Scam", "Advance Fee", "Lottery Scam"],
+      "scam_alert": "Airtel Money and TNM Mpamba fraud is the most common scam in Malawi. Never share PINs or OTPs.",
+      "languages": ["ny", "en"]
+    },
+    {
+      "code": "ET", "name": "Ethiopia", "flag": "🇪🇹", "region": "Africa",
+      "cyber_hotline": "8823", "cyber_portal": "https://www.insa.gov.et",
+      "police": "991", "ambulance": "907", "fire": "939",
+      "cyber_agency": "Information Network Security Administration (INSA)",
+      "report_url": "https://www.insa.gov.et/index.php/en/incident-reporting",
+      "top_scams": ["Telebirr Fraud", "Social Media Scam", "Fake Prize", "Job Scam", "Phone SIM Scam"],
+      "scam_alert": "Telebirr mobile payment fraud is on the rise in Ethiopia. Never reveal your PIN or OTP to anyone claiming to be bank staff.",
+      "languages": ["am", "en"]
+    }
+  ]
+}
