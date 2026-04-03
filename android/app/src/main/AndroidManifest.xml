@@ -11,6 +11,23 @@
         android:usesCleartextTraffic="false"
         android:networkSecurityConfig="@xml/network_security_config">
 
+        <!-- ── Circuit Breaker: Anti-Isolation NotificationListenerService ── -->
+        <!-- Requires user to grant Notification Access in System Settings    -->
+        <service
+            android:name=".CircuitBreakerService"
+            android:label="QuantumShield Guardian"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Safe Check-In: handles "I AM SAFE" action from pre-alert notification -->
+        <receiver
+            android:name=".CircuitBreakerResetReceiver"
+            android:exported="false" />
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
@@ -71,5 +88,20 @@
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
+
+    <!-- ── Circuit Breaker permissions ── -->
+    <!-- Read contacts to determine if WhatsApp caller is "unknown" -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- Keep network active for FCM distress relay -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- GPS for last-known-location in distress alert message -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Reschedule WorkManager heartbeat after device reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Battery optimisation exemption (user-granted) for persistent timer -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- Override DND / Silent Mode for ALARM-category kin alert -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
 </manifest>

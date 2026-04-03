@@ -64,6 +64,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   /* ── Tools ── */
   const TOOLS: Tool[] = [
     // Emergency
+    { id: 'circuitbreaker', name: 'Circuit Breaker',     nameHi: 'सर्किट ब्रेकर',    description: 'Anti-isolation · 6h unknown call alert',  descriptionHi: '6 घंटे अज्ञात कॉल → परिवार अलर्ट', icon: Zap,          path: '/circuit-breaker', category: 'emergency' },
     { id: 'evidence',     name: 'Evidence Vault',      nameHi: 'एविडेंस वॉल्ट',    description: 'Record tamper-proof video proof',          descriptionHi: 'वीडियो सबूत रिकॉर्ड करें',         icon: FileText,     path: '/evidence',        category: 'emergency' },
     { id: 'emergency',    name: 'Emergency Contacts',  nameHi: 'आपातकालीन संपर्क',  description: 'One-tap 1930 & cybercrime helpline',       descriptionHi: '1930 त्वरित पहुंच',                icon: Phone,        path: '/emergency',       category: 'emergency' },
     { id: 'aianalyzer',   name: 'AI Call Analyzer',    nameHi: 'AI कॉल विश्लेषक',  description: 'Real-time scam & Hinglish detection',      descriptionHi: 'रीयल-टाइम स्कैम कॉल पहचान',       icon: Mic,          path: '/aianalyzer',      category: 'emergency' },
