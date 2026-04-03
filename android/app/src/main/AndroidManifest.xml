@@ -28,6 +28,16 @@
             android:name=".CircuitBreakerResetReceiver"
             android:exported="false" />
 
+        <!-- ── Circuit Breaker: FCM receiver on the KIN's device ── -->
+        <!-- Plays siren, overrides Silent Mode, shows full-screen alert -->
+        <service
+            android:name=".KinAlertService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"

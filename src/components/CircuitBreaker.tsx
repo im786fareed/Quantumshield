@@ -5,8 +5,14 @@ import {
   XCircle, Bell, BellOff, UserPlus, Trash2, MessageSquare,
   Activity, Lock, Eye, EyeOff, RefreshCw, ChevronRight,
   ShieldAlert, Radio, Timer, PhoneOff, PhoneCall, Info,
-  ToggleLeft, ToggleRight,
+  ToggleLeft, ToggleRight, Globe,
 } from 'lucide-react';
+import globalSafetyData from '@/data/global-safety.json';
+
+const allCountries = globalSafetyData.countries as {
+  code: string; name: string; flag: string;
+  cyber_hotline: string; cyber_portal: string; cyber_agency: string;
+}[];
 
 /* ─── Types ─── */
 interface SafetyContact {
@@ -338,6 +344,13 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
     const timestamp = new Date().toLocaleString();
     const label = mode === 'test' ? 'TEST ALERT' : 'CRITICAL DISTRESS';
 
+    // ── Global Guardian: inject country-specific cyber hotline ──
+    const savedCountry = typeof window !== 'undefined' ? localStorage.getItem('qs_shield_country') || 'IN' : 'IN';
+    const countryInfo = allCountries.find(c => c.code === savedCountry) ?? allCountries[0];
+    const cyberLine = `${countryInfo.flag} ${countryInfo.name} Cybercrime: *${countryInfo.cyber_hotline}*`;
+    const cyberPortal = countryInfo.cyber_portal;
+    const cyberAgency = countryInfo.cyber_agency;
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const mapsUrl = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
@@ -349,14 +362,15 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
                 `*${c.name}*, this is an automated distress signal.\n\n` +
                 `Your contact has been in an *unverified call (${callerLabel}) for 6+ hours* and is unreachable.\n\n` +
                 `📍 Last known location: ${mapsUrl}\n\n` +
+                `🌍 Shield Region: *${countryInfo.flag} ${countryInfo.name}*\n\n` +
                 `⚠️ Possible *Virtual Kidnapping / Digital Arrest* scam.\n\n` +
-                `Please call them immediately or contact:\n• Cybercrime: *1930*\n• Police: *100*\n\n` +
-                `— QuantumShield Anti-Isolation Protocol`;
+                `Please call them immediately or contact:\n${cyberLine}\n• ${cyberAgency}\n• Portal: ${cyberPortal}\n\n` +
+                `— QuantumShield Global Guardian · Anti-Isolation Protocol`;
             const phone = c.phone.replace(/\D/g, '');
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
           }
         });
-        setAlertSentLog(prev => [`${timestamp} — ${label} sent to ${contacts.length} contact(s)`, ...prev]);
+        setAlertSentLog(prev => [`${timestamp} — ${label} sent to ${contacts.length} contact(s) [${countryInfo.flag} ${countryInfo.code}]`, ...prev]);
         if (mode === 'test') setTestSent(true);
       },
       () => {
@@ -366,12 +380,13 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
             const msg = mode === 'test'
               ? `🧪 [TEST] QuantumShield Circuit Breaker test alert.`
               : `🚨 *QUANTUM SHIELD — CIRCUIT BREAKER ALERT*\n\n` +
-                `*${c.name}*, your contact has been isolated in an unknown call for 6+ hours. Please reach them immediately.\n\nCybercrime: 1930 | Police: 100`;
+                `*${c.name}*, your contact has been isolated in an unknown call for 6+ hours. Please reach them immediately.\n\n` +
+                `🌍 Shield Region: *${countryInfo.flag} ${countryInfo.name}*\n${cyberLine}\nPortal: ${cyberPortal}`;
             const phone = c.phone.replace(/\D/g, '');
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
           }
         });
-        setAlertSentLog(prev => [`${timestamp} — ${label} sent (no GPS)`, ...prev]);
+        setAlertSentLog(prev => [`${timestamp} — ${label} sent (no GPS) [${countryInfo.flag} ${countryInfo.code}]`, ...prev]);
         if (mode === 'test') setTestSent(true);
       }
     );
@@ -440,6 +455,11 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-1 text-white">{t.title}</h1>
           <p className="text-sm text-gray-400">{t.subtitle}</p>
+          <a href="/global-guardian"
+            className="mt-3 inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full transition-all">
+            <Globe className="w-3 h-3" />
+            Global Guardian — {typeof window !== 'undefined' ? (allCountries.find(c => c.code === (localStorage.getItem('qs_shield_country') || 'IN'))?.flag ?? '🇮🇳') : '🇮🇳'} Country Shield active
+          </a>
         </div>
       </div>
 

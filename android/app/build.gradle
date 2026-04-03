@@ -70,6 +70,19 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // ── Firebase (Circuit Breaker FCM distress relay — free tier) ────────────
+    implementation platform('com.google.firebase:firebase-bom:33.7.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+
+    // ── Security Crypto (EncryptedSharedPreferences for LocalTracker) ────────
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+
+    // ── WorkManager (30-min heartbeat, battery-optimised) ───────────────────
+    implementation 'androidx.work:work-runtime-ktx:2.9.1'
+
+    // ── Kotlin Coroutines (async FCM relay in CircuitBreakerService) ─────────
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 }
 
 apply from: 'capacitor.build.gradle'
