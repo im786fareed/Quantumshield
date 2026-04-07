@@ -12,7 +12,6 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
     backgroundColor: '#000000',
-    overScrollMode: 'never',
   },
   ios: {
     backgroundColor: '#000000',

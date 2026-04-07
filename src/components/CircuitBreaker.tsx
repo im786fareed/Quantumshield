@@ -246,7 +246,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
         if (!callStartTime) return;
         const e = Date.now() - callStartTime;
         setElapsed(e);
-        if (e >= SIX_HOURS_MS && missedCount > 0 && protocolState !== 'triggered') {
+        if (e >= SIX_HOURS_MS && missedCount > 0) {
           setProtocolState('triggered');
           persistState({ protocolState: 'triggered' });
           sendDistressSignal('auto');
