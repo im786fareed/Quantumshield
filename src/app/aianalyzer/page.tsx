@@ -2,14 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Brain, AlertTriangle, CheckCircle, Phone, Loader2, ShieldAlert } from 'lucide-react';
 
-// Declare global types for SpeechRecognition
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-}
-
 // THE DEFAULT EXPORT FIXES THE "NOT A MODULE" ERROR
 export default function AICallAnalyzer() {
   const [isListening, setIsListening] = useState(false);
