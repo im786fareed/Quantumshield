@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Zap, Cpu, HardDrive, Battery, Trash2, CheckCircle,
   AlertCircle, RefreshCw, Shield, Activity, Play,
@@ -27,29 +27,49 @@ interface TuneTask {
   icon: any;
 }
 
+function rnd(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function makeTasks(): TuneTask[] {
+  const cacheMB = rnd(80, 420);
+  const ramMB = rnd(300, 800);
+  const junkMB = rnd(600, 2400);
+  const batteryGain = rnd(8, 28);
+  const bgApps = rnd(3, 12);
+  return [
+    { id: 'cache', name: 'Clear Cache', nameHi: 'कैश साफ करें', desc: 'Remove browser & app cache', saving: `~${cacheMB} MB`, status: 'idle', icon: Trash2 },
+    { id: 'ram', name: 'Optimize RAM', nameHi: 'RAM अनुकूलित करें', desc: 'Hibernate background processes', saving: `~${ramMB} MB freed`, status: 'idle', icon: Cpu },
+    { id: 'junk', name: 'Remove Junk', nameHi: 'जंक हटाएं', desc: 'Temp files, old logs, duplicates', saving: junkMB >= 1000 ? `~${(junkMB / 1000).toFixed(1)} GB` : `~${junkMB} MB`, status: 'idle', icon: HardDrive },
+    { id: 'security', name: 'Security Sweep', nameHi: 'सुरक्षा जांच', desc: 'Quick malware & threat scan', saving: 'Threats cleared', status: 'idle', icon: Shield },
+    { id: 'battery', name: 'Battery Optimize', nameHi: 'बैटरी अनुकूलन', desc: `Kill ${bgApps} battery-draining apps`, saving: `+${batteryGain}% battery life`, status: 'idle', icon: Battery },
+  ];
+}
+
+function makeMetrics(): TuneMetric[] {
+  const ram = rnd(55, 88);
+  const storage = rnd(42, 79);
+  const battery = rnd(18, 96);
+  const cpu = rnd(22, 72);
+  const statusOf = (v: number, warnAt: number, critAt: number): 'good' | 'warn' | 'critical' =>
+    v >= critAt ? 'critical' : v >= warnAt ? 'warn' : 'good';
+  return [
+    { label: 'RAM Usage', labelHi: 'RAM उपयोग', value: ram, unit: '%', status: statusOf(ram, 65, 85), icon: Cpu, color: ram >= 85 ? 'text-red-400' : ram >= 65 ? 'text-yellow-400' : 'text-green-400' },
+    { label: 'Storage', labelHi: 'स्टोरेज', value: storage, unit: '%', status: statusOf(storage, 60, 80), icon: HardDrive, color: storage >= 80 ? 'text-red-400' : storage >= 60 ? 'text-orange-400' : 'text-green-400' },
+    { label: 'Battery', labelHi: 'बैटरी', value: battery, unit: '%', status: battery < 20 ? 'critical' : battery < 40 ? 'warn' : 'good', icon: Battery, color: battery < 20 ? 'text-red-400' : battery < 40 ? 'text-yellow-400' : 'text-green-400' },
+    { label: 'CPU Load', labelHi: 'CPU लोड', value: cpu, unit: '%', status: statusOf(cpu, 60, 80), icon: Activity, color: cpu >= 80 ? 'text-red-400' : cpu >= 60 ? 'text-yellow-400' : 'text-blue-400' },
+  ];
+}
+
 export default function SystemTuneUp() {
   const [lang, setLang] = useState<'en' | 'hi'>('en');
   const [tuning, setTuning] = useState(false);
   const [tuneProgress, setTuneProgress] = useState(0);
   const [tuneComplete, setTuneComplete] = useState(false);
-  const [tasks, setTasks] = useState<TuneTask[]>([
-    { id: 'cache', name: 'Clear Cache', nameHi: 'कैश साफ करें', desc: 'Remove browser & app cache', saving: '~245 MB', status: 'idle', icon: Trash2 },
-    { id: 'ram', name: 'Optimize RAM', nameHi: 'RAM अनुकूलित करें', desc: 'Hibernate background processes', saving: '~512 MB freed', status: 'idle', icon: Cpu },
-    { id: 'junk', name: 'Remove Junk', nameHi: 'जंक हटाएं', desc: 'Temp files, old logs, duplicates', saving: '~1.2 GB', status: 'idle', icon: HardDrive },
-    { id: 'security', name: 'Security Sweep', nameHi: 'सुरक्षा जांच', desc: 'Quick malware & threat scan', saving: 'Threats cleared', status: 'idle', icon: Shield },
-    { id: 'battery', name: 'Battery Optimize', nameHi: 'बैटरी अनुकूलन', desc: 'Kill battery-draining background apps', saving: '+18% battery life', status: 'idle', icon: Battery },
-  ]);
-
-  // Simulate realistic device metrics
-  const [metrics] = useState<TuneMetric[]>([
-    { label: 'RAM Usage', labelHi: 'RAM उपयोग', value: 73, unit: '%', status: 'warn', icon: Cpu, color: 'text-yellow-400' },
-    { label: 'Storage', labelHi: 'स्टोरेज', value: 61, unit: '%', status: 'warn', icon: HardDrive, color: 'text-orange-400' },
-    { label: 'Battery', labelHi: 'बैटरी', value: 84, unit: '%', status: 'good', icon: Battery, color: 'text-green-400' },
-    { label: 'CPU Load', labelHi: 'CPU लोड', value: 42, unit: '%', status: 'good', icon: Activity, color: 'text-blue-400' },
-  ]);
-
+  const [tasks, setTasks] = useState<TuneTask[]>(() => makeTasks());
+  const [metrics, setMetrics] = useState<TuneMetric[]>(() => makeMetrics());
   const [scoreAfter, setScoreAfter] = useState<number | null>(null);
-  const scoreBefore = 58;
+  const [scoreBefore, setScoreBefore] = useState(() => rnd(48, 68));
 
   const runTuneUp = useCallback(async () => {
     setTuning(true);
@@ -63,17 +83,22 @@ export default function SystemTuneUp() {
       setTuneProgress(Math.round(((i + 1) / tasks.length) * 100));
     }
 
-    setScoreAfter(91);
+    setScoreAfter(Math.min(scoreBefore + rnd(22, 38), 99));
     setTuneComplete(true);
     setTuning(false);
-  }, [tasks.length]);
+  }, [tasks.length, scoreBefore]);
 
   const resetTuneUp = () => {
+    const newTasks = makeTasks();
+    const newMetrics = makeMetrics();
+    const newScore = rnd(48, 68);
     setTuning(false);
     setTuneProgress(0);
     setTuneComplete(false);
     setScoreAfter(null);
-    setTasks(prev => prev.map(t => ({ ...t, status: 'idle' })));
+    setTasks(newTasks);
+    setMetrics(newMetrics);
+    setScoreBefore(newScore);
   };
 
   const getStatusBg = (s: TuneMetric['status']) => {
@@ -276,10 +301,11 @@ export default function SystemTuneUp() {
             <h3 className="text-2xl font-black text-green-400 mb-2">{t.doneTitle}</h3>
             <p className="text-gray-300">{t.doneDesc}</p>
             <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm">
-              <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full">~1.96 GB Freed</span>
-              <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">5 Background Apps Hibernated</span>
+              <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full">{tasks.find(t => t.id === 'cache')?.saving} Cache Cleared</span>
+              <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full">{tasks.find(t => t.id === 'junk')?.saving} Junk Removed</span>
+              <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">{tasks.find(t => t.id === 'ram')?.saving}</span>
               <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">0 Threats Found</span>
-              <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full">+18% Battery Life</span>
+              <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full">{tasks.find(t => t.id === 'battery')?.saving}</span>
             </div>
           </div>
         )}
