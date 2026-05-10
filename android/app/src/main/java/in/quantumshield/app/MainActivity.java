@@ -1,4 +1,4 @@
-package com.quantumshield.app;
+package in.quantumshield.app;
 
 import com.getcapacitor.BridgeActivity;
 

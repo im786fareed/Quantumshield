@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.quantumshield.app',
+  appId: 'in.quantumshield.app',
   appName: 'QuantumShield',
   webDir: 'out',           // Next.js static export output dir
   server: {

@@ -1,4 +1,4 @@
-package com.quantumshield.app
+package in.quantumshield.app
 
 import android.app.NotificationManager
 import android.content.BroadcastReceiver

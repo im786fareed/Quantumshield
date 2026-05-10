@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">QuantumShield</string>
     <string name="title_activity_main">QuantumShield</string>
-    <string name="package_name">com.quantumshield.app</string>
-    <string name="custom_url_scheme">com.quantumshield.app</string>
+    <string name="package_name">in.quantumshield.app</string>
+    <string name="custom_url_scheme">in.quantumshield.app</string>
 </resources>
