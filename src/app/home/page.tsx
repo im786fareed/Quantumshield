@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function HomePage() {
   const protectionFeatures = [
-    { name: 'AI Call Analyzer', icon: Mic, path: '/aianalyzer', color: 'text-red-400' },
+    { name: 'AI Call & Deepfake Analyzer', icon: Mic, path: '/aianalyzer', color: 'text-red-400' },
     { name: 'Device Scanner', icon: Smartphone, path: '/devicescan', color: 'text-cyan-400' },
     { name: 'Evidence Vault', icon: Lock, path: '/evidence', color: 'text-emerald-400' },
     { name: 'Privacy Shield', icon: Shield, path: '/privacy', color: 'text-indigo-400' },
