@@ -35,14 +35,14 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       // FIXED: Added YouTube domains to allow scripts and styles for education videos
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://s.ytimg.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://*.youtube.com https://s.ytimg.com https://*.youtube-nocookie.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com",
       // FIXED: connect-src allows the AI and DNS tests to reach external APIs
       "connect-src 'self' https://*.vercel.app https://vitals.vercel-insights.com https://*.vercel-insights.com https://1.1.1.1",
       // FIXED: frame-src is CRITICAL to allow the Education page to show YouTube videos
-      "frame-src 'self' https://www.youtube.com https://youtube.com",
+      "frame-src 'self' https://www.youtube.com https://youtube.com https://*.youtube.com https://*.youtube-nocookie.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

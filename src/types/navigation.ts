@@ -25,6 +25,7 @@ export const TAB_IDS = [
   'whatsapp',
   'awareness',
   'privacy',
+  'system-guardian',
 ] as const;
 
 export type TabId = (typeof TAB_IDS)[number];

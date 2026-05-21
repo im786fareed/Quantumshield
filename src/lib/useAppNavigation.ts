@@ -33,5 +33,6 @@ export function useAppNavigation() {
     goWhatsapp: () => router.push('/whatsapp'),
     goAwareness: () => router.push('/awareness'),
     goPrivacy: () => router.push('/privacy'),
+    goSystemGuardian: () => router.push('/system-guardian'),
   };
 }

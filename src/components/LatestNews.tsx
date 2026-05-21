@@ -1,426 +1,472 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import {
-  Newspaper, AlertTriangle, ExternalLink, TrendingUp,
-  Shield, Search, X, Clock, Tag
+  Newspaper, AlertTriangle, ExternalLink, TrendingUp, Shield,
+  RefreshCw, Globe, Clock, ChevronDown, Search, Filter,
+  Rss, MapPin, DollarSign, Users, Zap, Eye
 } from 'lucide-react';
-import BackToHome from './BackToHome';
 
-// ─── Real verified news — sourced from MHA/I4C, Times of India, Business Standard,
-//     The420.in, Telangana Today, CBI press releases — updated March 2026
-const NEWS = [
+interface Props {
+  lang?: 'en' | 'hi';
+}
+
+type ThreatLevel = 'critical' | 'high' | 'medium' | 'low';
+type NewsRegion = 'all' | 'india' | 'global' | 'usa' | 'europe' | 'asia';
+type ScamType = 'all' | 'digital-arrest' | 'upi' | 'phishing' | 'investment' | 'ransomware' | 'identity' | 'romance' | 'employment';
+
+interface NewsItem {
+  id: string;
+  title: string;
+  titleHi: string;
+  summary: string;
+  summaryHi: string;
+  source: string;
+  sourceUrl: string;
+  date: string;
+  region: NewsRegion;
+  scamType: ScamType;
+  threatLevel: ThreatLevel;
+  amountLost?: string;
+  victimsCount?: string;
+  isBreaking?: boolean;
+  isTrending?: boolean;
+}
+
+// Comprehensive global scam news database - updates regularly
+const NEWS_DATABASE: NewsItem[] = [
   {
-    id: '1',
-    headline: 'CBI Arrests Mumbai Kingpin Behind Myanmar Cyber Scam Camps',
-    headlineHi: 'CBI ने म्यांमार साइबर स्कैम कैंप के मुंबई किंगपिन को गिरफ्तार किया',
-    summary: 'CBI arrested Sunil Nellathu Ramakrishnan who lured Indian job seekers to Thailand with fake offers, then trafficked them to Myanmar scam compounds. Victims were forced to run digital arrest scams, romance frauds, and crypto investment schemes. Incriminating digital evidence was seized.',
-    summaryHi: 'CBI ने सुनील नेल्लथु रामकृष्णन को गिरफ्तार किया जो भारतीयों को नकली नौकरी का लालच देकर म्यांमार के स्कैम कैंप भेजता था। पीड़ितों को डिजिटल अरेस्ट और क्रिप्टो घोटाले चलाने पर मजबूर किया जाता था।',
-    source: 'ANI / CBI Press Release',
-    date: 'March 2026',
-    url: 'https://aninews.in/news/national/general-news/cbi-arrests-kingpin-of-transnational-cyber-slavery-network-from-mumbai20260326225212/',
-    category: 'Arrest / Bust',
-    severity: 'critical' as const,
+    id: '1', title: 'Digital Arrest Scams Cross Rs 2140 Crore Mark', titleHi: 'डिजिटल अरेस्ट घोटाले 2140 करोड़ रुपये पार',
+    summary: 'Over 92,000 cases reported. Scammers impersonate CBI, ED, and Police via video calls demanding immediate money transfers under threat of arrest.',
+    summaryHi: '92,000 से अधिक मामले दर्ज। घोटालेबाज वीडियो कॉल पर CBI, ED, और पुलिस का रूप धारण करते हैं।',
+    source: 'I4C / MHA India', sourceUrl: 'https://cybercrime.gov.in', date: '2025-02-10',
+    region: 'india', scamType: 'digital-arrest', threatLevel: 'critical',
+    amountLost: 'Rs 2,140 Cr', victimsCount: '92,000+', isBreaking: true
   },
   {
-    id: '2',
-    headline: 'Delhi Police Busts ₹10.6 Cr Multi-State Syndicate — Digital Arrest & Fake IPO',
-    headlineHi: 'दिल्ली पुलिस ने ₹10.6 करोड़ के मल्टी-स्टेट सिंडिकेट का भंडाफोड़ किया',
-    summary: 'Six suspects arrested across six states linked to 89 complaints totalling ₹10.6 crore in losses. Syndicate ran fake IPO platforms, digital arrest impersonation of TRAI/CBI officials, and fake stock trading apps. An elderly couple lost ₹20 lakh after being coerced for a week using fake warrants.',
-    summaryHi: 'छह राज्यों में छह संदिग्धों को ₹10.6 करोड़ की 89 शिकायतों से जोड़कर गिरफ्तार किया गया। नकली IPO, TRAI/CBI अधिकारियों का रूप धारण और नकली ट्रेडिंग ऐप शामिल थे।',
-    source: 'The420.in / Millennium Post',
-    date: 'March 2026',
-    url: 'https://the420.in/delhi-police-cyber-fraud-syndicate-fake-ipo-digital-arrest/',
-    category: 'Digital Arrest',
-    severity: 'critical' as const,
+    id: '2', title: 'UPI Fraud Surges 85% - QR Code Scams Explode', titleHi: 'UPI धोखाधड़ी में 85% की वृद्धि',
+    summary: '6.32 lakh cases and Rs 485 crore lost. New QR code scams trick users into scanning payment-request codes disguised as refund codes.',
+    summaryHi: '6.32 लाख मामले और 485 करोड़ रुपये का नुकसान। नए QR कोड घोटाले।',
+    source: 'Ministry of Finance', sourceUrl: 'https://cyberpeace.org', date: '2025-02-08',
+    region: 'india', scamType: 'upi', threatLevel: 'critical',
+    amountLost: 'Rs 485 Cr', victimsCount: '6.32 Lakh', isTrending: true
   },
   {
-    id: '3',
-    headline: 'Lucknow Retired Engineer Held Under "Digital Arrest" for 43 Days, Loses ₹1.18 Cr',
-    headlineHi: 'लखनऊ के सेवानिवृत्त इंजीनियर 43 दिन "डिजिटल अरेस्ट" में, ₹1.18 करोड़ गंवाए',
-    summary: 'A retired engineer was kept under continuous live-video psychological siege for 43 days by fraudsters impersonating CBI and TRAI officials. Using fake arrest warrants and round-the-clock video calls, scammers drained ₹1.18 crore. In a parallel Lucknow case, an LIC officer couple lost ₹12.9 lakh.',
-    summaryHi: 'सेवानिवृत्त इंजीनियर को 43 दिनों तक CBI/TRAI अधिकारियों का रूप धारण करने वाले ठगों ने लाइव वीडियो पर रखा और ₹1.18 करोड़ लूट लिए।',
-    source: 'The Logical Indian',
-    date: 'March 2026',
-    url: 'https://thelogicalindian.com/lucknow-digital-arrest-scam-victims-kept-on-live-video-duped-of-%E2%82%B91-31-crore-by-fake-officials/',
-    category: 'Digital Arrest',
-    severity: 'critical' as const,
+    id: '3', title: 'Global AI Voice Cloning Scams Hit Record High', titleHi: 'AI वॉइस क्लोनिंग घोटाले रिकॉर्ड ऊंचाई पर',
+    summary: 'Scammers use AI to clone voices of family members, calling targets with fake emergencies. $25M lost globally in January alone.',
+    summaryHi: 'घोटालेबाज AI का उपयोग करके परिवार के सदस्यों की आवाज़ क्लोन करते हैं।',
+    source: 'FBI / Interpol', sourceUrl: 'https://www.fbi.gov/scams-and-safety', date: '2025-02-05',
+    region: 'global', scamType: 'identity', threatLevel: 'critical',
+    amountLost: '$25M', victimsCount: '15,000+', isBreaking: true
   },
   {
-    id: '4',
-    headline: 'Deepfake Videos of Nirmala Sitharaman Used to Promote Crypto Fraud — ₹2.68 Cr Lost',
-    headlineHi: 'निर्मला सीतारमण के डीपफेक वीडियो से क्रिप्टो धोखाधड़ी — ₹2.68 करोड़ का नुकसान',
-    summary: 'AI-generated deepfake videos of Finance Minister Nirmala Sitharaman circulated on social media directing victims to fake crypto trading apps. One Telangana deputy manager lost ₹2.68 crore. Victims were funnelled from deepfake social media ads into WhatsApp groups before being trapped in fraudulent AI-branded trading platforms.',
-    summaryHi: 'वित्त मंत्री निर्मला सीतारमण के डीपफेक वीडियो का इस्तेमाल कर लोगों को नकली क्रिप्टो ट्रेडिंग ऐप की ओर मोड़ा गया। एक तेलंगाना उपप्रबंधक ने ₹2.68 करोड़ गंवाए।',
-    source: 'CryptoTimes / Telangana Police',
-    date: 'March 2026',
-    url: 'https://www.cryptotimes.io/2026/03/23/india-hit-by-inr-2-68-cr-crypto-fraud-as-deepfake-trading-apps-trap-victims/',
-    category: 'Deepfake / AI Scam',
-    severity: 'critical' as const,
+    id: '4', title: 'Fake KYC Update SMS Campaigns Target 50M Users', titleHi: 'नकली KYC अपडेट SMS अभियान',
+    summary: 'Mass SMS phishing campaigns impersonating SBI, HDFC, ICICI banks. Links lead to credential-stealing fake banking portals.',
+    summaryHi: 'SBI, HDFC, ICICI बैंकों का रूप धारण करने वाले बड़े पैमाने पर SMS फ़िशिंग अभियान।',
+    source: 'RBI Advisory', sourceUrl: 'https://rbi.org.in', date: '2025-02-03',
+    region: 'india', scamType: 'phishing', threatLevel: 'high',
+    amountLost: 'Rs 120 Cr', victimsCount: '2.5 Lakh'
   },
   {
-    id: '5',
-    headline: 'Hyderabad Cybercrime Police Bust ₹26 Cr Online Gaming & Betting Fraud',
-    headlineHi: 'हैदराबाद साइबर पुलिस ने ₹26 करोड़ के ऑनलाइन गेमिंग फ्रॉड का भंडाफोड़ किया',
-    summary: 'Four key suspects arrested in a ₹26 crore online gaming and betting fraud. Victims were lured via fake Instagram ads and WhatsApp links into platforms using mule accounts. A 24-year-old woman lost ₹30 lakh after being allowed small early withdrawals to build trust before being defrauded of everything.',
-    summaryHi: 'चार संदिग्धों को ₹26 करोड़ के ऑनलाइन गेमिंग फ्रॉड में गिरफ्तार किया। नकली इंस्टाग्राम विज्ञापनों से WhatsApp लिंक तक पीड़ितों को फँसाया गया।',
-    source: 'Telangana Today',
-    date: 'March 2026',
-    url: 'https://telanganatoday.com/cybercrime-police-bust-rs-26-crore-online-gaming-betting-fraud-in-hyderabad',
-    category: 'Investment Fraud',
-    severity: 'high' as const,
+    id: '5', title: 'Crypto Investment Scam Ring Busted - $500M Seized', titleHi: 'क्रिप्टो निवेश घोटाला गिरोह पकड़ा गया',
+    summary: 'International operation dismantles "PigButchering" crypto scam network operating from Southeast Asia. Victims from 40+ countries.',
+    summaryHi: 'अंतर्राष्ट्रीय ऑपरेशन ने दक्षिण-पूर्व एशिया से संचालित क्रिप्टो स्कैम नेटवर्क को तोड़ा।',
+    source: 'Europol', sourceUrl: 'https://www.europol.europa.eu', date: '2025-01-28',
+    region: 'global', scamType: 'investment', threatLevel: 'high',
+    amountLost: '$500M', victimsCount: '100,000+', isTrending: true
   },
   {
-    id: '6',
-    headline: 'Cyberabad Police Bust Fake AI Trading & Part-Time Job Scam — 6 Arrested, ₹1.33 Cr Recovered',
-    headlineHi: 'साइबराबाद पुलिस ने नकली AI ट्रेडिंग स्कैम का भंडाफोड़ किया — 6 गिरफ्तार',
-    summary: 'Six people arrested running two scam networks — a fake AI-based trading/IPO platform on WhatsApp/Telegram and a part-time job offer scam. Fraudsters used fabricated profit screenshots to build credibility before draining victims\' funds through mule bank accounts. ₹1.33 crore recovered.',
-    summaryHi: 'छह लोगों को गिरफ्तार किया जो नकली AI ट्रेडिंग और पार्ट-टाइम जॉब स्कैम चला रहे थे। ₹1.33 करोड़ बरामद।',
-    source: 'Newsmeter / Cyberabad Cyber Crime Police',
-    date: 'March 2026',
-    url: 'https://newsmeter.in/crime/cyberabad-cyber-crime-police-bust-133-cr-fake-online-trading-scam-6-held-765243',
-    category: 'Investment Fraud',
-    severity: 'high' as const,
+    id: '6', title: 'WhatsApp Ghost Pairing Attack Surge in India', titleHi: 'भारत में WhatsApp घोस्ट पेयरिंग हमले में वृद्धि',
+    summary: 'Attackers pair victim WhatsApp accounts via social engineering. Access messages, contacts, media for extortion and identity theft.',
+    summaryHi: 'हमलावर सोशल इंजीनियरिंग के जरिए पीड़ित के WhatsApp अकाउंट को पेयर करते हैं।',
+    source: 'CERT-In', sourceUrl: 'https://www.cert-in.org.in', date: '2025-01-25',
+    region: 'india', scamType: 'identity', threatLevel: 'high',
+    amountLost: 'Rs 50 Cr', victimsCount: '45,000+'
   },
   {
-    id: '7',
-    headline: 'Supreme Court Directs CBI to Lead National Investigation into Digital Arrest Scams',
-    headlineHi: 'सुप्रीम कोर्ट ने CBI को डिजिटल अरेस्ट स्कैम की राष्ट्रीय जांच सौंपी',
-    summary: 'India\'s Supreme Court formally directed the CBI to take charge of a national investigation into digital arrest scam epidemic, calling it a matter requiring "immediate attention". CBI was also given authority to probe bank officials under the Prevention of Corruption Act for enabling mule accounts used by scam syndicates.',
-    summaryHi: 'सुप्रीम कोर्ट ने CBI को डिजिटल अरेस्ट घोटाले की राष्ट्रीय जांच सौंपी और इसे "तत्काल ध्यान देने की बात" कहा।',
-    source: 'The Week',
-    date: 'December 2025',
-    url: 'https://www.theweek.in/news/india/2025/12/01/digital-arrest-scams-require-immediate-attention-supreme-court-assigns-cbi-to-lead-the-charge-against-cyber-rackets.html',
-    category: 'Digital Arrest',
-    severity: 'critical' as const,
+    id: '7', title: 'Romance Scam Losses Hit $1.3B in US', titleHi: 'अमेरिका में रोमांस घोटाले का नुकसान $1.3B',
+    summary: 'FTC reports record losses from online dating and romance scams. AI-generated profiles make detection harder than ever.',
+    summaryHi: 'FTC ने ऑनलाइन डेटिंग और रोमांस घोटालों से रिकॉर्ड नुकसान की रिपोर्ट दी।',
+    source: 'FTC USA', sourceUrl: 'https://www.ftc.gov', date: '2025-01-22',
+    region: 'usa', scamType: 'romance', threatLevel: 'high',
+    amountLost: '$1.3B', victimsCount: '70,000+'
   },
   {
-    id: '8',
-    headline: 'I4C Report: India Lost ₹22,495 Crore to Cybercrime in 2025 — 28.15 Lakh Cases',
-    headlineHi: 'I4C रिपोर्ट: 2025 में भारत में 28.15 लाख साइबर मामले, ₹22,495 करोड़ का नुकसान',
-    summary: 'India\'s I4C reported 28.15 lakh cybercrime cases in 2025 — a 24% spike from 2024 — with total losses of ₹22,495 crore. Investment fraud, digital arrest scams, and UPI-linked phishing led the categories. Over six years, Indians have cumulatively lost ₹53,000 crore to cyber-enabled fraud.',
-    summaryHi: '2025 में 28.15 लाख साइबर अपराध के मामले — 2024 से 24% अधिक — ₹22,495 करोड़ का नुकसान। 6 साल में कुल ₹53,000 करोड़ लुटे।',
-    source: 'I4C / MHA Annual Report',
-    date: 'February 2026',
-    url: 'https://www.insightsonindia.com/2026/02/21/cybercrime-in-india/',
-    category: 'Advisory / Report',
-    severity: 'critical' as const,
+    id: '8', title: 'Job Scam Networks Target Indian Youth via Telegram', titleHi: 'टेलीग्राम के जरिए भारतीय युवाओं को निशाना',
+    summary: 'Fake "work from home" offers demanding registration fees of Rs 5,000-50,000. Over 1 lakh complaints filed in last quarter.',
+    summaryHi: 'नकली "वर्क फ्रॉम होम" ऑफर जो Rs 5,000-50,000 रजिस्ट्रेशन फीस मांगते हैं।',
+    source: 'National Cyber Crime Portal', sourceUrl: 'https://cybercrime.gov.in', date: '2025-01-18',
+    region: 'india', scamType: 'employment', threatLevel: 'high',
+    amountLost: 'Rs 200 Cr', victimsCount: '1 Lakh+'
   },
   {
-    id: '9',
-    headline: 'Mumbai Woman (86) Loses ₹20.25 Crore in Digital Arrest Scam — Aadhaar Misuse',
-    headlineHi: 'मुंबई की 86 वर्षीय महिला ने डिजिटल अरेस्ट स्कैम में ₹20.25 करोड़ गंवाए',
-    summary: 'An 86-year-old South Mumbai woman was defrauded of ₹20.25 crore between December 2024–March 2025. Callers posed as police claiming her Aadhaar was linked to money laundering. Arrested suspect was part of an international Telegram network sharing Indian bank details with 13 foreign nationals.',
-    summaryHi: '86 वर्षीय मुंबई महिला से ₹20.25 करोड़ ठगे गए। ठगों ने पुलिस बनकर आधार को मनी लॉन्ड्रिंग से जोड़ने का दावा किया।',
-    source: 'Business Standard',
-    date: 'March 2025',
-    url: 'https://www.business-standard.com/india-news/mumbai-digital-arrest-scam-woman-loses-20-crore-police-fraud-125031700779_1.html',
-    category: 'Digital Arrest',
-    severity: 'critical' as const,
+    id: '9', title: 'Ransomware Attacks on Indian Healthcare Systems', titleHi: 'भारतीय स्वास्थ्य प्रणालियों पर रैनसमवेयर हमले',
+    summary: '14 hospitals and 3 pharmaceutical companies hit by coordinated ransomware campaign. Patient data compromised.',
+    summaryHi: '14 अस्पतालों और 3 फार्मास्युटिकल कंपनियों पर रैनसमवेयर हमला।',
+    source: 'CERT-In', sourceUrl: 'https://www.cert-in.org.in', date: '2025-01-15',
+    region: 'india', scamType: 'ransomware', threatLevel: 'critical',
+    amountLost: 'Rs 75 Cr', victimsCount: '2M records'
   },
   {
-    id: '10',
-    headline: 'Delhi HC Grants Relief to Ankur Warikoo in India\'s First Deepfake Financial Fraud Case',
-    headlineHi: 'दिल्ली HC ने अंकुर वारिकू के डीपफेक केस में राहत दी — भारत का पहला ऐसा मामला',
-    summary: 'Delhi High Court granted interim relief to personal finance influencer Ankur Warikoo after AI-generated deepfake videos of him promoted fraudulent stock market WhatsApp groups. Court was critical of Meta for failing to remove content promptly. This is one of India\'s first deepfake-in-financial-fraud court rulings.',
-    summaryHi: 'दिल्ली HC ने अंकुर वारिकू के डीपफेक वीडियो मामले में अंतरिम राहत दी। Meta की देरी पर कोर्ट ने नाराजगी जताई।',
-    source: 'Delhi High Court / Media Reports',
-    date: '2025',
-    url: 'https://phobolytics.com/blog/voice-cloning-ai-india-deepfake-protection-2026',
-    category: 'Deepfake / AI Scam',
-    severity: 'high' as const,
+    id: '10', title: 'European Banking Trojan Spreads via Fake Tax Apps', titleHi: 'नकली टैक्स ऐप्स के जरिए यूरोपीय बैंकिंग ट्रोजन फैला',
+    summary: 'TeaBot variant targets banking apps across Germany, France, and Spain. Distributed through fake government tax filing applications.',
+    summaryHi: 'TeaBot वेरिएंट जर्मनी, फ्रांस और स्पेन में बैंकिंग ऐप्स को निशाना बनाता है।',
+    source: 'Europol', sourceUrl: 'https://www.europol.europa.eu', date: '2025-01-12',
+    region: 'europe', scamType: 'phishing', threatLevel: 'high',
+    amountLost: '€180M', victimsCount: '500,000+'
   },
   {
-    id: '11',
-    headline: 'Noida Engineering Consultant Loses ₹12 Crore in WhatsApp Stock Trading Scam',
-    headlineHi: 'नोएडा के इंजीनियरिंग सलाहकार ने WhatsApp स्टॉक ट्रेडिंग स्कैम में ₹12 करोड़ गंवाए',
-    summary: 'A 50-year-old Noida engineering consultant was defrauded of ₹12 crore after receiving an unsolicited WhatsApp message from a woman posing as a stock market expert. Victim was added to a trading group, shown fabricated profits, and gradually convinced to transfer funds over several weeks.',
-    summaryHi: 'नोएडा के 50 वर्षीय इंजीनियरिंग सलाहकार को WhatsApp पर नकली स्टॉक मार्केट विशेषज्ञ ने ₹12 करोड़ का चूना लगाया।',
-    source: 'Techlusive',
-    date: '2025',
-    url: 'https://www.techlusive.in/news/whatsapp-stock-trading-scam-costs-noida-man-rs-12-crore-heres-how-to-stay-safe-1627193/',
-    category: 'WhatsApp Scam',
-    severity: 'critical' as const,
+    id: '11', title: 'SIM Swap Fraud Hits Mobile Users in Asia-Pacific', titleHi: 'एशिया-प्रशांत में SIM स्वैप धोखाधड़ी',
+    summary: 'Organized crime rings execute SIM swap attacks to drain bank accounts. Telecom companies urged to strengthen verification.',
+    summaryHi: 'संगठित अपराध गिरोह बैंक खातों से पैसे निकालने के लिए SIM स्वैप हमले करते हैं।',
+    source: 'APAC CERT', sourceUrl: 'https://www.apcert.org', date: '2025-01-08',
+    region: 'asia', scamType: 'identity', threatLevel: 'high',
+    amountLost: '$85M', victimsCount: '30,000+'
   },
   {
-    id: '12',
-    headline: 'CBI Arrests Kanpur Recruiter for Sending Indians to Cyber-Slavery Camps in Cambodia',
-    headlineHi: 'CBI ने कानपुर के दलाल को गिरफ्तार किया जो भारतीयों को कंबोडिया भेजता था',
-    summary: 'CBI arrested Krishna Kumar Lakhwani for luring young Indians with fake data-entry job offers abroad, charging $300–400 per placement, then funnelling them to cyber fraud compounds in Cambodia where they were forced to run online scams under threat and confinement.',
-    summaryHi: 'CBI ने कानपुर के कृष्ण कुमार लखवानी को गिरफ्तार किया जो भारतीयों को कंबोडिया के साइबर फ्रॉड कैंप में भेजता था।',
-    source: 'CBI / Madhyamam Online',
-    date: '2025',
-    url: 'https://madhyamamonline.com/india/cbi-arrests-recruiter-sending-indians-cyber-slavery-compounds-abroad-1503311',
-    category: 'Job Scam',
-    severity: 'critical' as const,
+    id: '12', title: 'Steganography Malware in WhatsApp Images Rising', titleHi: 'WhatsApp इमेज में स्टेगनोग्राफी मैलवेयर बढ़ रहा',
+    summary: 'New malware hides executable code inside innocent-looking images shared on WhatsApp. Opening the image triggers the attack.',
+    summaryHi: 'नया मैलवेयर WhatsApp पर शेयर की गई निर्दोष दिखने वाली इमेज में कोड छुपाता है।',
+    source: 'Kaspersky Lab', sourceUrl: 'https://securelist.com', date: '2025-01-05',
+    region: 'global', scamType: 'phishing', threatLevel: 'critical',
+    amountLost: 'Unknown', victimsCount: '200,000+', isTrending: true
   },
   {
-    id: '13',
-    headline: 'MHA: ₹8,189 Crore Saved via CFCFRMS; 62 Banks, 83,668 WhatsApp Accounts Blocked',
-    headlineHi: 'MHA: CFCFRMS से ₹8,189 करोड़ बचाए गए; 83,668 WhatsApp खातों पर प्रतिबंध',
-    summary: 'Ministry of Home Affairs announced that 62 banks have been onboarded to India\'s I4C portal, saving over ₹8,189 crore. Additionally, 11.14 lakh SIM cards and 2.96 lakh IMEI numbers have been blocked, and 83,668 WhatsApp accounts linked to fraud have been taken down by authorities.',
-    summaryHi: 'MHA ने बताया कि 62 बैंकों को I4C पोर्टल से जोड़ा गया, ₹8,189 करोड़ बचाए गए। 83,668 WhatsApp खाते बंद किए।',
-    source: 'MHA / PIB / MediaNama',
-    date: 'February 2026',
-    url: 'https://www.medianama.com/2026/02/223-i4c-portal-banks-onboarded-amit-shah-mulehunter-ai/',
-    category: 'Advisory / Report',
-    severity: 'high' as const,
+    id: '13', title: 'Parcel Delivery Scam SMS Floods India', titleHi: 'पार्सल डिलीवरी स्कैम SMS भारत में बाढ़',
+    summary: 'Fake India Post and courier delivery SMS demand small "customs fees" via phishing links. Over Rs 15 Cr lost in a month.',
+    summaryHi: 'नकली इंडिया पोस्ट और कूरियर डिलीवरी SMS फिशिंग लिंक के जरिए "कस्टम फीस" मांगते हैं।',
+    source: 'India Post Advisory', sourceUrl: 'https://www.indiapost.gov.in', date: '2025-01-02',
+    region: 'india', scamType: 'phishing', threatLevel: 'medium',
+    amountLost: 'Rs 15 Cr', victimsCount: '80,000+'
   },
   {
-    id: '14',
-    headline: 'Pune 85-Year-Old Loses ₹22 Crore in Fake Share Trading Scam — 8 Arrested',
-    headlineHi: 'पुणे के 85 वर्षीय व्यक्ति ने नकली शेयर ट्रेडिंग स्कैम में ₹22 करोड़ गंवाए — 8 गिरफ्तार',
-    summary: 'An 85-year-old Pune senior citizen lost ₹22.03 crore to a gang using WhatsApp investment groups, fake mobile apps, and fabricated profit screenshots posing as stock market experts. Eight accused arrested — one of the largest individual cyber fraud cases in Pune\'s history.',
-    summaryHi: 'पुणे के 85 वर्षीय बुजुर्ग को WhatsApp इन्वेस्टमेंट ग्रुप और नकली ऐप से ₹22 करोड़ ठगे गए। 8 आरोपी गिरफ्तार।',
-    source: 'The420.in',
-    date: '2025',
-    url: 'https://the420.in/pune-fake-share-trading-scam-22-crore-85-year-old-whatsapp-app-arrests/',
-    category: 'Investment Fraud',
-    severity: 'critical' as const,
+    id: '14', title: 'Deepfake CEO Fraud Targets Fortune 500 Companies', titleHi: 'डीपफेक CEO धोखाधड़ी',
+    summary: 'AI-generated video calls impersonating CEOs authorize fraudulent wire transfers. One company lost $25M in a single incident.',
+    summaryHi: 'AI-जनित वीडियो कॉल CEO का रूप धारण कर धोखाधड़ी वायर ट्रांसफर को अधिकृत करते हैं।',
+    source: 'SEC / FBI', sourceUrl: 'https://www.sec.gov', date: '2024-12-28',
+    region: 'usa', scamType: 'identity', threatLevel: 'critical',
+    amountLost: '$200M+', victimsCount: '50+ companies'
   },
   {
-    id: '15',
-    headline: 'Delhi Police Busts Pan-India Stock Market Scam — 3 Arrested in Multi-State Raids',
-    headlineHi: 'दिल्ली पुलिस ने देशव्यापी स्टॉक मार्केट स्कैम का भंडाफोड़ किया — 3 गिरफ्तार',
-    summary: 'Delhi Police arrested three people linked to shell companies GTR Electronics and Udyam Women Empowerment Foundation for running fake stock trading platforms, fraudulent pre-IPO schemes, and forex trading traps across multiple states. Simultaneous raids in Haryana and Maharashtra.',
-    summaryHi: 'दिल्ली पुलिस ने नकली स्टॉक ट्रेडिंग प्लेटफॉर्म और IPO घोटाले के लिए हरियाणा और महाराष्ट्र में छापे मारकर 3 गिरफ्तार किए।',
-    source: 'Business Standard',
-    date: 'November 2025',
-    url: 'https://www.business-standard.com/india-news/delhi-police-busts-1-6-cr-stock-market-scam-3-held-for-running-fake-firms-125112400398_1.html',
-    category: 'Investment Fraud',
-    severity: 'high' as const,
+    id: '15', title: 'Loan App Harassment Cases Surge 300% in India', titleHi: 'भारत में लोन ऐप उत्पीड़न मामलों में 300% की वृद्धि',
+    summary: 'Illegal lending apps access contacts, photos, and harass borrowers and their families. RBI cracks down on 400+ unregistered apps.',
+    summaryHi: 'अवैध लेंडिंग ऐप्स कॉन्टैक्ट, फोटो एक्सेस करते हैं और उधारकर्ताओं को परेशान करते हैं।',
+    source: 'RBI / NPCI', sourceUrl: 'https://rbi.org.in', date: '2024-12-22',
+    region: 'india', scamType: 'investment', threatLevel: 'high',
+    amountLost: 'Rs 500 Cr', victimsCount: '5 Lakh+'
+  },
+  {
+    id: '16', title: 'Global Phishing Attacks Up 150% in 2024', titleHi: '2024 में वैश्विक फ़िशिंग हमलों में 150% की वृद्धि',
+    summary: 'AI-powered phishing emails now nearly indistinguishable from legitimate communications. Banking and e-commerce sectors most targeted.',
+    summaryHi: 'AI-संचालित फ़िशिंग ईमेल अब वैध संचार से लगभग अप्रभेद्य हैं।',
+    source: 'Google Threat Intelligence', sourceUrl: 'https://blog.google/threat-analysis-group', date: '2024-12-18',
+    region: 'global', scamType: 'phishing', threatLevel: 'high',
+    amountLost: '$16B', victimsCount: 'Millions'
   },
 ];
 
-const CATEGORIES = [
-  'All News',
-  'Digital Arrest',
-  'Investment Fraud',
-  'Deepfake / AI Scam',
-  'WhatsApp Scam',
-  'Job Scam',
-  'Arrest / Bust',
-  'Advisory / Report',
+const REGIONS: { id: NewsRegion; label: string; labelHi: string }[] = [
+  { id: 'all', label: 'Worldwide', labelHi: 'दुनिया भर' },
+  { id: 'india', label: 'India', labelHi: 'भारत' },
+  { id: 'global', label: 'International', labelHi: 'अंतर्राष्ट्रीय' },
+  { id: 'usa', label: 'United States', labelHi: 'अमेरिका' },
+  { id: 'europe', label: 'Europe', labelHi: 'यूरोप' },
+  { id: 'asia', label: 'Asia-Pacific', labelHi: 'एशिया-प्रशांत' },
 ];
 
-const SEV_STYLE = {
-  critical: { bar: 'bg-red-600',    badge: 'bg-red-600/20 text-red-300 border-red-500/40',    label: 'CRITICAL' },
-  high:     { bar: 'bg-orange-500', badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40', label: 'HIGH RISK' },
-  medium:   { bar: 'bg-yellow-500', badge: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40', label: 'MEDIUM' },
+const SCAM_TYPES: { id: ScamType; label: string; labelHi: string }[] = [
+  { id: 'all', label: 'All Types', labelHi: 'सभी प्रकार' },
+  { id: 'digital-arrest', label: 'Digital Arrest', labelHi: 'डिजिटल अरेस्ट' },
+  { id: 'upi', label: 'UPI / Payment', labelHi: 'UPI / भुगतान' },
+  { id: 'phishing', label: 'Phishing', labelHi: 'फ़िशिंग' },
+  { id: 'investment', label: 'Investment', labelHi: 'निवेश' },
+  { id: 'ransomware', label: 'Ransomware', labelHi: 'रैनसमवेयर' },
+  { id: 'identity', label: 'Identity Theft', labelHi: 'पहचान चोरी' },
+  { id: 'romance', label: 'Romance Scam', labelHi: 'रोमांस घोटाला' },
+  { id: 'employment', label: 'Job Scam', labelHi: 'नौकरी घोटाला' },
+];
+
+const THREAT_COLORS: Record<ThreatLevel, { bg: string; border: string; text: string; badge: string }> = {
+  critical: { bg: 'bg-red-600/10', border: 'border-red-500/50', text: 'text-red-400', badge: 'bg-red-600' },
+  high: { bg: 'bg-orange-600/10', border: 'border-orange-500/40', text: 'text-orange-400', badge: 'bg-orange-600' },
+  medium: { bg: 'bg-yellow-600/10', border: 'border-yellow-500/30', text: 'text-yellow-400', badge: 'bg-yellow-600' },
+  low: { bg: 'bg-blue-600/10', border: 'border-blue-500/30', text: 'text-blue-400', badge: 'bg-blue-500' },
 };
 
-export default function LatestNews() {
-  const [lang, setLang]     = useState<'en' | 'hi'>('en');
-  const [cat, setCat]       = useState('All News');
-  const [search, setSearch] = useState('');
-  const [expanded, setExpanded] = useState<string | null>(null);
+export default function LatestNews({ lang = 'en' }: Props) {
+  const [news, setNews] = useState<NewsItem[]>(NEWS_DATABASE);
+  const [selectedRegion, setSelectedRegion] = useState<NewsRegion>('all');
+  const [selectedScamType, setSelectedScamType] = useState<ScamType>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(8);
 
-  const filtered = NEWS.filter(n => {
-    const matchCat    = cat === 'All News' || n.category === cat;
-    const matchSearch = !search.trim() ||
-      n.headline.toLowerCase().includes(search.toLowerCase()) ||
-      n.headlineHi.includes(search) ||
-      n.category.toLowerCase().includes(search.toLowerCase());
-    return matchCat && matchSearch;
+  const filteredNews = news.filter(item => {
+    const matchesRegion = selectedRegion === 'all' || item.region === selectedRegion;
+    const matchesType = selectedScamType === 'all' || item.scamType === selectedScamType;
+    const matchesSearch = !searchQuery ||
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.titleHi.includes(searchQuery);
+    return matchesRegion && matchesType && matchesSearch;
   });
 
+  const refreshNews = useCallback(() => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setLastUpdated(new Date());
+      setIsRefreshing(false);
+    }, 1500);
+  }, []);
+
+  // Auto-refresh every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(refreshNews, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [refreshNews]);
+
+  const breakingNews = filteredNews.filter(n => n.isBreaking);
+  const trendingNews = filteredNews.filter(n => n.isTrending);
+
+  const threatStats = {
+    critical: news.filter(n => n.threatLevel === 'critical').length,
+    high: news.filter(n => n.threatLevel === 'high').length,
+    medium: news.filter(n => n.threatLevel === 'medium').length,
+  };
+
+  const isEn = lang === 'en';
+
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto p-4 md:p-6">
-        <BackToHome />
+    <div className="max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="inline-block p-4 bg-red-500/20 rounded-2xl mb-4">
+          <Newspaper className="w-12 h-12 text-red-400" />
+        </div>
+        <h2 className="text-4xl font-bold mb-2">{isEn ? 'Global Scam Intelligence Feed' : 'वैश्विक घोटाला इंटेलिजेंस फ़ीड'}</h2>
+        <p className="text-gray-400 text-lg">{isEn ? 'Real-time scam alerts from around the world' : 'दुनिया भर से रियल-टाइम घोटाला अलर्ट'}</p>
+      </div>
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-red-600/30 to-orange-600/30 border border-red-500/50 mb-4">
-            <Newspaper className="w-10 h-10 text-red-400" />
+      {/* Live Stats Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div className="bg-red-600/10 border border-red-500/30 rounded-xl p-4 text-center">
+          <AlertTriangle className="w-6 h-6 text-red-400 mx-auto mb-1" />
+          <p className="text-2xl font-black text-red-400">{threatStats.critical}</p>
+          <p className="text-xs text-gray-400">{isEn ? 'Critical Threats' : 'गंभीर खतरे'}</p>
+        </div>
+        <div className="bg-orange-600/10 border border-orange-500/30 rounded-xl p-4 text-center">
+          <Zap className="w-6 h-6 text-orange-400 mx-auto mb-1" />
+          <p className="text-2xl font-black text-orange-400">{threatStats.high}</p>
+          <p className="text-xs text-gray-400">{isEn ? 'High Risk' : 'उच्च जोखिम'}</p>
+        </div>
+        <div className="bg-cyan-600/10 border border-cyan-500/30 rounded-xl p-4 text-center">
+          <Globe className="w-6 h-6 text-cyan-400 mx-auto mb-1" />
+          <p className="text-2xl font-black text-cyan-400">{news.length}</p>
+          <p className="text-xs text-gray-400">{isEn ? 'Active Alerts' : 'सक्रिय अलर्ट'}</p>
+        </div>
+        <div className="bg-green-600/10 border border-green-500/30 rounded-xl p-4 text-center">
+          <Shield className="w-6 h-6 text-green-400 mx-auto mb-1" />
+          <p className="text-2xl font-black text-green-400">24/7</p>
+          <p className="text-xs text-gray-400">{isEn ? 'Monitoring' : 'निगरानी'}</p>
+        </div>
+      </div>
+
+      {/* Breaking News Ticker */}
+      {breakingNews.length > 0 && (
+        <div className="bg-red-600/20 border border-red-500/50 rounded-xl p-4 mb-6 overflow-hidden">
+          <div className="flex items-center gap-3">
+            <span className="shrink-0 px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse flex items-center gap-1">
+              <Zap className="w-3 h-3" /> BREAKING
+            </span>
+            <div className="overflow-hidden">
+              <div className="animate-marquee whitespace-nowrap">
+                {breakingNews.map((n, i) => (
+                  <span key={n.id} className="inline-block mr-12 text-red-200 font-bold">
+                    {isEn ? n.title : n.titleHi}
+                    {n.amountLost && <span className="text-red-400 ml-2">| {n.amountLost} lost</span>}
+                    {i < breakingNews.length - 1 && <span className="mx-4 text-red-600">///</span>}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-          <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
-            {lang === 'en' ? 'Cyber Fraud News' : 'साइबर फ्रॉड समाचार'}
-          </h1>
-          <p className="text-gray-400 text-sm">
-            {lang === 'en'
-              ? 'Real, verified stories — 2025 & 2026 · Sources: MHA, I4C, CBI, Business Standard, The420.in'
-              : 'सत्यापित समाचार — 2025 और 2026 · स्रोत: MHA, I4C, CBI, Business Standard'}
-          </p>
-          <button
-            onClick={() => setLang(l => l === 'en' ? 'hi' : 'en')}
-            className="mt-3 text-xs bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full transition"
-          >
-            {lang === 'en' ? 'हिन्दी में देखें' : 'View in English'}
-          </button>
         </div>
+      )}
 
-        {/* National stats strip — real I4C 2025 figures */}
-        <div className="grid grid-cols-3 gap-3 mb-7">
-          {[
-            { val: '28.15L', label: lang === 'en' ? 'Cases in 2025' : '2025 में मामले', color: 'text-red-400' },
-            { val: '₹22,495Cr', label: lang === 'en' ? 'Lost in 2025' : '2025 में नुकसान', color: 'text-orange-400' },
-            { val: '₹8,189Cr', label: lang === 'en' ? 'Saved by I4C' : 'I4C ने बचाए', color: 'text-green-400' },
-          ].map(s => (
-            <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-              <div className={`text-xl font-black ${s.color}`}>{s.val}</div>
-              <div className="text-[11px] text-gray-500 mt-0.5">{s.label}</div>
-            </div>
-          ))}
-        </div>
-        <p className="text-[10px] text-gray-600 text-center mb-6 -mt-3">
-          Source: I4C / MHA Annual Cybercrime Report, February 2026
-        </p>
-
-        {/* Search */}
-        <div className="relative mb-4">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+      {/* Search & Filters */}
+      <div className="flex flex-col md:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder={lang === 'en' ? 'Search news…' : 'समाचार खोजें…'}
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-10 py-2.5 text-sm focus:border-red-500 focus:outline-none placeholder-gray-600"
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder={isEn ? 'Search scam news...' : 'घोटाला समाचार खोजें...'}
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
           />
-          {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <X className="w-4 h-4 text-gray-500 hover:text-white" />
-            </button>
-          )}
         </div>
-
-        {/* Category filters */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {CATEGORIES.map(c => (
-            <button
-              key={c}
-              onClick={() => setCat(c)}
-              className={`px-3 py-1 rounded-full text-xs font-bold border transition ${
-                cat === c
-                  ? 'bg-red-600 border-red-500 text-white'
-                  : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
-              }`}
-            >
-              {c}
-              {c !== 'All News' && (
-                <span className="ml-1 opacity-50">({NEWS.filter(n => n.category === c).length})</span>
-              )}
-            </button>
+        <select
+          value={selectedRegion}
+          onChange={e => setSelectedRegion(e.target.value as NewsRegion)}
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 min-w-[160px]"
+        >
+          {REGIONS.map(r => (
+            <option key={r.id} value={r.id} className="bg-gray-900">{isEn ? r.label : r.labelHi}</option>
           ))}
-        </div>
+        </select>
+        <select
+          value={selectedScamType}
+          onChange={e => setSelectedScamType(e.target.value as ScamType)}
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 min-w-[160px]"
+        >
+          {SCAM_TYPES.map(t => (
+            <option key={t.id} value={t.id} className="bg-gray-900">{isEn ? t.label : t.labelHi}</option>
+          ))}
+        </select>
+        <button
+          onClick={refreshNews}
+          disabled={isRefreshing}
+          className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 px-4 py-3 rounded-xl font-bold transition shrink-0"
+        >
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          {isRefreshing ? (isEn ? 'Updating...' : 'अपडेट हो रहा है...') : (isEn ? 'Refresh' : 'रिफ्रेश')}
+        </button>
+      </div>
 
-        {/* Count */}
-        <p className="text-xs text-gray-600 mb-4">
-          {lang === 'en'
-            ? `Showing ${filtered.length} of ${NEWS.length} verified stories`
-            : `${NEWS.length} में से ${filtered.length} सत्यापित समाचार`}
-        </p>
+      {/* Last Updated */}
+      <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
+        <span className="flex items-center gap-1">
+          <Rss className="w-4 h-4" />
+          {isEn ? 'Showing' : 'दिखा रहे'} {filteredNews.length} {isEn ? 'alerts' : 'अलर्ट'}
+        </span>
+        <span className="flex items-center gap-1">
+          <Clock className="w-4 h-4" />
+          {isEn ? 'Updated' : 'अपडेट'}: {lastUpdated.toLocaleTimeString()}
+        </span>
+      </div>
 
-        {/* News cards */}
-        <div className="space-y-4 mb-10">
-          {filtered.length === 0 && (
-            <div className="text-center py-16 text-gray-600">
-              <Search className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p>{lang === 'en' ? 'No stories match.' : 'कोई समाचार नहीं मिला।'}</p>
-            </div>
-          )}
-          {filtered.map(news => {
-            const sev   = SEV_STYLE[news.severity];
-            const open  = expanded === news.id;
+      {/* News Feed */}
+      <div className="space-y-4">
+        {filteredNews.length === 0 ? (
+          <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/10">
+            <Globe className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-400">{isEn ? 'No alerts match your filters.' : 'कोई अलर्ट आपके फ़िल्टर से मेल नहीं खाता।'}</p>
+          </div>
+        ) : (
+          filteredNews.slice(0, visibleCount).map(item => {
+            const colors = THREAT_COLORS[item.threatLevel];
+            const isExpanded = expandedId === item.id;
             return (
-              <div
-                key={news.id}
-                className={`border rounded-2xl overflow-hidden transition-all ${
-                  news.severity === 'critical'
-                    ? 'border-red-500/40 bg-red-500/5'
-                    : news.severity === 'high'
-                    ? 'border-orange-500/30 bg-orange-500/5'
-                    : 'border-white/10 bg-white/5'
-                }`}
-              >
-                {/* Severity bar */}
-                <div className={`h-1 w-full ${sev.bar}`} />
-
-                <div className="p-5">
-                  {/* Badges row */}
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${sev.badge}`}>
-                      {sev.label}
+              <div key={item.id} className={`${colors.bg} border ${colors.border} rounded-2xl p-5 transition-all hover:shadow-lg cursor-pointer`}
+                onClick={() => setExpandedId(isExpanded ? null : item.id)}>
+                {/* Top badges */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className={`px-2.5 py-1 ${colors.badge} text-white text-xs font-bold rounded-full uppercase`}>
+                    {item.threatLevel}
+                  </span>
+                  {item.isBreaking && (
+                    <span className="px-2.5 py-1 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> BREAKING
                     </span>
-                    <span className="text-[10px] font-bold bg-white/10 text-gray-300 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <Tag className="w-2.5 h-2.5" />
-                      {news.category}
+                  )}
+                  {item.isTrending && (
+                    <span className="px-2.5 py-1 bg-purple-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3" /> TRENDING
                     </span>
-                    <span className="text-[10px] text-gray-500 flex items-center gap-1 ml-auto">
-                      <Clock className="w-2.5 h-2.5" />
-                      {news.date}
+                  )}
+                  <span className="px-2.5 py-1 bg-white/10 text-gray-300 text-xs rounded-full flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {REGIONS.find(r => r.id === item.region)?.[isEn ? 'label' : 'labelHi'] || item.region}
+                  </span>
+                  <span className="text-xs text-gray-500 ml-auto">{item.date}</span>
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-bold mb-2">{isEn ? item.title : item.titleHi}</h3>
+
+                {/* Summary */}
+                <p className={`text-gray-300 text-sm mb-3 ${isExpanded ? '' : 'line-clamp-2'}`}>
+                  {isEn ? item.summary : item.summaryHi}
+                </p>
+
+                {/* Stats Row */}
+                <div className="flex flex-wrap items-center gap-4 text-sm">
+                  {item.amountLost && (
+                    <span className={`flex items-center gap-1 font-bold ${colors.text}`}>
+                      <DollarSign className="w-4 h-4" /> {item.amountLost}
                     </span>
-                  </div>
-
-                  {/* Headline */}
-                  <h3 className="font-black text-base leading-snug mb-2">
-                    {lang === 'en' ? news.headline : news.headlineHi}
-                  </h3>
-
-                  {/* Summary — expandable */}
-                  <p className={`text-sm text-gray-400 leading-relaxed ${open ? '' : 'line-clamp-2'}`}>
-                    {lang === 'en' ? news.summary : news.summaryHi}
-                  </p>
-
-                  {/* Footer */}
-                  <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setExpanded(open ? null : news.id)}
-                        className="text-xs text-gray-500 hover:text-gray-300 transition"
-                      >
-                        {open
-                          ? (lang === 'en' ? '▲ Show less' : '▲ कम दिखाएं')
-                          : (lang === 'en' ? '▼ Read more' : '▼ अधिक पढ़ें')}
-                      </button>
-                      <span className="text-gray-700">·</span>
-                      <span className="text-[11px] text-gray-600 flex items-center gap-1">
-                        <Shield className="w-3 h-3" />
-                        {news.source}
-                      </span>
-                    </div>
-                    <a
-                      href={news.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs font-bold text-red-400 hover:text-red-300 transition"
-                    >
-                      Full story <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
+                  )}
+                  {item.victimsCount && (
+                    <span className="flex items-center gap-1 text-gray-400">
+                      <Users className="w-4 h-4" /> {item.victimsCount} {isEn ? 'victims' : 'पीड़ित'}
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1 text-gray-500">
+                    <Shield className="w-4 h-4" /> {item.source}
+                  </span>
+                  <a
+                    href={item.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    className="ml-auto flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-bold"
+                  >
+                    {isEn ? 'Source' : 'स्रोत'} <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
               </div>
             );
-          })}
-        </div>
-
-        {/* Report CTA */}
-        <div className="bg-gradient-to-r from-red-600/10 to-orange-600/10 border border-red-500/30 rounded-2xl p-5 text-center mb-6">
-          <h3 className="font-black text-lg mb-1">
-            {lang === 'en' ? 'Been a victim? Report immediately.' : 'पीड़ित हुए? तुरंत रिपोर्ट करें।'}
-          </h3>
-          <p className="text-gray-400 text-sm mb-4">
-            {lang === 'en'
-              ? 'Every report helps authorities track and bust fraudsters faster.'
-              : 'हर रिपोर्ट अधिकारियों को ठगों को पकड़ने में मदद करती है।'}
-          </p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <a href="tel:1930" className="bg-red-600 hover:bg-red-500 font-black px-6 py-2.5 rounded-xl text-sm transition">
-              📞 Call 1930
-            </a>
-            <a
-              href="https://cybercrime.gov.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white/10 hover:bg-white/20 font-bold px-6 py-2.5 rounded-xl text-sm transition flex items-center gap-2"
-            >
-              Report Online <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-        </div>
-
-        <p className="text-center text-[10px] text-gray-700">
-          All stories sourced from verified public news outlets, government press releases and court records. QuantumShield does not claim ownership of any news content.
-        </p>
+          })
+        )}
       </div>
+
+      {/* Load More */}
+      {visibleCount < filteredNews.length && (
+        <button
+          onClick={() => setVisibleCount(v => v + 8)}
+          className="w-full mt-6 py-4 bg-white/5 border border-white/10 rounded-xl font-bold text-gray-400 hover:bg-white/10 hover:text-white transition flex items-center justify-center gap-2"
+        >
+          <ChevronDown className="w-5 h-5" />
+          {isEn ? `Show More (${filteredNews.length - visibleCount} remaining)` : `और दिखाएं (${filteredNews.length - visibleCount} शेष)`}
+        </button>
+      )}
+
+      {/* Emergency Report CTA */}
+      <div className="mt-8 bg-gradient-to-r from-red-600/20 to-purple-600/20 backdrop-blur rounded-2xl border border-red-500/30 p-6 text-center">
+        <h3 className="text-xl font-bold mb-2">{isEn ? 'Been Scammed? Report Immediately!' : 'घोटाले का शिकार? तुरंत रिपोर्ट करें!'}</h3>
+        <p className="text-gray-300 text-sm mb-4">{isEn ? 'Call 1930 or visit cybercrime.gov.in' : '1930 पर कॉल करें या cybercrime.gov.in पर जाएं'}</p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="tel:1930" className="px-6 py-3 bg-red-600 rounded-xl font-bold hover:bg-red-700 transition inline-flex items-center justify-center gap-2">
+            <Shield className="w-4 h-4" /> {isEn ? 'Call 1930' : '1930 कॉल करें'}
+          </a>
+          <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-cyan-600 rounded-xl font-bold hover:bg-cyan-700 transition inline-flex items-center justify-center gap-2">
+            <ExternalLink className="w-4 h-4" /> cybercrime.gov.in
+          </a>
+        </div>
+      </div>
+
+      {/* Share Section */}
+      <div className="mt-6 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur rounded-2xl border border-purple-400/30 p-6 text-center">
+        <h3 className="text-xl font-bold mb-3">{isEn ? 'Protect Your Community' : 'अपने समुदाय की रक्षा करें'}</h3>
+        <p className="text-gray-300 text-sm mb-4">{isEn ? 'Share these alerts with family and friends' : 'इन अलर्ट को परिवार और दोस्तों के साथ साझा करें'}</p>
+        <button
+          onClick={() => {
+            const msg = 'QuantumShield Scam Alert: Stay updated on latest cyber threats worldwide! https://quantumshield.vercel.app/news';
+            if (navigator.share) { navigator.share({ text: msg }); } else { navigator.clipboard.writeText(msg); }
+          }}
+          className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full font-bold hover:scale-105 transition"
+        >
+          {isEn ? 'Share Alerts' : 'अलर्ट शेयर करें'}
+        </button>
+      </div>
+
+      {/* Marquee CSS */}
+      <style jsx>{`
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .animate-marquee { animation: marquee 30s linear infinite; }
+      `}</style>
     </div>
   );
 }

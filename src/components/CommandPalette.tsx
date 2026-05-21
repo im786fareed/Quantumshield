@@ -39,6 +39,7 @@ const LABELS: Record<TabId, string> = {
   whatsapp: 'WhatsApp Safety',
   awareness: 'Scam Awareness',
   privacy: 'Privacy Shield',
+  'system-guardian': 'System Guardian',
 };
 
 export default function CommandPalette() {
