@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import { Upload, FileText, AlertTriangle, CheckCircle, Shield, X, Loader, Info } from 'lucide-react';
 
@@ -244,34 +244,94 @@ export default function FileScanner({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     setResult(null);
 
     try {
-      // Simulate scanning process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Calculate true SHA-256 hash using the Web Crypto API
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const sha256 = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-      // Generate mock hash
-      const hash = Array.from({ length: 64 }, () => 
-        Math.floor(Math.random() * 16).toString(16)
-      ).join('');
+      // Perform Magic Bytes signature verification
+      const headerBytes = new Uint8Array(arrayBuffer.slice(0, 4));
+      const hexArr = Array.from(headerBytes).map(b => b.toString(16).padStart(2, '0').toUpperCase());
+      const hex4 = hexArr.join(' ');
+      const hex3 = hexArr.slice(0, 3).join(' ');
+      const hex2 = hexArr.slice(0, 2).join(' ');
 
-      // Simulate threat detection (random for demo)
-      const random = Math.random();
-      const isSafe = random > 0.3;
+      const ext = selectedFile.name.split('.').pop()?.toLowerCase() || '';
 
-      const mockResult: ScanResult = {
-        safe: isSafe,
-        threats: isSafe ? [] : [
-          'Trojan.Generic.12345',
-          'Suspicious behavior detected',
-          'Unknown executable signature'
-        ],
+      let safe = true;
+      const threats: string[] = [];
+      let detectedType = selectedFile.type || 'Unknown binary structure';
+
+      // Verify file headers (Magic Bytes) against extensions
+      if (hex4 === '89 50 4E 47') {
+        detectedType = 'PNG Image File';
+        if (!['png'].includes(ext)) {
+          safe = false;
+          threats.push(`Spoofing Detected: Genuine PNG image structure found, but extension is maliciously set to ".${ext}".`);
+        }
+      } else if (hex3 === 'FF D8 FF') {
+        detectedType = 'JPEG Image File';
+        if (!['jpg', 'jpeg'].includes(ext)) {
+          safe = false;
+          threats.push(`Spoofing Detected: Genuine JPEG image structure found, but extension is maliciously set to ".${ext}".`);
+        }
+      } else if (hex4 === '25 50 44 46') {
+        detectedType = 'PDF Document File';
+        if (ext !== 'pdf') {
+          safe = false;
+          threats.push(`Spoofing Detected: Genuine PDF document structure found, but extension is maliciously set to ".${ext}".`);
+        }
+      } else if (hex4 === '50 4B 03 04') {
+        detectedType = 'ZIP/PK Compressed Archive';
+        if (!['zip', 'apk', 'docx', 'xlsx', 'pptx', 'jar', 'epub', 'aar', 'kmz'].includes(ext)) {
+          safe = false;
+          threats.push(`Spoofing Detected: ZIP/Archive structure found, but extension is disguised as ".${ext}".`);
+        }
+      } else if (hex2 === '4D 5A') {
+        detectedType = 'Windows Executable/Library Binary (MZ)';
+        if (!['exe', 'dll', 'sys', 'scr', 'msi', 'bat', 'cmd'].includes(ext)) {
+          safe = false;
+          threats.push(`CRITICAL THREAT: Windows executable binary found, disguised under the extension ".${ext}". Executing this file could compromise your system!`);
+        }
+      } else if (hex4 === '7F 45 4C 46') {
+        detectedType = 'Linux ELF Executable Binary';
+        if (!['bin', 'so', 'out', 'sh', ''].includes(ext)) {
+          safe = false;
+          threats.push(`CRITICAL THREAT: Linux/Android ELF executable binary found, disguised under the extension ".${ext}".`);
+        }
+      }
+
+      // Check for Double Extension Trap (e.g. invoice.pdf.exe)
+      if (selectedFile.name.includes('.') && selectedFile.name.split('.').length > 2) {
+        const parts = selectedFile.name.toLowerCase().split('.');
+        const penultimate = parts[parts.length - 2];
+        const ultimate = parts[parts.length - 1];
+        if (['exe', 'scr', 'bat', 'cmd', 'vbs', 'js', 'jar'].includes(ultimate) && 
+            ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx', 'txt', 'xls', 'xlsx'].includes(penultimate)) {
+          safe = false;
+          threats.push(`CRITICAL THREAT: Double extension trick detected (".${penultimate}.${ultimate}"). Cybercriminals use this to hide executable spyware as documents!`);
+        }
+      }
+
+      // Check general dangerous extensions
+      if (safe && ['exe', 'bat', 'cmd', 'vbs', 'scr', 'js', 'reg', 'ps1'].includes(ext)) {
+        // Genuine executable or script file
+        threats.push(`Security Advisory: This is an active script or executable format (.${ext}). Make sure you absolutely trust the sender before opening.`);
+      }
+
+      const scanResult: ScanResult = {
+        safe: safe && threats.filter(t => t.startsWith('CRITICAL') || t.startsWith('Spoofing')).length === 0,
+        threats: threats,
         fileInfo: {
           name: selectedFile.name,
           size: formatFileSize(selectedFile.size),
-          type: selectedFile.type || 'Unknown',
-          hash: hash
+          type: detectedType,
+          hash: sha256
         }
       };
 
-      setResult(mockResult);
+      setResult(scanResult);
     } catch (err) {
       setError(t.uploadError);
     } finally {
