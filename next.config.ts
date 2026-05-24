@@ -28,7 +28,7 @@ const securityHeaders = [
   {
     key: "Permissions-Policy",
     // FIXED: microphone for AI Analyzer and display-capture for Evidence Collector
-    value: "camera=(), microphone=(self), display-capture=(self), geolocation=(), payment=(), usb=(), interest-cohort=()",
+    value: "camera=(self), microphone=(self), display-capture=(self), geolocation=(), payment=(), usb=(), interest-cohort=()",
   },
   {
     key: "Content-Security-Policy",
@@ -38,6 +38,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://*.youtube.com https://s.ytimg.com https://*.youtube-nocookie.com https://cdn.jsdelivr.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
+      "media-src 'self' blob:",
       "font-src 'self' data: https://fonts.gstatic.com",
       // FIXED: connect-src allows AI, DNS tests, MediaPipe WASM, and phish.rocks URL lookup
       "connect-src 'self' https://*.vercel.app https://vitals.vercel-insights.com https://*.vercel-insights.com https://1.1.1.1 https://cdn.jsdelivr.net https://api.phish.rocks",
