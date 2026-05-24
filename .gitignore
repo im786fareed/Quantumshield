@@ -42,6 +42,9 @@ next-env.d.ts
 
 .vercel
 
-# Android build secrets & helpers
+# Android signing — NEVER commit these
+android/*.jks
+android/*.keystore
+android/keystore.properties
 android/keystore-base64.txt
 scripts/b64.js

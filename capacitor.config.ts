@@ -5,8 +5,9 @@ const config: CapacitorConfig = {
   appName: 'QuantumShield',
   webDir: 'out',           // Next.js static export output dir
   server: {
-    // Point to live site so API routes work in the APK
-    url: 'https://quantumshield.in',
+    // Production Vercel deployment — API routes work server-side here
+    // Update to custom domain once quantumshield.in is configured in Vercel
+    url: 'https://quantumguard.vercel.app',
     cleartext: false,
   },
   android: {

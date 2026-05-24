@@ -1,82 +1,78 @@
 # QuantumShield — Google Play Store Submission Guide
 
 ## App Details
-- **Package ID:** `com.quantumshield.app`
+- **Package ID:** `in.quantumshield.app`
 - **Version:** 1.1 (versionCode 2)
 - **Min Android:** 7.0 (API 24)
 - **Target Android:** 15 (API 36)
+- **Live URL (APK loads from):** `https://quantumguard.vercel.app`
 
 ---
 
-## STEP 1 — Generate Release Keystore
+## HOW THE BUILD WORKS
 
-> Do this ONCE. Store the `.jks` file safely (Google Drive / password manager). If you lose it, you can NEVER update the app.
+You do **NOT** need Android Studio installed on your computer.
 
-```bash
-# Run from android/ folder
-keytool -genkey -v \
-  -keystore quantumshield-release.jks \
-  -alias quantumshield \
-  -keyalg RSA -keysize 2048 -validity 10000 \
-  -dname "CN=QuantumShield, OU=Security, O=QuantumShield, L=New Delhi, S=Delhi, C=IN"
-```
-
-You'll be prompted for:
-- **Store password** → choose a strong password, save it
-- **Key password** → can be same as store password
+Every time you push code to GitHub, the **GitHub Actions** pipeline
+automatically builds a signed `.aab` (Play Store bundle) and `.apk` (test file).
+You just download the file from GitHub and upload it to Play Console.
 
 ---
 
-## STEP 2 — Create keystore.properties
+## STEP 1 — Add 3 GitHub Secrets (do this once)
 
-Copy `android/keystore.properties.example` → `android/keystore.properties`
+These secrets let GitHub Actions sign the APK with your keystore.
 
-```properties
-storeFile=quantumshield-release.jks
-storePassword=<your_store_password>
-keyAlias=quantumshield
-keyPassword=<your_key_password>
-```
+1. Go to: **https://github.com/im786fareed/Quantumshield/settings/secrets/actions**
+2. Click **"New repository secret"** and add these 3 secrets:
 
-⚠️ `keystore.properties` is in `.gitignore` — never commit it.
+| Secret name | Value |
+|---|---|
+| `KEYSTORE_BASE64` | *(copy the entire contents of `android/keystore-base64.txt`)* |
+| `KEYSTORE_STORE_PASSWORD` | `Bnk135231$1` |
+| `KEYSTORE_KEY_PASSWORD` | `Bnk135231$1` |
 
----
-
-## STEP 3 — Build Release AAB
-
-```bash
-# From project root
-cd android
-./gradlew bundleRelease
-```
-
-Output: `android/app/build/outputs/bundle/release/app-release.aab`
-
-> Use **AAB** (not APK) for Play Store. Google requires AAB since August 2021.
+> ⚠️ **Save these passwords somewhere safe** (password manager, Google Drive note).
+> If you lose them AND the `.jks` file, you can NEVER update the app on Play Store.
 
 ---
 
-## STEP 4 — Create Play Console Account
+## STEP 2 — Get your AAB file
 
-1. Go to https://play.google.com/console
-2. Pay one-time $25 registration fee
-3. Complete developer profile (India address, PAN/GST optional)
+After pushing any code to GitHub:
+
+1. Go to: **https://github.com/im786fareed/Quantumshield/actions**
+2. Click the latest **"Android Release Build"** run
+3. Scroll to the bottom → **Artifacts** section
+4. Download **`QuantumShield-vXX.aab`**
+
+That file is your signed Play Store bundle, ready to upload.
 
 ---
 
-## STEP 5 — Create App in Play Console
+## STEP 3 — Create Play Console Account (one-time, $25)
 
-1. Click **Create app**
+1. Go to: **https://play.google.com/console**
+2. Sign in with your Google account
+3. Pay the **$25 USD one-time registration fee**
+4. Fill in your developer name: `QuantumShield Security`
+5. Complete the developer profile
+
+---
+
+## STEP 4 — Create the App in Play Console
+
+1. Click **"Create app"**
 2. Fill in:
    - **App name:** `QuantumShield — Cyber Safety`
    - **Default language:** `English (India)`
    - **App or Game:** App
    - **Free or Paid:** Free
-3. Accept policies → Create
+3. Accept developer policies → **Create**
 
 ---
 
-## STEP 6 — Store Listing (copy-paste ready)
+## STEP 5 — Store Listing (copy-paste ready)
 
 ### Short Description (80 chars max)
 ```
@@ -94,8 +90,17 @@ for everyday users, seniors, and professionals who face digital fraud daily.
 Real-time scam detection during calls. Speaks Hinglish. Catches digital
 arrest frauds, fake police calls, OTP requests, and KYC scams as they happen.
 
-🔍 SCAM SCANNER
-Scan QR codes, links, and UPI IDs for fraud before you pay or click.
+📱 PHONE NUMBER GUARD
+Instantly checks any phone number for scam patterns — TRAI 140xxx telemarketer
+series, VoIP numbers, spoofed international numbers, repeated-digit traps.
+
+🔍 URL & LINK CHECKER
+Scan any link before you click. Detects phishing sites, fake banking portals,
+and malware download pages using multi-layer AI analysis.
+
+🦠 APK GUARDIAN
+Scan Android APK files before installing. Detects malware permissions, spyware
+patterns, and fake app signatures.
 
 💳 UPI GUARD
 Instantly checks UPI VPAs for red flags — fake Paytm support IDs,
@@ -103,18 +108,17 @@ lottery scams, fake government portals.
 
 🎓 CYBER EDUCATION (48 Videos)
 Learn to identify and avoid: Digital Arrest, Phone Scams, WhatsApp Fraud,
-Investment Scams, KYC Fraud, Romance Scams, and more — in Hindi & English.
+Investment Scams, KYC Fraud, Romance Scams — in Hindi & English.
 
 📰 LIVE FRAUD NEWS
 Real-time cybercrime news from I4C/MHA, CBI, and verified Indian sources.
-No fake stats — only verified data.
 
 🆘 EMERGENCY RESPONSE
-One-tap access to: Cyber Crime Helpline 1930, cybercrime.gov.in,
-Digital Arrest emergency guide, FIR checklist.
+One-tap: Cyber Crime Helpline 1930, cybercrime.gov.in, Digital Arrest guide.
 
-🔒 ENCRYPTION TOOLKIT
-Secure your files and communications. Evidence collection for FIR filing.
+🔒 EVIDENCE VAULT
+Record and securely store video evidence on your device for FIR filing.
+Zero cloud storage — everything stays on YOUR phone.
 
 ⚖️ CYBER LEGAL AID
 Know your rights under IT Act, Article 20(3), Article 22.
@@ -125,128 +129,121 @@ Step-by-step digital arrest response guide.
 • ₹22,495 Crore lost to cybercriminals
 • ₹8,189 Crore recovered by law enforcement
 
-QuantumShield is a free, privacy-first app. No ads. No data collection.
+QuantumShield is a free, privacy-first app. No ads. No data sold.
 Built in India, for India.
 
-For support: info@quantumshield.in
-Website: https://quantumshield.in
+Website: https://quantumguard.vercel.app
+Support: quantumshield4india@gmail.com
 ```
 
 ---
 
-## STEP 7 — App Category & Tags
+## STEP 6 — App Category & Tags
 
 - **Category:** Tools
 - **Tags:** cybersecurity, scam detector, fraud protection, UPI safety, digital arrest
 
 ---
 
-## STEP 8 — Content Rating
+## STEP 7 — Content Rating Questionnaire
 
-In Play Console → Content Rating:
-- Answer questionnaire
-- Select: **Utilities / Productivity** type app
-- No violence, no user-generated content
+In Play Console → **Policy → App content → Content ratings**:
+- Select app type: **Utilities / Productivity**
+- No violence, no user-generated content, no gambling
 - Expected rating: **Everyone**
 
 ---
 
-## STEP 9 — Data Safety Form
+## STEP 8 — Data Safety Form
 
 | Data Type | Collected? | Shared? | Purpose |
 |-----------|-----------|---------|---------|
-| Microphone audio | No (processed on-device) | No | Call analysis is fully local |
-| Device info | No | No | — |
-| Location | No | No | — |
-| Contacts | No | No | — |
+| Microphone audio | No | No | Processed 100% on-device |
+| Camera | No | No | Only used for local recording |
+| Device storage | No | No | Evidence saved locally only |
+| Location | No | No | Not used |
+| Contacts | No | No | Not used |
 
-✅ No personal data collected or shared.
-✅ No data sold to third parties.
+✅ **No personal data collected or shared.**  
+✅ **No data sold to third parties.**  
+✅ **No tracking or analytics on user behaviour.**
 
 ---
 
-## STEP 10 — Privacy Policy URL
+## STEP 9 — Privacy Policy URL
 
-Use your existing: **https://quantumshield.in/privacy**
+Use: **https://quantumguard.vercel.app/privacy**
 
 (Already live as a page in the app)
 
 ---
 
-## STEP 11 — Required Graphics Assets
+## STEP 10 — Required Graphics Assets
 
 | Asset | Size | Notes |
 |-------|------|-------|
-| App Icon | 512×512 PNG | No alpha/transparency |
-| Feature Graphic | 1024×500 PNG | Banner shown at top of listing |
-| Phone Screenshots | 2+ (min 1080×1920) | At least 2 required |
-| 7-inch Tablet (optional) | 1200×1920 | Recommended |
-| 10-inch Tablet (optional) | 1600×2560 | Optional |
+| App Icon | 512×512 PNG | No transparency (solid background) |
+| Feature Graphic | 1024×500 PNG | Banner at top of store listing |
+| Phone Screenshots | At least 2 | Min 1080×1920 |
 
 ### Quick screenshot guide:
-1. Open Chrome on Android → go to https://quantumshield.in
-2. Take screenshots of: Homepage, Call Analyzer, Education, UPI Guard, News
-3. Or use Android Studio Emulator → Device Manager → take screenshots
+1. Open Chrome on Android → go to `https://quantumguard.vercel.app`
+2. Take screenshots of: Homepage, Call Analyzer, Phone Guard, Education page
+3. Or use any Android emulator → take screenshots there
 
 ---
 
-## STEP 12 — Upload & Review
+## STEP 11 — Upload AAB and Submit
 
-1. Play Console → Release → Production → Create new release
-2. Upload `app-release.aab`
-3. Fill release notes:
+1. Play Console → **Release → Production → Create new release**
+2. Upload the `.aab` file you downloaded from GitHub Actions
+3. Fill in release notes:
    ```
-   Version 1.1 — March 2026
-   • AI Call Analyzer with Hinglish / MTI support
+   Version 1.1 — 2026
+   • AI Call Analyzer with Hinglish support
+   • Phone Number Guard — India-specific scam detection
    • 48 cybercrime education videos
+   • UPI Guard, URL Checker, APK Guardian
+   • Evidence Vault — record & store video locally
    • Real-time fraud news (verified I4C/MHA sources)
-   • UPI Guard — scan VPAs for fraud risk
    • Cyber Legal Aid — digital arrest emergency guide
-   • System Tune-Up & Device Scanner
    ```
-4. Submit for review
+4. Click **"Save and review"** → **"Start rollout to Production"**
 5. Review typically takes **3–7 business days** for new apps
 
 ---
 
-## STEP 13 — Post-Launch
+## STEP 12 — After Approval
 
-- Set up **Play App Signing** (Google manages your key after first upload)
-- Enable **pre-registration** if you want early sign-ups
-- Monitor **Android Vitals** for crash rates
-- Reply to reviews within 24h
+- Enable **Play App Signing** (Google manages your key going forward)
+- Monitor **Android Vitals** for any crash reports
+- Reply to reviews within 24h (affects ranking)
+- To publish an update: push code → GitHub Actions builds new AAB → upload to Play Console → submit new release
 
 ---
 
-## Build Commands Reference
+## Important Files Reference
+
+| File | Purpose |
+|------|---------|
+| `android/quantumshield-release.jks` | Signing keystore (**back this up!**) |
+| `android/keystore-base64.txt` | Base64 version for GitHub Secrets |
+| `android/keystore.properties` | Local signing config (gitignored) |
+| `capacitor.config.ts` | Capacitor settings (app ID, live URL) |
+| `.github/workflows/android-release.yml` | Auto-build pipeline |
+
+## Build Commands (if you install Android Studio locally later)
 
 ```bash
-# Debug APK (for testing on your phone)
-cd android && ./gradlew assembleDebug
-# Output: app/build/outputs/apk/debug/app-debug.apk
-
 # Release AAB (for Play Store)
 cd android && ./gradlew bundleRelease
 # Output: app/build/outputs/bundle/release/app-release.aab
 
-# Release APK (for direct distribution / testing)
+# Release APK (for direct testing)
 cd android && ./gradlew assembleRelease
 # Output: app/build/outputs/apk/release/app-release.apk
+
+# Debug APK (for development testing)
+cd android && ./gradlew assembleDebug
+# Output: app/build/outputs/apk/debug/app-debug.apk
 ```
-
----
-
-## Checklist Before Submitting
-
-- [ ] Keystore `.jks` file created and **backed up securely**
-- [ ] `keystore.properties` filled in (NOT committed to git)
-- [ ] Release AAB builds successfully with `./gradlew bundleRelease`
-- [ ] App tested on real Android device or emulator
-- [ ] Privacy policy at https://quantumshield.in/privacy is live
-- [ ] Play Console account created ($25 fee paid)
-- [ ] App icon 512×512 PNG ready
-- [ ] Feature graphic 1024×500 PNG ready
-- [ ] At least 2 phone screenshots ready
-- [ ] Short + full description written
-- [ ] Content rating questionnaire completed
-- [ ] Data safety form filled (no data collected)

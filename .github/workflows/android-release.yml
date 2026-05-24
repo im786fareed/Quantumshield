@@ -3,7 +3,8 @@ name: Android Release Build
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+    tags: ['v*']
+  workflow_dispatch:   # ← lets you manually trigger from GitHub Actions tab
 
 jobs:
   build-android:
@@ -31,73 +32,73 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      # ── 4. Install npm dependencies ───────────────────────────────────────
+      # ── 4. Android SDK (command-line tools) ──────────────────────────────
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      # ── 5. Install npm dependencies ──────────────────────────────────────
       - name: Install dependencies
         run: npm ci
 
-      # ── 5. Build Next.js ──────────────────────────────────────────────────
-      - name: Build Next.js
-        run: npm run build
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'placeholder' }}
-          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY || 'placeholder' }}
-
-      # ── 6. Ensure assets directory exists (required by Capacitor) ─────────
-      - name: Create Android assets and out directories
+      # ── 6. Create placeholder web dir (Capacitor uses server.url live) ───
+      #    The APK loads from https://quantumguard.vercel.app — the 'out'
+      #    folder is only used when there is NO server.url. We create a
+      #    stub so 'npx cap sync' doesn't fail.
+      - name: Create stub web output directory
         run: |
-          mkdir -p android/app/src/main/assets
           mkdir -p out
-          echo "<html><body>QuantumShield Wrapper</body></html>" > out/index.html
+          echo '<html><body>QuantumShield</body></html>' > out/index.html
 
-      # ── 7. Capacitor sync ─────────────────────────────────────────────────
+      # ── 7. Capacitor sync (copies config into Android project) ───────────
       - name: Sync Capacitor → Android
         run: npx cap sync android
 
-      # ── 8. Write google-services.json (use secret or fall back to template)
+      # ── 8. Write google-services.json (optional — only for push notifications)
+      #    If you don't have a Firebase project, leave the secret empty.
+      #    The build.gradle already handles the missing-file case gracefully.
       - name: Write google-services.json
         run: |
           if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
             echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
-          else
-            cp android/app/google-services.json.template android/app/google-services.json
           fi
+          # If secret is not set, the file simply won't exist and Firebase/FCM
+          # will be skipped by the try/catch in app/build.gradle — that's fine.
 
-      # ── 9. Decode & write keystore ────────────────────────────────────────
+      # ── 9. Decode keystore (stored as base64 GitHub Secret) ──────────────
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/quantumshield-release.jks
 
-      # ── 10. Write keystore.properties ─────────────────────────────────────
+      # ── 10. Write keystore.properties ────────────────────────────────────
+      #    storeFile is relative to the android/ folder (where build.gradle is)
       - name: Write keystore.properties
         run: |
-          cat > android/keystore.properties << EOF
-          storeFile=../quantumshield-release.jks
-          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-          keyAlias=${{ secrets.KEY_ALIAS }}
-          keyPassword=${{ secrets.KEY_PASSWORD }}
+          cat > android/keystore.properties << 'EOF'
+          storeFile=quantumshield-release.jks
+          storePassword=${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          keyAlias=quantumshield
+          keyPassword=${{ secrets.KEYSTORE_KEY_PASSWORD }}
           EOF
 
       # ── 11. Gradle permissions ────────────────────────────────────────────
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # ── 12. Build release AAB ─────────────────────────────────────────────
-      - name: Build signed release AAB
-        run: |
-          cd android
-          ./gradlew bundleRelease --stacktrace
+      # ── 12. Build signed release AAB (for Play Store) ────────────────────
+      - name: Build release AAB
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon --stacktrace
 
-      # ── 13. Build release APK ─────────────────────────────────────────────
-      - name: Build signed release APK
-        run: |
-          cd android
-          ./gradlew assembleRelease --stacktrace
+      # ── 13. Build signed release APK (for direct device testing) ─────────
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
 
       # ── 14. Upload AAB artifact ───────────────────────────────────────────
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: QuantumShield-release-${{ github.run_number }}.aab
+          name: QuantumShield-v${{ github.run_number }}.aab
           path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
 
@@ -105,11 +106,11 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: QuantumShield-release-${{ github.run_number }}.apk
+          name: QuantumShield-v${{ github.run_number }}.apk
           path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
 
-      # ── 16. Create GitHub Release (on tag push) ───────────────────────────
+      # ── 16. Create GitHub Release (only on tag push like v1.1) ────────────
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
