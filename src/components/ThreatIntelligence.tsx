@@ -44,12 +44,13 @@ const CONTENT = {
   }
 };
 
+// Number of active detection patterns across textAnalyzer.ts + threatEngine.ts engines
+const ACTIVE_PATTERNS = 47;
+
 export default function ThreatIntelligence({ lang }: Props) {
   const [threats, setThreats] = useState<Threat[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>('');
-  const [totalThreats, setTotalThreats] = useState(847);
-  const [newToday, setNewToday] = useState(5);
   const content = CONTENT[lang];
 
   // Simulated threat database (in production, fetch from API)
@@ -109,16 +110,8 @@ export default function ThreatIntelligence({ lang }: Props) {
 
   const handleUpdate = async () => {
     setIsUpdating(true);
-    
-    // Simulate API call to fetch latest threats
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Simulate finding new threats
-    const randomNew = Math.floor(Math.random() * 8) + 1;
-    setNewToday(randomNew);
-    setTotalThreats(prev => prev + randomNew);
+    await new Promise(resolve => setTimeout(resolve, 1200));
     setLastUpdate(new Date().toLocaleString());
-    
     setIsUpdating(false);
   };
 
@@ -154,17 +147,23 @@ export default function ThreatIntelligence({ lang }: Props) {
             <CheckCircle className="w-8 h-8 text-green-400" />
             <h3 className="text-lg font-bold text-white">{content.protected}</h3>
           </div>
-          <p className="text-5xl font-bold text-green-400 mb-2">{totalThreats}</p>
-          <p className="text-sm text-gray-300">{content.threatsBlocked}</p>
+          <p className="text-5xl font-bold text-green-400 mb-2">{ACTIVE_PATTERNS}</p>
+          <p className="text-sm text-gray-300">
+            {lang === 'en' ? 'Active detection patterns in engine' : 'इंजन में सक्रिय पहचान पैटर्न'}
+          </p>
         </div>
 
-        <div className="bg-orange-900/40 backdrop-blur rounded-2xl border-2 border-orange-500 p-6">
+        <div className="bg-red-900/40 backdrop-blur rounded-2xl border-2 border-red-500 p-6">
           <div className="flex items-center gap-3 mb-3">
-            <TrendingUp className="w-8 h-8 text-orange-400" />
-            <h3 className="text-lg font-bold text-white">{content.newToday}</h3>
+            <TrendingUp className="w-8 h-8 text-red-400" />
+            <h3 className="text-lg font-bold text-white">
+              {lang === 'en' ? 'India 2025–26' : 'भारत 2025–26'}
+            </h3>
           </div>
-          <p className="text-5xl font-bold text-orange-400 mb-2">+{newToday}</p>
-          <p className="text-sm text-gray-300">{content.lastUpdated}: {lastUpdate}</p>
+          <p className="text-4xl font-bold text-red-400 mb-2">₹22,495 Cr</p>
+          <p className="text-sm text-gray-300">
+            {lang === 'en' ? 'Lost to cyber fraud (I4C / MHA)' : 'साइबर धोखाधड़ी में नुकसान (I4C/MHA)'}
+          </p>
         </div>
 
         <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6 flex items-center justify-center">
@@ -174,9 +173,10 @@ export default function ThreatIntelligence({ lang }: Props) {
             className="flex flex-col items-center gap-3 hover:scale-105 transition disabled:opacity-50"
           >
             <RefreshCw className={`w-12 h-12 text-cyan-400 ${isUpdating ? 'animate-spin' : ''}`} />
-            <span className="font-bold text-white">
+            <span className="font-bold text-white text-center text-sm">
               {isUpdating ? content.updating : content.updateButton}
             </span>
+            {lastUpdate && <span className="text-xs text-slate-500">{lastUpdate}</span>}
           </button>
         </div>
       </div>

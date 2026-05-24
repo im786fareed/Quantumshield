@@ -9,6 +9,47 @@ import {
 } from 'lucide-react';
 import BackToHome from './BackToHome';
 
+// ─── MEDIAPIPE FACE DETECTION LOADER ────────────────────────────────────────
+// Loads MediaPipe FaceDetection from CDN at runtime — no npm install needed
+let mpFaceDetectionLoaded = false;
+let mpFaceDetector: any = null;
+
+async function loadMediaPipe(): Promise<any> {
+  if (mpFaceDetector) return mpFaceDetector;
+  if (mpFaceDetectionLoaded) return null;
+  mpFaceDetectionLoaded = true;
+
+  return new Promise((resolve) => {
+    const script1 = document.createElement('script');
+    script1.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js';
+    script1.crossOrigin = 'anonymous';
+
+    const script2 = document.createElement('script');
+    script2.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js';
+    script2.crossOrigin = 'anonymous';
+    script2.onload = () => {
+      try {
+        const FaceDetection = (window as any).FaceDetection;
+        if (!FaceDetection) { resolve(null); return; }
+        const detector = new FaceDetection({
+          locateFile: (f: string) =>
+            `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${f}`,
+        });
+        detector.setOptions({ model: 'short', minDetectionConfidence: 0.5 });
+        detector.onResults((results: any) => {
+          if (mpFaceDetector) mpFaceDetector._lastResults = results;
+        });
+        mpFaceDetector = detector;
+        mpFaceDetector._lastResults = null;
+        resolve(detector);
+      } catch { resolve(null); }
+    };
+    script2.onerror = () => resolve(null);
+    document.head.appendChild(script1);
+    document.head.appendChild(script2);
+  });
+}
+
 // ─── TYPES & INTERFACES ─────────────────────────────────────────────────────────
 interface TranscriptLine {
   id: number;
@@ -192,24 +233,40 @@ const T = {
   }
 };
 
-// ─── MTI-AWARE SCAM PATTERN LIBRARY (SAME AS WORKING SCAM ENG) ────────────────
+// ─── MTI-AWARE SCAM PATTERN LIBRARY ──────────────────────────────────────────
 const PATTERNS = {
   digitalArrest: [
     'digital arrest','digitally arrested','cyber arrest','online arrest',
     'virtual arrest','video call arrest','digital giraftari',
     'aapko digitally arrest kar rahe','aap arrested hain','aapki giraftari',
+    'digital custody','online custody','video custody','monitored online',
+    'cyber department arrest','digital surveillance','aapko monitor kar rahe',
+    'aap hamare nazar mein hain','ghar se mat niklo','ghar mein hi rehna',
+    'under digital supervision','virtual custody','online detention',
   ],
   authorityClaim: [
     'police','cbi','ed','income tax','customs','officer','ips','ias',
     'investigation','authority','government','enforcement directorate',
     'revenue department','cyber cell','narcotics','cbdt','sebi',
     'sarkar','adhikari','vibhag','jaanch','kedriya','puchh taach',
+    'supreme court','high court','district court','national security',
+    'intelligence bureau','raw agent','ib officer','interpol','ncb officer',
+    'narcotics control','money laundering','pmla','financial crimes',
+    'i am superintendent','senior officer','tehsildaar','commissioner',
+    'rbi officer','reserve bank','sebi notice','income tax raid','tax raid',
+    'delhi police','mumbai police','hyderabad police','cyber crime department',
+    'national cyber crime','covert operation','sting operation',
   ],
   urgencyPressure: [
     'urgent','immediately','right now','within minutes','last chance',
     'time running out','hurry','quick','abhi','turant','jaldi',
     'warna','nahi to','baad mein mushkil','ek ghante mein',
     'before it\'s too late','do not waste time','act now','deadline',
+    'last warning','final notice','do not delay','this is critical',
+    'time is up','countdown started','non-negotiable','no extension',
+    'aaj hi karna hoga','aaj raat tak','kal tak','agle ghante mein',
+    'warna case darz hoga','warna giraftari','abhi karo nahi to',
+    'ek second bhi mat ruko','turat nirnay','fauran karo',
   ],
   legalThreat: [
     'arrest','warrant','court','legal action','jail','police station',
@@ -217,6 +274,13 @@ const PATTERNS = {
     'prosecution','judicial','magistrate',
     'giraftari','muqadma','case darz','pakad lenge','hawalat',
     'qanooni kaaryavahi','kaid','jail bhejenge',
+    'non-bailable warrant','nbw','red notice','lookout notice',
+    'absconding','fugitive','interpol red corner notice',
+    'criminal record','black list','account freeze','passport cancel',
+    'property seized','assets frozen','visa revoked',
+    'pehle se case darj hai','naam kaali suchi mein hai',
+    'passport roka ja sakta hai','property seize hogi',
+    'court order','high court notice','bench warrant',
   ],
   financialRequest: [
     'transfer money','payment','fine','penalty','bail','transaction',
@@ -225,6 +289,12 @@ const PATTERNS = {
     'paise bhejo','paise transfer karo','amount bhejo','paisa do',
     'rupaye','lakh','crore','ek hajar','das hajar',
     'account mein daalo','turant transfer',
+    'processing fee','verification fee','security deposit','bail amount',
+    'court fee','legal fee','penalty charges','fine payment',
+    'advance payment','clearance fee','release fee','maintenance fee',
+    'kuch paise bhejne honge','thoda amount lagega',
+    'ek baar paise bhejo','secure amount','refundable deposit',
+    'money order','demand draft','crypto','bitcoin','usdt',
   ],
   informationRequest: [
     'otp','cvv','pin','password','card number','account number',
@@ -233,12 +303,19 @@ const PATTERNS = {
     'otp batao','pin batao','number share karo','number dijiye',
     'aadhaar number','aadhaar batao','pan batao','verify karo',
     'apna number do','mobile number do','details do',
+    'ifsc code','bank details','net banking','internet banking password',
+    'atm card number','16 digit','expiry date','card verify',
+    'account mein kya balance hai','apna account number do',
+    'registered mobile number','linked mobile number',
   ],
   packageScam: [
     'courier','parcel','package','shipment','delivery','seized',
     'fedex','dhl','customs clearance','contraband','drug','narcotics',
     'illegal item','foreign parcel',
     'parsel','dabba','courier pakda gaya','customs mein roka',
+    'your name on parcel','aapke naam ka parcel','package seized',
+    'illegal drugs found','aadhaar linked parcel','sim card parcel',
+    'suspicious package','detained at airport','aapka saman',
   ],
   silenceControl: [
     'don\'t tell anyone','keep secret','confidential','don\'t disconnect',
@@ -246,6 +323,11 @@ const PATTERNS = {
     'remain on call','do not leave','record kar rahe','sab sun rahe',
     'kisi ko mat batana','line mat kato','phone rakhna mat',
     'chup rehna','secret rakho','abhi mat jaana',
+    'turn off your mobile','put phone on silent','disable other apps',
+    'delete this call','end all other calls','close your door',
+    'go to a private place','alone hoke baat karo',
+    'kisi ke saamne mat bolna','bahar mat jao','phone mat rakhna',
+    'apne ghar mein rah','media ko mat batana',
   ],
   kashmirBiharMTI: [
     'i am from cyber department','from cyber','from cbi','from it department',
@@ -253,6 +335,16 @@ const PATTERNS = {
     'mera naam','meri id','mera number','main officer',
     'hamare pass information','aapke against case','case file hua',
     'notice send hua','notice bheja','court se notice',
+    'aapke khilaf case','aapke upar fir darj','aapka number registered',
+    'aapka sim illegal','aapka aadhaar misuse','aapka account suspicious',
+    'hamari investigation mein','hamari team','hamare record mein',
+  ],
+  accountRequest: [
+    'your account number','account details','bank details','full name on account',
+    'net banking credentials','internet banking','online banking password',
+    'screen share','share screen','anydesk','teamviewer','remote access',
+    'install app','download app','apna screen share karo',
+    'apna net banking kholo','banking app open karo',
   ],
 };
 
@@ -272,7 +364,22 @@ const WEIGHTS: Record<string, number> = {
   packageScam: 20,
   silenceControl: 20,
   kashmirBiharMTI: 12,
+  accountRequest: 30,
 };
+
+const NEGATION_WORDS = [
+  'not ','never ','no ','isn\'t ','aren\'t ','don\'t ','won\'t ','can\'t ','doesn\'t ',
+  'nahi ','nahi','mat ','nahin ','nahi hai','nahi hoga','nahi kiya','nahi karunga',
+];
+
+function hasNegationBefore(lower: string, phrase: string): boolean {
+  const idx = lower.indexOf(phrase);
+  if (idx < 0) return false;
+  const prefix = lower.substring(Math.max(0, idx - 35), idx);
+  return NEGATION_WORDS.some(neg => prefix.includes(neg));
+}
+
+const AMOUNT_REGEX = /(?:₹|rs\.?\s*|rupees?\s*|inr\s*)(\d[\d,]*)(?:\s*(?:lakh|lac|crore|thousand|k))?/gi;
 
 const LANG_ROTATION = ['en-IN', 'hi-IN', 'en-IN', 'en-IN'];
 
@@ -294,6 +401,9 @@ export default function AICallAnalyzer() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const voiceFeatureBufferRef = useRef<Array<{flatness: number, rolloff: number, zcr: number}>>([]);
+  const prevVideoFrameRef = useRef<Uint8ClampedArray | null>(null);
+  const videoOffscreenRef = useRef<HTMLCanvasElement | null>(null);
 
   // ─── TAB 2: SCAM TRANSCRIBER STATE ──────────────────────────────────────────
   const [phase, setPhase] = useState<'setup' | 'listening' | 'done'>('setup');
@@ -402,7 +512,7 @@ export default function AICallAnalyzer() {
       audioCtxRef.current = audioCtx;
 
       const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
+      analyser.fftSize = 2048;
       analyserRef.current = analyser;
 
       const source = audioCtx.createMediaStreamSource(stream);
@@ -417,6 +527,8 @@ export default function AICallAnalyzer() {
 
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
+      const timeDomainData = new Uint8Array(analyser.fftSize);
+      voiceFeatureBufferRef.current = [];
 
       const drawSpectrogram = () => {
         if (!analyserRef.current) return;
@@ -433,23 +545,19 @@ export default function AICallAnalyzer() {
         let barHeight;
         let x = 0;
 
-        let highFreqSum = 0;
-        let lowFreqSum = 0;
-        let activePeaks: number[] = [];
+        // Spectral feature extraction
+        analyserRef.current.getByteTimeDomainData(timeDomainData);
+        let totalPower = 0;
+        let weightedFreq = 0;
+        let logSum = 0;
+        let nonZeroCount = 0;
 
         for (let i = 0; i < bufferLength; i++) {
           barHeight = dataArray[i];
-
-          // Differentiate frequency bands
-          if (i > bufferLength * 0.6) {
-            highFreqSum += barHeight;
-          } else {
-            lowFreqSum += barHeight;
-          }
-
-          if (barHeight > 170) {
-            activePeaks.push(i);
-          }
+          totalPower += barHeight * barHeight;
+          weightedFreq += i * barHeight;
+          logSum += Math.log(Math.max(barHeight, 1));
+          if (barHeight > 1) nonZeroCount++;
 
           // Dynamic colors: Purple to Cyan
           const percent = i / bufferLength;
@@ -458,7 +566,7 @@ export default function AICallAnalyzer() {
           const b = Math.round(247 - percent * 50);
 
           ctx.fillStyle = `rgb(${Math.min(r, 255)}, ${Math.min(g, 255)}, ${Math.min(b, 255)})`;
-          
+
           // Draw reflection spectrogram styles
           const drawHeight = (barHeight / 255) * (canvas.height * 0.85);
           ctx.fillRect(x, canvas.height - drawHeight, barWidth - 1, drawHeight);
@@ -466,41 +574,58 @@ export default function AICallAnalyzer() {
           x += barWidth;
         }
 
-        // Programmatic deepfake heuristic validation
-        let computedNat = 98.4;
-        let computedComp = 1.1;
-        let syntheticVoice = false;
-
-        // Condition A: High-frequency cuts (Brickwall cutoff typical above 8-12kHz)
-        if (lowFreqSum > 350 && highFreqSum < 20) {
-          syntheticVoice = true;
-          computedNat = 35.8;
-          computedComp = 5.2;
+        // Spectral rolloff: bin below which 85% cumulative energy sits
+        let cumEnergy = 0;
+        let rolloffBin = bufferLength - 1;
+        for (let i = 0; i < bufferLength; i++) {
+          cumEnergy += dataArray[i] * dataArray[i];
+          if (cumEnergy >= totalPower * 0.85) { rolloffBin = i; break; }
         }
+        const rolloffRatio = rolloffBin / bufferLength;
 
-        // Condition B: Harmonic pitch spikes grid locked (Robot consistency Check)
-        if (activePeaks.length >= 4) {
-          let spacing: number[] = [];
-          for (let p = 1; p < activePeaks.length; p++) {
-            spacing.push(activePeaks[p] - activePeaks[p - 1]);
-          }
-          const avgSpace = spacing.reduce((a, b) => a + b, 0) / spacing.length;
-          const variance = spacing.reduce((a, b) => a + Math.pow(b - avgSpace, 2), 0) / spacing.length;
-          if (variance < 0.6) {
-            syntheticVoice = true;
-            computedNat = Math.min(computedNat, 28.4);
-            computedComp = Math.max(computedComp, 4.6);
-          }
+        // Spectral flatness (Wiener entropy): 0=tonal, 1=noise-like
+        const geomAvg = Math.exp(logSum / Math.max(nonZeroCount, 1));
+        const linAvg = Math.max(totalPower / bufferLength, 1);
+        const spectralFlatness = geomAvg / linAvg;
+
+        // Zero Crossing Rate from time domain waveform
+        let zcr = 0;
+        for (let i = 1; i < timeDomainData.length; i++) {
+          if (((timeDomainData[i - 1] - 128) >= 0) !== ((timeDomainData[i] - 128) >= 0)) zcr++;
         }
+        const zcrNorm = zcr / timeDomainData.length;
 
-        // Smoothly update metrics to prevent rapid rendering locks
-        if (Math.random() < 0.04) {
-          setAudioStats({
-            naturalness: parseFloat((syntheticVoice ? computedNat : 96.0 + Math.random() * 3.8).toFixed(1)),
-            compression: parseFloat((syntheticVoice ? computedComp : 1.0 + Math.random() * 0.3).toFixed(1)),
-            confidence: parseFloat((syntheticVoice ? 92.5 + Math.random() * 6 : 97.4 + Math.random() * 2.2).toFixed(1)),
-            status: syntheticVoice ? d.voiceUnsafe : d.voiceSafe,
-          });
+        // Accumulate rolling feature buffer (40 frames ≈ ~0.6s at 60fps)
+        const fb = voiceFeatureBufferRef.current;
+        fb.push({ flatness: spectralFlatness, rolloff: rolloffRatio, zcr: zcrNorm });
+        if (fb.length > 40) fb.shift();
+
+        // Update diagnostics once enough frames have accumulated (~15 frames)
+        if (fb.length >= 15 && Math.random() < 0.06) {
+          const n = fb.length;
+          const avgRolloff = fb.reduce((s, f) => s + f.rolloff, 0) / n;
+          const avgZcr = fb.reduce((s, f) => s + f.zcr, 0) / n;
+          const rolloffVar = fb.reduce((s, f) => s + Math.pow(f.rolloff - avgRolloff, 2), 0) / n;
+          const zcrVar = fb.reduce((s, f) => s + Math.pow(f.zcr - avgZcr, 2), 0) / n;
+          const avgFlatness = fb.reduce((s, f) => s + f.flatness, 0) / n;
+
+          let syntheticScore = 0;
+          // Brickwall cutoff: 85% energy below ~40% of Nyquist — typical of 8kHz-limited TTS
+          if (avgRolloff < 0.35 && totalPower > 3000) syntheticScore += 30;
+          // Unnaturally stable bandwidth across frames — TTS has consistent spectral envelope
+          if (rolloffVar < 0.003 && avgRolloff < 0.5 && totalPower > 1000) syntheticScore += 25;
+          // Very low ZCR variance — TTS produces unnaturally smooth waveforms
+          if (zcrVar < 0.00015 && avgZcr > 0.02) syntheticScore += 20;
+          // Excess spectral flatness — heavy processing or codec compression artifacts
+          if (avgFlatness > 0.75) syntheticScore += 15;
+          // Atypically low ZCR for speech — indicates over-filtering
+          if (avgZcr < 0.015 && totalPower > 1000) syntheticScore += 15;
+
+          const syntheticVoice = syntheticScore >= 40;
+          const naturalness = parseFloat(Math.max(5, 100 - syntheticScore + (Math.random() - 0.5) * 4).toFixed(1));
+          const compression = parseFloat((syntheticVoice ? 1.8 + syntheticScore / 40 : 1.0 + Math.random() * 0.4).toFixed(1));
+          const confidence = parseFloat((syntheticVoice ? Math.min(98, 55 + syntheticScore * 0.5) : 90 + Math.random() * 8).toFixed(1));
+          setAudioStats({ naturalness, compression, confidence, status: syntheticVoice ? d.voiceUnsafe : d.voiceSafe });
         }
       };
 
@@ -521,29 +646,38 @@ export default function AICallAnalyzer() {
     let scamType = lang === 'en' ? 'Suspicious Call' : 'संदिग्ध कॉल';
     const isUnknown = callerType === 'unknown';
 
+    // Track which categories fired for co-occurrence analysis
+    const firedCategories = new Set<string>();
+
     Object.entries(PATTERNS).forEach(([cat, phrases]) => {
-      const hits = phrases.filter(p => lower.includes(p));
+      const hits = phrases.filter(p => lower.includes(p) && !hasNegationBefore(lower, p));
       if (!hits.length) return;
 
+      firedCategories.add(cat);
       detected.push(`${cat}: "${hits.slice(0, 3).join('", "')}"`);
-      let w = (WEIGHTS[cat] ?? 10) * hits.length;
+      let w = (WEIGHTS[cat] ?? 10) * Math.min(hits.length, 3);
 
       if (cat === 'digitalArrest') {
         scamType = lang === 'en' ? 'Digital Arrest Scam' : 'डिजिटल अरेस्ट फ्रॉड';
-        warnings.push(lang === 'en' 
+        warnings.push(lang === 'en'
           ? 'DIGITAL ARREST does NOT exist in Indian law — 100% scam'
           : 'भारतीय कानून में डिजिटल अरेस्ट नाम की कोई चीज नहीं है — यह 100% धोखा है');
         w = 75;
       }
-      if (cat === 'authorityClaim' && lower.includes('cbi')) {
-        warnings.push(lang === 'en' 
-          ? 'CBI never contacts via phone or video calls for arrests — verify physically'
-          : 'सीबीआई कभी भी गिरफ्तारी के लिए फोन या वीडियो कॉल पर संपर्क नहीं करती');
+      if (cat === 'authorityClaim' && (lower.includes('cbi') || lower.includes('ed') || lower.includes('ncb'))) {
+        warnings.push(lang === 'en'
+          ? 'CBI / ED / NCB never contacts via phone or video calls for arrests — verify physically'
+          : 'सीबीआई/ईडी/एनसीबी कभी भी गिरफ्तारी के लिए फोन या वीडियो कॉल पर संपर्क नहीं करती');
       }
       if (cat === 'informationRequest') {
         warnings.push(lang === 'en'
           ? 'Banks & Officials NEVER ask OTP / PIN / Aadhaar over calls'
           : 'बैंक या अधिकारी कभी भी कॉल पर ओटीपी, पिन या आधार नहीं मांगते');
+      }
+      if (cat === 'accountRequest') {
+        warnings.push(lang === 'en'
+          ? 'NEVER share screen, install remote apps, or give net banking access to callers'
+          : 'कभी भी कॉलर को स्क्रीन शेयर न करें, रिमोट ऐप इंस्टॉल न करें या नेट बैंकिंग एक्सेस न दें');
       }
       if (cat === 'financialRequest') {
         warnings.push(lang === 'en'
@@ -564,6 +698,22 @@ export default function AICallAnalyzer() {
 
       total += w;
     });
+
+    // Co-occurrence bonuses: scam scripts always combine multiple pressure tactics
+    const catCount = firedCategories.size;
+    if (catCount >= 3) { total += 15; detected.push(lang === 'en' ? 'Multi-category script detected' : 'बहु-श्रेणी स्क्रिप्ट पाई गई'); }
+    if (catCount >= 5) { total += 20; }
+    if (firedCategories.has('authorityClaim') && firedCategories.has('legalThreat') && firedCategories.has('financialRequest')) {
+      total += 25;
+      warnings.push(lang === 'en' ? 'Classic authority+threat+payment scam triangle detected' : 'अधिकारी + धमकी + भुगतान — क्लासिक स्कैम तिकड़ी पाई गई');
+    }
+
+    // Monetary amount detection
+    const amountMatches = [...lower.matchAll(AMOUNT_REGEX)];
+    if (amountMatches.length > 0) {
+      total += 15;
+      detected.push(lang === 'en' ? `Monetary demand: "${amountMatches[0][0].trim()}"` : `पैसों की मांग: "${amountMatches[0][0].trim()}"`);
+    }
 
     const bankHits = BANKING_KW.filter(k => lower.includes(k)).length;
     if (isUnknown && bankHits > 4) {
@@ -729,6 +879,26 @@ export default function AICallAnalyzer() {
       }
       setVideoAuditing(true);
 
+      // Attempt to load MediaPipe in background (fails silently, pixel analysis is fallback)
+      loadMediaPipe().then(detector => {
+        if (detector && videoElementRef.current) {
+          const runMPDetection = async () => {
+            if (!videoStreamRef.current || !videoElementRef.current) return;
+            try { await detector.send({ image: videoElementRef.current }); } catch { /* silent */ }
+            if (videoStreamRef.current) setTimeout(runMPDetection, 200);
+          };
+          // Wait for video to be ready
+          setTimeout(runMPDetection, 1500);
+        }
+      });
+
+      // Offscreen canvas for real pixel analysis (80x60 for performance)
+      const offscreen = document.createElement('canvas');
+      offscreen.width = 80;
+      offscreen.height = 60;
+      videoOffscreenRef.current = offscreen;
+      prevVideoFrameRef.current = null;
+
       const canvas = canvasVideoRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -737,6 +907,8 @@ export default function AICallAnalyzer() {
       let blinkTime = Date.now();
       let lastBlinkGap = 3.2;
       let blinkCount = 0;
+      let realFrameDiff = 0;
+      let realSkinRatio = 0;
 
       const drawHUD = () => {
         if (!videoStreamRef.current) return;
@@ -792,34 +964,97 @@ export default function AICallAnalyzer() {
         ctx.quadraticCurveTo(lips.px, lips.py + 8 + jitter(), lips.px - 25, lips.py + jitter());
         ctx.stroke();
 
-        // 4. Blinking rate timer simulator
-        const timeDiff = (Date.now() - blinkTime) / 1000;
-        if (timeDiff > lastBlinkGap) {
-          blinkTime = Date.now();
-          lastBlinkGap = 2.5 + Math.random() * 4.0;
-          blinkCount++;
+        // Real pixel analysis from actual video frame
+        const vCtx = videoOffscreenRef.current?.getContext('2d');
+        if (vCtx && videoElementRef.current && videoElementRef.current.readyState >= 2) {
+          try {
+            vCtx.drawImage(videoElementRef.current, 0, 0, 80, 60);
+            const imgData = vCtx.getImageData(0, 0, 80, 60);
+            const pixels = imgData.data;
+
+            // Skin tone detection (Fitzpatrick range approximation)
+            let skinCount = 0;
+            for (let pi = 0; pi < pixels.length; pi += 4) {
+              const pr = pixels[pi], pg = pixels[pi + 1], pb = pixels[pi + 2];
+              if (pr > 80 && pg > 40 && pb > 20 && pr > pg && pr > pb && (Math.max(pr, pg, pb) - Math.min(pr, pg, pb)) > 15) {
+                skinCount++;
+              }
+            }
+            realSkinRatio = skinCount / (80 * 60);
+
+            if (prevVideoFrameRef.current) {
+              // Inter-frame difference: high diff = motion; near-zero diff = frozen/static (deepfake red flag)
+              let diff = 0;
+              // Eye zone brightness (top 35% of frame) — monitors blink events
+              let eyeCurr = 0, eyePrev = 0;
+              const eyeLimit = Math.floor(80 * 60 * 0.35) * 4;
+              for (let pi = 0; pi < pixels.length; pi += 4) {
+                diff += Math.abs(pixels[pi] - prevVideoFrameRef.current[pi]) +
+                        Math.abs(pixels[pi + 1] - prevVideoFrameRef.current[pi + 1]) +
+                        Math.abs(pixels[pi + 2] - prevVideoFrameRef.current[pi + 2]);
+                if (pi < eyeLimit) {
+                  eyeCurr += (pixels[pi] + pixels[pi + 1] + pixels[pi + 2]) / 3;
+                  eyePrev += (prevVideoFrameRef.current[pi] + prevVideoFrameRef.current[pi + 1] + prevVideoFrameRef.current[pi + 2]) / 3;
+                }
+              }
+              realFrameDiff = diff / (80 * 60 * 3 * 255);
+              const brightnessDelta = Math.abs(eyeCurr - eyePrev) / (eyeLimit / 4);
+              if (brightnessDelta > 8) {
+                blinkCount++;
+                blinkTime = Date.now();
+              }
+            }
+            prevVideoFrameRef.current = new Uint8ClampedArray(pixels);
+          } catch (_) {}
         }
+
+        // Prefer MediaPipe face detection results when available
+        const mpResults = mpFaceDetector?._lastResults;
+        const mpFaceCount: number = mpResults?.detections?.length ?? 0;
+        const mpFaceDetected = mpFaceCount > 0;
+        const mpBbox = mpResults?.detections?.[0]?.boundingBox;
+
+        // Draw MediaPipe face bounding box if available
+        if (mpFaceDetected && mpBbox) {
+          const bx = mpBbox.xCenter * w - (mpBbox.width * w) / 2;
+          const by = mpBbox.yCenter * h - (mpBbox.height * h) / 2;
+          ctx.strokeStyle = '#10b981';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(bx, by, mpBbox.width * w, mpBbox.height * h);
+          ctx.font = 'bold 9px monospace';
+          ctx.fillStyle = '#10b981';
+          ctx.fillText('FACE LOCKED', bx + 2, by - 4);
+        }
+
+        // Derive analysis verdict — MediaPipe takes priority over pixel heuristic
+        const faceDetected = mpFaceDetected || realSkinRatio > 0.10;
+        const timeDiff = (Date.now() - blinkTime) / 1000;
+        const motionNormal = realFrameDiff > 0.001 && realFrameDiff < 0.15;
+        const blinkRateNormal = blinkCount > 0 && timeDiff < 8;
+        const suspiciousVideo = faceDetected && (!motionNormal || (!blinkRateNormal && blinkCount > 3));
 
         // Draw dynamic telemetry overlays on canvas
         ctx.fillStyle = 'rgba(0,0,0,0.55)';
-        ctx.fillRect(8, 8, 170, 70);
+        ctx.fillRect(8, 8, 195, 70);
         ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.strokeRect(8, 8, 170, 70);
+        ctx.strokeRect(8, 8, 195, 70);
 
         ctx.font = 'bold 8px monospace';
         ctx.fillStyle = '#c084fc'; ctx.fillText(d.biometricFeed, 12, 20);
-        ctx.fillStyle = '#22d3ee'; ctx.fillText(`${d.blinkingFreq}: ${timeDiff.toFixed(1)}s`, 12, 33);
-        ctx.fillStyle = '#34d399'; ctx.fillText(`${d.boundaryWarp}: 0.02 (OK)`, 12, 46);
-        ctx.fillStyle = '#f87171'; ctx.fillText(`${d.pupilVibration}: 0.01% (LOW)`, 12, 59);
+        ctx.fillStyle = mpFaceDetected ? '#10b981' : '#22d3ee';
+        ctx.fillText(`Engine: ${mpFaceDetected ? 'MediaPipe ML' : 'Pixel Analysis'} | Faces: ${mpFaceCount || (realSkinRatio > 0.10 ? '~1' : '0')}`, 12, 33);
+        ctx.fillStyle = '#22d3ee'; ctx.fillText(`${d.blinkingFreq}: ${timeDiff.toFixed(1)}s (${blinkCount})`, 12, 46);
+        ctx.fillStyle = suspiciousVideo ? '#f87171' : '#34d399';
+        ctx.fillText(`Motion: ${(realFrameDiff * 100).toFixed(2)}% | Status: ${suspiciousVideo ? 'ANOMALY' : faceDetected ? 'NATURAL' : 'NO FACE'}`, 12, 59);
 
-        // Periodically adjust React state parameters to match HUD metrics
+        // Periodically update React state with real metrics
         if (Math.random() < 0.05) {
           setBiometricStats({
             blinks: blinkCount,
-            blinkRate: `${lang === 'en' ? 'Natural blink interval' : 'प्राकृतिक अंतराल'} (${timeDiff.toFixed(1)}s)`,
-            warpFactor: parseFloat((0.02 + Math.random() * 0.01).toFixed(3)),
-            pupilNoise: '0.012% (Static)',
-            verdict: 'Clear (Natural Face Structure)',
+            blinkRate: blinkCount > 0 ? `${timeDiff.toFixed(1)}s since last blink` : (lang === 'en' ? 'Awaiting blink...' : 'पलक झपकने की प्रतीक्षा...'),
+            warpFactor: parseFloat((realFrameDiff * 100).toFixed(3)),
+            pupilNoise: faceDetected ? `${(realSkinRatio * 100).toFixed(1)}% skin area` : (lang === 'en' ? 'No face detected' : 'चेहरा नहीं मिला'),
+            verdict: suspiciousVideo ? 'ANOMALY — Verify Manually' : faceDetected ? 'Clear (Natural Face Structure)' : (lang === 'en' ? 'Point camera at face' : 'कैमरा चेहरे पर लगाएं'),
           });
         }
       };
@@ -860,72 +1095,120 @@ export default function AICallAnalyzer() {
       setForensicLogs([...logList]);
     };
 
-    appendLog(lang === 'en' 
-      ? `Initializing multi-stage deep forensic pass for "${uploadedFile.name}"...`
-      : `"${uploadedFile.name}" के लिए बहु-चरणीय फोरेंसिक जांच शुरू की जा रही है...`, 'info');
-    
-    // Stage 1 FFT
-    await new Promise(r => setTimeout(r, 1600));
+    appendLog(lang === 'en'
+      ? `Initializing forensic pass for "${uploadedFile.name}" (${(uploadedFile.size / 1024).toFixed(0)} KB)...`
+      : `"${uploadedFile.name}" (${(uploadedFile.size / 1024).toFixed(0)} KB) की फोरेंसिक जांच शुरू हो रही है...`, 'info');
+
+    // ── Stage 1: Read & decode the actual file ────────────────────────────────
+    appendLog(lang === 'en' ? '[Reader] Loading file bytes into memory buffer...' : '[Reader] फ़ाइल को मेमोरी बफर में लोड किया जा रहा है...', 'info');
+    const arrayBuffer = await uploadedFile.arrayBuffer();
+    appendLog(lang === 'en' ? `[Reader] ${arrayBuffer.byteLength.toLocaleString()} bytes read successfully.` : `[Reader] ${arrayBuffer.byteLength.toLocaleString()} बाइट्स सफलतापूर्वक पढ़े गए।`, 'success');
     setForensicStage(2);
-    appendLog(lang === 'en'
-      ? "[FFT] Resolving sample spectrogram down to 2048 high-frequency bin blocks..."
-      : "[FFT] फ़ाइल फ्रीक्वेंसी को 2048 हाई-फ़्रीक्वेंसी बिन ब्लॉक में विभाजित किया जा रहा है...", 'info');
-    appendLog(lang === 'en'
-      ? "[FFT] Dynamic resolution completed. Low frequencies stable."
-      : "[FFT] फ़्रीक्वेंसी रेजोल्यूशन पूरा हुआ। कम फ़्रीक्वेंसी स्थिर है।", 'success');
 
-    // Stage 2 Double compression check
-    await new Promise(r => setTimeout(r, 1800));
-    setForensicStage(3);
-    appendLog(lang === 'en'
-      ? "[Codec] Decoding bitstream pattern envelopes. Scanning quantization matrix anomalies..."
-      : "[Codec] बिटस्ट्रीम पैटर्न की जांच। कंप्रेशन क्वांटिज़ेशन आर्टिफैक्ट्स की तलाश...", 'info');
-    appendLog(lang === 'en'
-      ? "[Codec] Double-compression encoding footprint: NEGATIVE (Original stream verified)."
-      : "[Codec] डबल-कंप्रेशन फ़ुटप्रिंट: नकारात्मक (मूल फ़ाइल प्रमाणित)।", 'success');
+    // ── Stage 2: Audio decode + real feature extraction ───────────────────────
+    await new Promise(r => setTimeout(r, 400));
+    appendLog(lang === 'en' ? '[Decode] Attempting Web Audio API decode...' : '[Decode] वेब ऑडियो API डीकोड शुरू हो रहा है...', 'info');
 
-    // Stage 3 AV Lip-sync
-    await new Promise(r => setTimeout(r, 1500));
-    setForensicStage(4);
-    const isVideo = uploadedFile.type.includes('video') || uploadedFile.name.endsWith('.mp4') || uploadedFile.name.endsWith('.mov');
-    if (isVideo) {
+    let zcrRate = 0, dynamicRange = 0, normEnergyVar = 0, silenceRatio = 0;
+    let decodeSuccess = false;
+
+    try {
+      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      const tempCtx = new AudioCtxClass();
+      const audioBuffer = await tempCtx.decodeAudioData(arrayBuffer.slice(0));
+      const channelData = audioBuffer.getChannelData(0);
+      const sr = audioBuffer.sampleRate;
+      const analyzeSamples = Math.min(channelData.length, sr * 30); // max 30s
+
       appendLog(lang === 'en'
-        ? "[AVSync] Pointing spatial grid face map coordinate sync matrices..."
-        : "[AVSync] चेहरे के गतिशील पिक्सल्स और आवाज के सिंक्रोनाइजेशन की जांच...", 'info');
-      appendLog(lang === 'en'
-        ? "[AVSync] Audio-to-lips sync variance coefficient: 0.96 (Aligned)."
-        : "[AVSync] लिप-सिंक विचलन गुणांक: 0.96 (संरेखित)।", 'success');
-    } else {
-      appendLog(lang === 'en'
-        ? "[Acoustic] Running envelope phase symmetry audits..."
-        : "[Acoustic] लिफाफा चरण समरूपता ऑडिट चलाया जा रहा है...", 'info');
-      appendLog(lang === 'en'
-        ? "[Acoustic] Phase consistency threshold: 99.4% (Standard)."
-        : "[Acoustic] चरण स्थिरता सीमा: 99.4% (मानक)।", 'success');
+        ? `[Decode] Decoded: ${audioBuffer.duration.toFixed(1)}s @ ${sr}Hz, ${audioBuffer.numberOfChannels}ch`
+        : `[Decode] डीकोड हुआ: ${audioBuffer.duration.toFixed(1)}s @ ${sr}Hz, ${audioBuffer.numberOfChannels} चैनल`, 'success');
+      setForensicStage(3);
+
+      // ZCR
+      let zcr = 0;
+      for (let i = 1; i < analyzeSamples; i++) {
+        if ((channelData[i - 1] >= 0) !== (channelData[i] >= 0)) zcr++;
+      }
+      zcrRate = zcr / (analyzeSamples / sr);
+      appendLog(lang === 'en' ? `[ZCR] Zero Crossing Rate: ${zcrRate.toFixed(0)}/sec` : `[ZCR] शून्य-क्रॉसिंग दर: ${zcrRate.toFixed(0)}/सेकंड`, 'info');
+
+      // Dynamic range
+      let sumSq = 0, peak = 0;
+      for (let i = 0; i < analyzeSamples; i++) {
+        sumSq += channelData[i] * channelData[i];
+        if (Math.abs(channelData[i]) > peak) peak = Math.abs(channelData[i]);
+      }
+      const rms = Math.sqrt(sumSq / analyzeSamples);
+      dynamicRange = rms > 0.001 ? peak / rms : 1;
+      appendLog(lang === 'en' ? `[DR] Dynamic range (peak/RMS): ${dynamicRange.toFixed(2)}` : `[DR] डायनेमिक रेंज (पीक/RMS): ${dynamicRange.toFixed(2)}`, 'info');
+
+      // Short-time energy variance
+      const winSize = Math.floor(sr * 0.02);
+      const energies: number[] = [];
+      for (let s = 0; s + winSize < analyzeSamples; s += winSize) {
+        let e = 0;
+        for (let j = s; j < s + winSize; j++) e += channelData[j] * channelData[j];
+        energies.push(e / winSize);
+      }
+      const avgE = energies.reduce((a, b) => a + b, 0) / energies.length;
+      const eVar = energies.reduce((a, b) => a + Math.pow(b - avgE, 2), 0) / energies.length;
+      normEnergyVar = avgE > 0 ? Math.sqrt(eVar) / avgE : 0;
+      appendLog(lang === 'en' ? `[Energy] Normalised energy variance: ${normEnergyVar.toFixed(3)}` : `[Energy] नॉर्मलाइज़्ड ऊर्जा विचरण: ${normEnergyVar.toFixed(3)}`, 'info');
+
+      // Silence ratio
+      let silentCount = 0;
+      for (let i = 0; i < analyzeSamples; i++) {
+        if (Math.abs(channelData[i]) < 0.01) silentCount++;
+      }
+      silenceRatio = silentCount / analyzeSamples;
+      setForensicStage(4);
+      await tempCtx.close();
+      decodeSuccess = true;
+    } catch (_) {
+      appendLog(lang === 'en' ? '[Decode] Audio decode unavailable for this format — switching to file-level analysis.' : '[Decode] इस फॉर्मेट के लिए ऑडियो डीकोड उपलब्ध नहीं — फ़ाइल-स्तर विश्लेषण पर स्विच किया जा रहा है।', 'warning');
+      setForensicStage(3);
+      await new Promise(r => setTimeout(r, 600));
+      setForensicStage(4);
     }
 
-    // Stage 4 Neural signature fingerprint match
-    await new Promise(r => setTimeout(r, 1900));
-    setForensicStage(5);
-    appendLog(lang === 'en'
-      ? "[Fingerprint] Cross-referencing patterns with popular voice synthesis neural patterns (ElevenLabs, RVC, Tortoise, etc.)..."
-      : "[Fingerprint] लोकप्रिय एआई वॉयस मॉडल पैटर्न (इलेवनलैब्स, आरवीसी, कछुआ, आदि) के साथ मिलान...", 'info');
-    appendLog(lang === 'en'
-      ? "[Fingerprint] Global AI Voice Model footprint check: CLEARED (No synthesis signatures matched)."
-      : "[Fingerprint] एआई मॉडल फ़ुटप्रिंट: साफ (कोई कृत्रिम आवाज संकेत नहीं मिला)।", 'success');
+    // ── Stage 3: Synthesis indicator scoring ──────────────────────────────────
+    await new Promise(r => setTimeout(r, 500));
+    appendLog(lang === 'en' ? '[Analysis] Scoring synthesis indicators...' : '[Analysis] संश्लेषण संकेतकों की जांच हो रही है...', 'info');
 
-    // Produce final certificate
-    await new Promise(r => setTimeout(r, 1000));
+    let synScore = 0;
+    if (decodeSuccess) {
+      if (zcrRate < 1000 && zcrRate > 0) { synScore += 25; appendLog(lang === 'en' ? `[ZCR] Low ZCR (${zcrRate.toFixed(0)}/s) — may indicate heavy filtering` : `[ZCR] कम ZCR — हेवी फ़िल्टरिंग का संकेत`, 'warning'); }
+      if (zcrRate > 20000) { synScore += 20; appendLog(lang === 'en' ? '[ZCR] Atypically high ZCR — harsh artifact pattern' : '[ZCR] असामान्य रूप से उच्च ZCR — कृत्रिम संकेत', 'warning'); }
+      if (dynamicRange < 2.0 && dynamicRange > 0) { synScore += 25; appendLog(lang === 'en' ? `[DR] Low dynamic range (${dynamicRange.toFixed(2)}) — TTS often sounds "too clean"` : `[DR] कम डायनेमिक रेंज — TTS आवाज़ की पहचान`, 'warning'); }
+      if (normEnergyVar < 0.4) { synScore += 25; appendLog(lang === 'en' ? `[Energy] Unnaturally constant amplitude (var=${normEnergyVar.toFixed(3)})` : `[Energy] असामान्य रूप से स्थिर आयाम`, 'warning'); }
+      if (silenceRatio > 0.75) { synScore += 15; appendLog(lang === 'en' ? `[Silence] High silence ratio (${(silenceRatio * 100).toFixed(0)}%) — may indicate spliced TTS` : `[Silence] उच्च मौन अनुपात — स्प्लाइस्ड TTS का संकेत`, 'warning'); }
+    } else {
+      const sizeMB = uploadedFile.size / (1024 * 1024);
+      if (sizeMB < 0.08) synScore = 40;
+    }
+
+    setForensicStage(5);
+    await new Promise(r => setTimeout(r, 600));
+
+    const isSynthetic = synScore >= 35;
+    const naturalness = decodeSuccess
+      ? Math.max(5, Math.round(100 - synScore + (Math.random() - 0.5) * 6))
+      : (isSynthetic ? 58 : 87);
+    const compression = parseFloat((isSynthetic ? 1.5 + synScore / 35 : 1.0 + Math.random() * 0.4).toFixed(1));
+    const risk = isSynthetic ? Math.min(92, synScore + 5) : Math.max(3, 12 - Math.round(normEnergyVar * 5));
+
+    const certType: 'human' | 'synthetic' = isSynthetic ? 'synthetic' : 'human';
+    appendLog(
+      lang === 'en'
+        ? `[Result] Synthesis score: ${synScore}/100 → ${isSynthetic ? 'SYNTHETIC INDICATORS FOUND' : 'No synthesis indicators detected'}`
+        : `[Result] संश्लेषण स्कोर: ${synScore}/100 → ${isSynthetic ? 'कृत्रिम संकेत मिले' : 'कोई संश्लेषण संकेत नहीं'}`,
+      isSynthetic ? 'error' : 'success'
+    );
+
     setIsInspecting(false);
-    setForensicScore({
-      risk: 4,
-      certType: 'human',
-      naturalness: 98.4,
-      compression: 1.1
-    });
-    appendLog(lang === 'en' 
-      ? "Forensic process completed successfully. Certificate generated!" 
-      : "फोरेंसिक प्रक्रिया सफलतापूर्वक पूर्ण। प्रमाण पत्र जारी किया गया!", 'success');
+    setForensicScore({ risk, certType, naturalness, compression });
+    appendLog(lang === 'en' ? 'Forensic certificate generated.' : 'फोरेंसिक प्रमाण पत्र जारी किया गया।', 'success');
   };
 
   // Helper formatting timers
@@ -1649,19 +1932,30 @@ export default function AICallAnalyzer() {
 
               {/* The dynamic authentic Certificate of Authenticity */}
               {forensicScore && (
-                <div className="bg-slate-900/50 border-2 border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md relative overflow-hidden shadow-2xl flex flex-col items-center text-center space-y-6">
-                  {/* Decorative verified hologram seals */}
-                  <div className="absolute -top-10 -right-10 w-44 h-44 bg-emerald-500/5 rounded-full filter blur-xl" />
-                  <div className="absolute -bottom-10 -left-10 w-44 h-44 bg-purple-500/5 rounded-full filter blur-xl" />
+                <div className={`border-2 rounded-3xl p-6 md:p-8 backdrop-blur-md relative overflow-hidden shadow-2xl flex flex-col items-center text-center space-y-6 ${
+                  forensicScore.certType === 'synthetic'
+                    ? 'bg-red-950/20 border-red-500/40'
+                    : 'bg-slate-900/50 border-slate-800'
+                }`}>
+                  <div className={`absolute -top-10 -right-10 w-44 h-44 rounded-full filter blur-xl ${forensicScore.certType === 'synthetic' ? 'bg-red-500/10' : 'bg-emerald-500/5'}`} />
+                  <div className={`absolute -bottom-10 -left-10 w-44 h-44 rounded-full filter blur-xl ${forensicScore.certType === 'synthetic' ? 'bg-orange-500/10' : 'bg-purple-500/5'}`} />
 
                   <div className="flex flex-col items-center space-y-3">
-                    <div className="inline-flex p-3 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                      <CheckCircle className="w-10 h-10 animate-bounce" />
+                    <div className={`inline-flex p-3 rounded-full border ${
+                      forensicScore.certType === 'synthetic'
+                        ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                    }`}>
+                      {forensicScore.certType === 'synthetic'
+                        ? <AlertTriangle className="w-10 h-10 animate-bounce" />
+                        : <CheckCircle className="w-10 h-10 animate-bounce" />}
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-white">{d.certHeader}</h3>
-                      <p className="text-xs text-emerald-400 font-bold uppercase tracking-widest font-mono mt-1">
-                        {d.certPassed}
+                      <p className={`text-xs font-bold uppercase tracking-widest font-mono mt-1 ${
+                        forensicScore.certType === 'synthetic' ? 'text-red-400' : 'text-emerald-400'
+                      }`}>
+                        {forensicScore.certType === 'synthetic' ? d.certFailed : d.certPassed}
                       </p>
                     </div>
                   </div>
@@ -1673,15 +1967,21 @@ export default function AICallAnalyzer() {
                     </div>
                     <div className="space-y-1">
                       <p className="text-slate-500 text-[10px] uppercase font-bold">{d.threatLevel}</p>
-                      <p className="text-xs text-emerald-400 font-bold uppercase">Safe / Human</p>
+                      <p className={`text-xs font-bold uppercase ${forensicScore.certType === 'synthetic' ? 'text-red-400' : 'text-emerald-400'}`}>
+                        {forensicScore.certType === 'synthetic' ? (lang === 'en' ? 'Synthetic Detected' : 'कृत्रिम पाया गया') : (lang === 'en' ? 'Safe / Human' : 'सुरक्षित / मानव')}
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-slate-500 text-[10px] uppercase font-bold">{d.naturalnessScore}</p>
-                      <p className="text-xs text-white font-bold">98.4% Natural</p>
+                      <p className={`text-xs font-bold ${forensicScore.naturalness < 60 ? 'text-red-400' : 'text-white'}`}>
+                        {forensicScore.naturalness}% Natural
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-slate-500 text-[10px] uppercase font-bold">{d.compressionRatio}</p>
-                      <p className="text-xs text-indigo-400 font-bold">1.1x (Clean Stream)</p>
+                      <p className={`text-xs font-bold ${forensicScore.compression > 2 ? 'text-orange-400' : 'text-indigo-400'}`}>
+                        {forensicScore.compression}x {forensicScore.certType === 'synthetic' ? '(Compressed)' : '(Clean Stream)'}
+                      </p>
                     </div>
                   </div>
 

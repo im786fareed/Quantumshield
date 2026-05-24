@@ -1,389 +1,280 @@
 'use client';
-
-import { MessageSquare, Shield, AlertTriangle, CheckCircle, Clock, TrendingUp } from 'lucide-react';
+import { MessageSquare, Shield, AlertTriangle, CheckCircle, XCircle, TrendingUp, Loader2, ExternalLink, Info } from 'lucide-react';
 import { useState } from 'react';
 
-interface Props {
-  lang: 'en' | 'hi';
-}
+interface Props { lang: 'en' | 'hi' }
 
-interface SMSMessage {
-  id: number;
-  sender: string;
-  message: string;
-  time: string;
-  threat: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'SAFE';
-  threatType: string;
+interface AnalysisResult {
+  spam: boolean;
   confidence: number;
+  score: number;
+  level: string;
+  threatType: string;
+  message: string;
+  reasons: string[];
   indicators: string[];
-  actions: string[];
 }
-
-const CONTENT = {
-  en: {
-    title: 'SMS Guardian',
-    subtitle: 'Detect fraud OTPs and scam messages instantly',
-    checkButton: 'Check My Latest SMS',
-    loading: 'Scanning messages...',
-    noMessages: 'No suspicious messages found',
-    browserWarning: '⚠️ Browser Limitation',
-    browserMessage: 'Web apps cannot read SMS messages from your device.\n\nOptions:\n1. Use "Spam AI Checker" tab to paste suspicious SMS\n2. Try our "Demo Scam" feature on homepage\n3. Wait for Android app (coming soon)\n\nFor now, manually check suspicious messages using our other tools!',
-    tabs: {
-      check: 'Check SMS',
-      learn: 'Learn',
-      stats: 'Stats'
-    }
-  },
-  hi: {
-    title: 'SMS गार्डियन',
-    subtitle: 'धोखाधड़ी OTP और स्कैम संदेश तुरंत पहचानें',
-    checkButton: 'मेरे नवीनतम SMS जांचें',
-    loading: 'संदेश स्कैन कर रहे हैं...',
-    noMessages: 'कोई संदिग्ध संदेश नहीं मिला',
-    browserWarning: '⚠️ ब्राउज़र सीमा',
-    browserMessage: 'वेब ऐप आपके डिवाइस से SMS संदेश नहीं पढ़ सकते।\n\nविकल्प:\n1. संदिग्ध SMS पेस्ट करने के लिए "Spam AI Checker" टैब उपयोग करें\n2. होमपेज पर हमारे "Demo Scam" फीचर को आज़माएं\n3. Android ऐप की प्रतीक्षा करें (जल्द आ रहा है)\n\nअभी के लिए, हमारे अन्य उपकरणों का उपयोग करके संदिग्ध संदेशों को मैन्युअल रूप से जांचें!',
-    tabs: {
-      check: 'SMS जांचें',
-      learn: 'सीखें',
-      stats: 'आँकड़े'
-    }
-  }
-};
-
-const MOCK_MESSAGES: { [key: string]: SMSMessage[] } = {
-  en: [
-    {
-      id: 1,
-      sender: '+91-98765-43210',
-      message: 'URGENT: Your account will be blocked. Verify KYC: http://bit.ly/verify-now',
-      time: '10 minutes ago',
-      threat: 'CRITICAL',
-      threatType: 'Phishing Link',
-      confidence: 98,
-      indicators: [
-        'Shortened URL (bit.ly) hiding destination',
-        'Fake urgency tactics',
-        'Unknown sender number',
-        'KYC verification scam pattern'
-      ],
-      actions: [
-        'DO NOT click the link',
-        'Delete this message immediately',
-        'Block the sender',
-        'Report to 1930'
-      ]
-    },
-    {
-      id: 2,
-      sender: 'AX-ICICIBANK',
-      message: 'Your ICICI Bank account credited with Rs.5,250 on 15-Dec-24. Available balance: Rs.45,320',
-      time: '2 hours ago',
-      threat: 'SAFE',
-      threatType: 'Legitimate Bank Notification',
-      confidence: 99,
-      indicators: [
-        'Official sender ID (AX-ICICIBANK)',
-        'Standard transaction format',
-        'No links or requests',
-        'Informational only'
-      ],
-      actions: [
-        'This is a legitimate bank notification',
-        'No action needed'
-      ]
-    }
-  ],
-  hi: [
-    {
-      id: 1,
-      sender: '+91-98765-43210',
-      message: 'अत्यावश्यक: आपका खाता ब्लॉक हो जाएगा। KYC सत्यापित करें: http://bit.ly/verify-now',
-      time: '10 मिनट पहले',
-      threat: 'CRITICAL',
-      threatType: 'फ़िशिंग लिंक',
-      confidence: 98,
-      indicators: [
-        'छोटा URL (bit.ly) गंतव्य छिपा रहा है',
-        'नकली दबाव रणनीति',
-        'अज्ञात प्रेषक नंबर',
-        'KYC सत्यापन स्कैम पैटर्न'
-      ],
-      actions: [
-        'लिंक पर क्लिक न करें',
-        'यह संदेश तुरंत डिलीट करें',
-        'प्रेषक को ब्लॉक करें',
-        '1930 पर रिपोर्ट करें'
-      ]
-    },
-    {
-      id: 2,
-      sender: 'AX-ICICIBANK',
-      message: '15-दिसं-24 को आपके ICICI बैंक खाते में Rs.5,250 जमा हुए। उपलब्ध शेष: Rs.45,320',
-      time: '2 घंटे पहले',
-      threat: 'SAFE',
-      threatType: 'वैध बैंक सूचना',
-      confidence: 99,
-      indicators: [
-        'आधिकारिक प्रेषक ID (AX-ICICIBANK)',
-        'मानक लेनदेन प्रारूप',
-        'कोई लिंक या अनुरोध नहीं',
-        'केवल सूचनात्मक'
-      ],
-      actions: [
-        'यह एक वैध बैंक सूचना है',
-        'कोई कार्रवाई की आवश्यकता नहीं'
-      ]
-    }
-  ]
-};
 
 export default function SMSGuardian({ lang }: Props) {
-  const [activeTab, setActiveTab] = useState<'check' | 'learn' | 'stats'>('check');
-  const [loading, setLoading] = useState(false);
-  const [scannedMessages, setScannedMessages] = useState<SMSMessage[]>([]);
+  const en = lang !== 'hi';
+  const [activeTab, setActiveTab] = useState<'check' | 'learn'>('check');
+  const [smsText, setSmsText] = useState('');
+  const [loading,  setLoading]  = useState(false);
+  const [result,   setResult]   = useState<AnalysisResult | null>(null);
+  const [error,    setError]    = useState('');
 
-  const content = CONTENT[lang];
-  const mockMessages = MOCK_MESSAGES[lang];
-
-  const handleCheckSMS = () => {
-    // Check if running in browser (not Android app)
-    if (typeof window !== 'undefined') {
-      alert(content.browserWarning + '\n\n' + content.browserMessage);
-      return;
-    }
-    
-    // This code will only run in Android app
+  const analyse = async () => {
+    const text = smsText.trim();
+    if (!text || text.length < 3) return;
     setLoading(true);
-    setTimeout(() => {
-      setScannedMessages(mockMessages);
+    setResult(null);
+    setError('');
+    try {
+      const res  = await fetch('/api/check-spam', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Analysis failed');
+      setResult(data as AnalysisResult);
+    } catch (e: any) {
+      setError(e.message ?? 'Network error — please try again.');
+    } finally {
       setLoading(false);
-    }, 2000);
-  };
-
-  const getSeverityColor = (threat: string) => {
-    switch (threat) {
-      case 'CRITICAL':
-        return 'border-red-500 bg-red-900/20';
-      case 'HIGH':
-        return 'border-orange-500 bg-orange-900/20';
-      case 'MEDIUM':
-        return 'border-yellow-500 bg-yellow-900/20';
-      case 'SAFE':
-        return 'border-green-500 bg-green-900/20';
-      default:
-        return 'border-gray-500 bg-gray-900/20';
     }
   };
 
-  const getSeverityBadge = (threat: string) => {
-    switch (threat) {
-      case 'CRITICAL':
-        return 'bg-red-500';
-      case 'HIGH':
-        return 'bg-orange-500';
-      case 'MEDIUM':
-        return 'bg-yellow-500';
-      case 'SAFE':
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-500';
-    }
+  const threatColor = (level?: string) => {
+    if (!level) return 'border-slate-600 bg-slate-800/40';
+    const l = level.toLowerCase();
+    if (l === 'critical' || l === 'high') return 'border-red-500/60 bg-red-500/10';
+    if (l === 'medium') return 'border-orange-500/60 bg-orange-500/10';
+    if (l === 'low') return 'border-yellow-500/60 bg-yellow-500/10';
+    return 'border-emerald-500/60 bg-emerald-500/10';
   };
+
+  const examples = en ? [
+    'URGENT: Your SBI account is blocked. Update KYC now: http://bit.ly/sbikycin',
+    'Congratulations! You have won ₹2,50,000 in Lucky Draw. Call 9876543210 to claim.',
+    'Dear customer, your PNB loan of ₹2L is approved. Pay processing fee ₹999 to 8765432109@paytm',
+  ] : [
+    'अत्यावश्यक: आपका SBI खाता ब्लॉक है। KYC अपडेट करें: http://bit.ly/sbikycin',
+    'बधाई! Lucky Draw में आपने ₹2,50,000 जीते। 9876543210 पर कॉल करें।',
+    'ग्राहक, आपका ₹2L लोन मंजूर। ₹999 प्रोसेसिंग शुल्क 8765432109@paytm पर भेजें',
+  ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center">
         <div className="inline-block p-4 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-3xl mb-4">
           <MessageSquare className="w-12 h-12 text-blue-400" />
         </div>
-        <h1 className="text-4xl font-bold mb-2">{content.title}</h1>
-        <p className="text-gray-400 text-lg">{content.subtitle}</p>
+        <h1 className="text-3xl font-bold mb-1 text-white">
+          {en ? 'SMS Guardian' : 'SMS गार्डियन'}
+        </h1>
+        <p className="text-slate-400">
+          {en ? 'Paste any suspicious SMS or message — AI analyses it instantly' : 'कोई भी संदिग्ध SMS पेस्ट करें — AI तुरंत विश्लेषण करेगा'}
+        </p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-2 justify-center">
-        {(['check', 'learn', 'stats'] as const).map((tab) => (
+        {(['check', 'learn'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-3 rounded-xl font-bold transition ${
+            className={`px-6 py-3 rounded-xl font-bold transition text-sm ${
               activeTab === tab
                 ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                : 'bg-white/5 text-slate-400 hover:bg-white/10'
             }`}
           >
-            {content.tabs[tab]}
+            {tab === 'check' ? (en ? 'Analyse SMS' : 'SMS विश्लेषण') : (en ? 'Learn' : 'सीखें')}
           </button>
         ))}
       </div>
 
-      {/* Check Tab */}
+      {/* ── CHECK TAB ── */}
       {activeTab === 'check' && (
-        <div className="space-y-6">
-          {/* Check Button */}
-          <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-8 text-center">
-            <button
-              onClick={handleCheckSMS}
-              disabled={loading}
-              className="px-12 py-5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl font-bold text-xl hover:scale-105 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <Clock className="w-6 h-6 animate-spin" />
-                  {content.loading}
-                </span>
-              ) : (
-                content.checkButton
-              )}
-            </button>
-            <p className="text-sm text-gray-400 mt-4">
-              {lang === 'en' 
-                ? 'Click to scan your latest SMS messages for fraud patterns'
-                : 'धोखाधड़ी पैटर्न के लिए अपने नवीनतम SMS संदेश स्कैन करने के लिए क्लिक करें'}
-            </p>
+        <div className="space-y-5">
+          {/* Input */}
+          <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-5">
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+              {en ? 'Paste suspicious SMS or message text' : 'संदिग्ध SMS या संदेश पेस्ट करें'}
+            </label>
+            <textarea
+              rows={5}
+              value={smsText}
+              onChange={e => { setSmsText(e.target.value); setResult(null); setError(''); }}
+              placeholder={en
+                ? 'Example: "URGENT: Your account will be blocked. Verify KYC at http://bit.ly/verify-now"'
+                : 'उदाहरण: "अत्यावश्यक: आपका खाता ब्लॉक हो जाएगा। KYC सत्यापित करें: http://bit.ly/verify-now"'}
+              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600 resize-none"
+            />
+            <div className="flex items-center justify-between mt-3">
+              <span className="text-slate-500 text-xs">{smsText.length} {en ? 'chars' : 'अक्षर'}</span>
+              <button
+                onClick={analyse}
+                disabled={!smsText.trim() || loading}
+                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 text-sm transition"
+              >
+                {loading ? <><Loader2 className="w-4 h-4 animate-spin" />{en ? 'Analysing…' : 'विश्लेषण…'}</> : (en ? 'Analyse' : 'विश्लेषण करें')}
+              </button>
+            </div>
           </div>
 
-          {/* Privacy Notice */}
-          <div className="bg-green-600/20 backdrop-blur rounded-xl border border-green-500/50 p-6">
-            <h3 className="font-bold text-green-400 mb-2 flex items-center gap-2">
-              <Shield className="w-5 h-5" />
-              {lang === 'en' ? 'Privacy Guarantee' : 'गोपनीयता गारंटी'}
-            </h3>
-            <ul className="text-sm text-green-200 space-y-1">
-              <li>✓ {lang === 'en' ? 'Only reads when you click the button' : 'केवल बटन क्लिक करने पर पढ़ता है'}</li>
-              <li>✓ {lang === 'en' ? 'No background monitoring' : 'कोई पृष्ठभूमि निगरानी नहीं'}</li>
-              <li>✓ {lang === 'en' ? 'Analysis happens on your device' : 'विश्लेषण आपके डिवाइस पर होता है'}</li>
-              <li>✓ {lang === 'en' ? 'No data stored or transmitted' : 'कोई डेटा संग्रहीत या प्रसारित नहीं'}</li>
-            </ul>
+          {/* Quick examples */}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-xs text-slate-500 self-center">{en ? 'Try:' : 'उदाहरण:'}</span>
+            {examples.map((ex, i) => (
+              <button
+                key={i}
+                onClick={() => { setSmsText(ex); setResult(null); }}
+                className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition truncate max-w-[200px]"
+              >
+                {ex.slice(0, 38)}…
+              </button>
+            ))}
           </div>
 
-          {/* Results */}
-          {scannedMessages.length > 0 && (
-            <div className="space-y-4">
-              {scannedMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`backdrop-blur rounded-2xl border-2 p-6 ${getSeverityColor(msg.threat)}`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="font-bold text-white">{msg.sender}</span>
-                        <span className="text-xs text-gray-400">{msg.time}</span>
-                      </div>
-                      <p className="text-gray-300 text-sm mb-3 bg-black/20 rounded-lg p-3">
-                        {msg.message}
-                      </p>
-                    </div>
-                    <span className={`px-3 py-1 ${getSeverityBadge(msg.threat)} rounded-full text-xs font-bold ml-4`}>
-                      {msg.threat}
-                    </span>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-bold text-white mb-2">{msg.threatType}</h4>
-                      <p className="text-sm text-gray-400">
-                        {lang === 'en' ? 'AI Confidence: ' : 'AI विश्वास: '}
-                        <strong className="text-white">{msg.confidence}%</strong>
-                      </p>
-                    </div>
-
-                    <div>
-                      <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        {lang === 'en' ? 'Threat Indicators:' : 'खतरे के संकेतक:'}
-                      </h4>
-                      <ul className="space-y-1">
-                        {msg.indicators.map((indicator, i) => (
-                          <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
-                            <span className="text-red-400">•</span>
-                            <span>{indicator}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="bg-black/20 rounded-lg p-4">
-                      <h4 className="font-bold text-white mb-2">
-                        {lang === 'en' ? 'Recommended Actions:' : 'अनुशंसित कार्रवाई:'}
-                      </h4>
-                      <ul className="space-y-1">
-                        {msg.actions.map((action, i) => (
-                          <li key={i} className="text-sm text-gray-200 flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                            <span>{action}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {error && (
+            <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/40 rounded-xl px-4 py-3 text-sm text-red-300">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              {error}
             </div>
           )}
+
+          {/* Result */}
+          {result && (
+            <div className={`rounded-2xl border p-5 ${threatColor(result.level)}`}>
+              {/* Verdict row */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  {result.spam
+                    ? <XCircle className="w-7 h-7 text-red-400" />
+                    : <CheckCircle className="w-7 h-7 text-emerald-400" />}
+                  <div>
+                    <div className={`text-xl font-black ${result.spam ? 'text-red-400' : 'text-emerald-400'}`}>
+                      {result.spam
+                        ? (en ? 'SCAM / SPAM DETECTED' : 'स्कैम / स्पैम मिला')
+                        : (en ? 'LOOKS SAFE' : 'सुरक्षित लगता है')}
+                    </div>
+                    <div className="text-slate-400 text-xs mt-0.5">{result.threatType}</div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className={`text-2xl font-black ${result.spam ? 'text-red-400' : 'text-emerald-400'}`}>
+                    {Math.round(result.confidence * 100)}%
+                  </div>
+                  <div className="text-slate-500 text-xs">{en ? 'Confidence' : 'विश्वास'}</div>
+                </div>
+              </div>
+
+              {/* AI message */}
+              <div className="bg-black/30 rounded-xl px-4 py-3 text-sm text-slate-200 mb-4">
+                {result.message}
+              </div>
+
+              {/* Indicators */}
+              {(result.indicators?.length > 0 || result.reasons?.length > 0) && (
+                <div className="mb-4">
+                  <div className="text-white font-semibold text-sm mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-orange-400" />
+                    {en ? 'Threat Indicators' : 'खतरे के संकेतक'}
+                  </div>
+                  <ul className="space-y-1">
+                    {[...(result.indicators ?? []), ...(result.reasons ?? [])].map((ind, i) => (
+                      <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
+                        <span className="text-orange-400 mt-0.5 shrink-0">•</span>{ind}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Advice */}
+              <div className="bg-black/20 rounded-xl px-4 py-3 text-sm">
+                <span className="font-bold text-white">{en ? 'What to do: ' : 'क्या करें: '}</span>
+                <span className="text-slate-300">
+                  {result.spam
+                    ? (en
+                      ? 'Do NOT click any links. Do NOT share OTP. Block the sender. Report to 1930 if you suffered a loss.'
+                      : 'किसी भी लिंक पर क्लिक न करें। OTP साझा न करें। प्रेषक को ब्लॉक करें। नुकसान होने पर 1930 पर रिपोर्ट करें।')
+                    : (en
+                      ? 'No strong scam signals found. Always stay alert — never share OTP or passwords.'
+                      : 'कोई मजबूत स्कैम संकेत नहीं। हमेशा सतर्क रहें — OTP या पासवर्ड कभी साझा न करें।')}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Privacy notice */}
+          <div className="bg-emerald-600/10 border border-emerald-500/30 rounded-xl px-4 py-3 flex items-start gap-3">
+            <Shield className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <p className="text-emerald-200 text-xs">
+              {en
+                ? 'Analysis runs on this server only to check text patterns — no SMS is ever stored, shared, or logged. Zero PII transmitted.'
+                : 'विश्लेषण केवल टेक्स्ट पैटर्न जांच के लिए इस सर्वर पर चलता है — कोई SMS संग्रहीत, साझा या लॉग नहीं किया जाता।'}
+            </p>
+          </div>
         </div>
       )}
 
-      {/* Learn Tab */}
+      {/* ── LEARN TAB ── */}
       {activeTab === 'learn' && (
-        <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-8">
-          <h2 className="text-2xl font-bold mb-6">
-            {lang === 'en' ? 'Common SMS Scams' : 'सामान्य SMS स्कैम'}
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-white">
+            {en ? 'Common SMS Scams in India' : 'भारत में सामान्य SMS स्कैम'}
           </h2>
-          <div className="space-y-4">
-            <div className="bg-red-900/20 rounded-xl border border-red-500/50 p-6">
-              <h3 className="font-bold text-red-400 mb-2">
-                {lang === 'en' ? '1. OTP Fraud' : '1. OTP धोखाधड़ी'}
-              </h3>
-              <p className="text-gray-300 text-sm">
-                {lang === 'en'
-                  ? 'Never share OTPs for money transfers. Real banks never ask for OTPs over calls or SMS.'
-                  : 'पैसे ट्रांसफर के लिए कभी OTP साझा न करें। असली बैंक कभी कॉल या SMS पर OTP नहीं मांगते।'}
-              </p>
+          {[
+            {
+              color: 'red', title: en ? '1. OTP Fraud' : '1. OTP धोखाधड़ी',
+              body: en
+                ? 'Scammers impersonate banks and ask you to share the OTP you receive. Once shared, they empty your account within seconds. Real banks NEVER ask for OTP.'
+                : 'स्कैमर बैंक का नाटक करते हैं और आपको मिला OTP मांगते हैं। एक बार साझा होने पर वे तुरंत खाता खाली कर देते हैं। असली बैंक कभी OTP नहीं मांगते।',
+            },
+            {
+              color: 'orange', title: en ? '2. KYC / Account Block' : '2. KYC / खाता ब्लॉक',
+              body: en
+                ? 'Message claims your KYC is pending and account will be blocked. Contains a phishing link that steals credentials. Your bank will NEVER send a link via SMS to update KYC.'
+                : 'संदेश में कहा जाता है कि KYC पेंडिंग है और खाता ब्लॉक हो जाएगा। SMS में दिया लिंक आपकी जानकारी चुरा लेता है।',
+            },
+            {
+              color: 'yellow', title: en ? '3. Lottery / Prize Fraud' : '3. लॉटरी / पुरस्कार',
+              body: en
+                ? 'You "won" a prize in a draw you never entered. They ask for a processing fee to release your winnings. No legitimate lottery asks for money upfront.'
+                : 'आपने बिना हिस्सा लिए कोई लॉटरी "जीती"। वे "प्रोसेसिंग शुल्क" मांगते हैं। कोई वैध लॉटरी पहले पैसे नहीं मांगती।',
+            },
+            {
+              color: 'purple', title: en ? '4. Loan Processing Fee' : '4. लोन प्रोसेसिंग शुल्क',
+              body: en
+                ? 'SMS says your loan is approved and asks you to pay a processing/insurance fee to receive the amount. Once you pay, the loan never comes and they vanish.'
+                : 'SMS कहता है लोन मंजूर है और प्रोसेसिंग/बीमा शुल्क मांगता है। शुल्क देने के बाद लोन नहीं आता और वे गायब हो जाते हैं।',
+            },
+            {
+              color: 'pink', title: en ? '5. TRAI / SIM Block' : '5. TRAI / SIM ब्लॉक',
+              body: en
+                ? 'Fake TRAI message claims your mobile number will be disconnected for illegal use. They ask you to "verify" by calling them — it\'s a trap to extort money.'
+                : 'नकली TRAI संदेश कहता है कि आपका नंबर गैरकानूनी उपयोग के लिए बंद होगा। "सत्यापन" के लिए कॉल करवाते हैं — यह पैसे वसूलने का जाल है।',
+            },
+          ].map(({ color, title, body }) => (
+            <div key={title} className={`bg-${color}-900/20 rounded-xl border border-${color}-500/50 p-5`}>
+              <h3 className={`font-bold text-${color}-400 mb-2`}>{title}</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">{body}</p>
             </div>
-            <div className="bg-orange-900/20 rounded-xl border border-orange-500/50 p-6">
-              <h3 className="font-bold text-orange-400 mb-2">
-                {lang === 'en' ? '2. KYC Update Scams' : '2. KYC अपडेट स्कैम'}
-              </h3>
-              <p className="text-gray-300 text-sm">
-                {lang === 'en'
-                  ? 'Fake urgency about KYC updates with phishing links. Real banks use official channels.'
-                  : 'फ़िशिंग लिंक के साथ KYC अपडेट के बारे में नकली दबाव। असली बैंक आधिकारिक चैनल उपयोग करते हैं।'}
-              </p>
-            </div>
-            <div className="bg-yellow-900/20 rounded-xl border border-yellow-500/50 p-6">
-              <h3 className="font-bold text-yellow-400 mb-2">
-                {lang === 'en' ? '3. Prize/Lottery Scams' : '3. पुरस्कार/लॉटरी स्कैम'}
-              </h3>
-              <p className="text-gray-300 text-sm">
-                {lang === 'en'
-                  ? 'Messages claiming you won prizes asking for fees. No legitimate lottery asks for money upfront.'
-                  : 'पुरस्कार जीतने का दावा करने वाले संदेश शुल्क मांगते हैं। कोई वैध लॉटरी पहले पैसे नहीं मांगती।'}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+          ))}
 
-      {/* Stats Tab */}
-      {activeTab === 'stats' && (
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-red-900/40 to-orange-900/40 backdrop-blur rounded-2xl border-2 border-red-500 p-8 text-center">
-            <TrendingUp className="w-12 h-12 text-red-400 mx-auto mb-4" />
-            <p className="text-5xl font-bold text-red-400 mb-2">847</p>
-            <p className="text-gray-300">
-              {lang === 'en' ? 'SMS Scam Patterns Detected' : 'SMS स्कैम पैटर्न पाए गए'}
-            </p>
-          </div>
-          <div className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 backdrop-blur rounded-2xl border-2 border-green-500 p-8 text-center">
-            <Shield className="w-12 h-12 text-green-400 mx-auto mb-4" />
-            <p className="text-5xl font-bold text-green-400 mb-2">99.2%</p>
-            <p className="text-gray-300">
-              {lang === 'en' ? 'Detection Accuracy' : 'पहचान सटीकता'}
-            </p>
-          </div>
+          <a
+            href="https://cybercrime.gov.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 transition mt-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            {en ? 'Report a scam at cybercrime.gov.in' : 'cybercrime.gov.in पर स्कैम रिपोर्ट करें'}
+          </a>
         </div>
       )}
     </div>

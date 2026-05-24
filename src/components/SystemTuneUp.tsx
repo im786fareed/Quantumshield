@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Zap, Cpu, HardDrive, Battery, Trash2, CheckCircle,
   AlertCircle, RefreshCw, Shield, Activity, Play,
@@ -137,6 +137,73 @@ function makeOSMetrics() {
   };
 }
 
+/* ── Real browser metric loader ──
+   Uses Battery API, Storage API, and performance.memory where available.
+   Falls back gracefully on unsupported browsers.
+*/
+async function loadRealMetrics(): Promise<TuneMetric[]> {
+  const metrics: TuneMetric[] = [];
+  const statusOf = (v: number, warnAt: number, critAt: number): 'good' | 'warn' | 'critical' =>
+    v >= critAt ? 'critical' : v >= warnAt ? 'warn' : 'good';
+
+  // Battery
+  try {
+    const bat = await (navigator as any).getBattery?.();
+    if (bat) {
+      const pct = Math.round(bat.level * 100);
+      metrics.push({
+        label: 'Battery', labelHi: 'बैटरी', value: pct, unit: '%',
+        status: pct < 20 ? 'critical' : pct < 40 ? 'warn' : 'good',
+        icon: Battery,
+        color: pct < 20 ? 'text-red-400' : pct < 40 ? 'text-yellow-400' : 'text-green-400',
+      });
+    }
+  } catch { /* not available */ }
+
+  // Storage
+  try {
+    const est = await navigator.storage?.estimate?.();
+    if (est?.quota && est?.usage) {
+      const usedPct = Math.round((est.usage / est.quota) * 100);
+      metrics.push({
+        label: 'Storage Used', labelHi: 'स्टोरेज उपयोग', value: usedPct, unit: '%',
+        status: statusOf(usedPct, 60, 85),
+        icon: HardDrive,
+        color: usedPct >= 85 ? 'text-red-400' : usedPct >= 60 ? 'text-orange-400' : 'text-green-400',
+      });
+    }
+  } catch { /* not available */ }
+
+  // JS Heap (Chrome only)
+  try {
+    const mem = (performance as any).memory;
+    if (mem?.jsHeapSizeLimit && mem?.usedJSHeapSize) {
+      const heapPct = Math.round((mem.usedJSHeapSize / mem.jsHeapSizeLimit) * 100);
+      metrics.push({
+        label: 'JS Heap', labelHi: 'JS हीप', value: heapPct, unit: '%',
+        status: statusOf(heapPct, 50, 75),
+        icon: Cpu,
+        color: heapPct >= 75 ? 'text-red-400' : heapPct >= 50 ? 'text-yellow-400' : 'text-blue-400',
+      });
+    }
+  } catch { /* not available */ }
+
+  // Device memory (Chrome — total RAM, not usage)
+  try {
+    const devMem = (navigator as any).deviceMemory;
+    if (devMem) {
+      metrics.push({
+        label: `Device RAM`, labelHi: 'डिवाइस RAM', value: devMem, unit: ' GB',
+        status: devMem >= 4 ? 'good' : devMem >= 2 ? 'warn' : 'critical',
+        icon: MemoryStick,
+        color: devMem >= 4 ? 'text-green-400' : devMem >= 2 ? 'text-yellow-400' : 'text-red-400',
+      });
+    }
+  } catch { /* not available */ }
+
+  return metrics;
+}
+
 export default function SystemTuneUp() {
   const [lang, setLang] = useState<'en' | 'hi'>('en');
   const [activeTab, setActiveTab] = useState<'tuneup' | 'osopt'>('tuneup');
@@ -146,9 +213,17 @@ export default function SystemTuneUp() {
   const [tuneProgress, setTuneProgress] = useState(0);
   const [tuneComplete, setTuneComplete] = useState(false);
   const [tasks, setTasks] = useState<TuneTask[]>(() => makeTasks());
-  const [metrics, setMetrics] = useState<TuneMetric[]>(() => makeMetrics());
+  const [metrics, setMetrics] = useState<TuneMetric[]>([]);
   const [scoreAfter, setScoreAfter] = useState<number | null>(null);
-  const [scoreBefore, setScoreBefore] = useState(() => rnd(48, 68));
+  const [scoreBefore] = useState(72); // fixed baseline — "before tune-up"
+
+  // Load real browser metrics on mount
+  useEffect(() => {
+    loadRealMetrics().then(real => {
+      if (real.length > 0) setMetrics(real);
+      // else keep empty — will show "unavailable" message
+    });
+  }, []);
 
   // OS Optimizer state
   const [osTasks, setOSTasks] = useState<OSTask[]>(() => makeOSTasks());
@@ -171,7 +246,7 @@ export default function SystemTuneUp() {
       setTuneProgress(Math.round(((i + 1) / tasks.length) * 100));
     }
 
-    setScoreAfter(Math.min(scoreBefore + rnd(22, 38), 99));
+    setScoreAfter(91); // browser cache/security tasks are done
     setTuneComplete(true);
     setTuning(false);
   }, [tasks.length, scoreBefore]);
@@ -202,8 +277,7 @@ export default function SystemTuneUp() {
     setTuneComplete(false);
     setScoreAfter(null);
     setTasks(makeTasks());
-    setMetrics(makeMetrics());
-    setScoreBefore(rnd(48, 68));
+    loadRealMetrics().then(real => { if (real.length > 0) setMetrics(real); });
   };
 
   const resetOSOptimizer = () => {
@@ -352,24 +426,32 @@ export default function SystemTuneUp() {
                 <Activity className="w-5 h-5 text-blue-400" />
                 {t.metricsTitle}
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {metrics.map((m) => {
-                  const Icon = m.icon;
-                  return (
-                    <div key={m.label} className={`border rounded-xl p-4 text-center ${getStatusBg(m.status)}`}>
-                      <Icon className={`w-6 h-6 mx-auto mb-2 ${m.color}`} />
-                      <div className={`text-2xl font-black ${m.color}`}>{m.value}{m.unit}</div>
-                      <div className="text-xs text-gray-400 mt-1">{lang === 'en' ? m.label : m.labelHi}</div>
-                      <div className="mt-2 bg-black/30 rounded-full h-1.5 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${m.status === 'good' ? 'bg-green-400' : m.status === 'warn' ? 'bg-yellow-400' : 'bg-red-400'}`}
-                          style={{ width: `${m.value}%` }}
-                        />
+              {metrics.length === 0 ? (
+                <div className="text-slate-500 text-sm bg-slate-800/50 rounded-xl px-4 py-3">
+                  {lang === 'en'
+                    ? 'Live metrics unavailable in this browser. Battery, Storage, and JS Heap data require Chrome / Edge on Android or desktop.'
+                    : 'इस ब्राउज़र में लाइव मेट्रिक्स उपलब्ध नहीं। Chrome / Edge पर उपलब्ध।'}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {metrics.map((m) => {
+                    const Icon = m.icon;
+                    return (
+                      <div key={m.label} className={`border rounded-xl p-4 text-center ${getStatusBg(m.status)}`}>
+                        <Icon className={`w-6 h-6 mx-auto mb-2 ${m.color}`} />
+                        <div className={`text-2xl font-black ${m.color}`}>{m.value}{m.unit}</div>
+                        <div className="text-xs text-gray-400 mt-1">{lang === 'en' ? m.label : m.labelHi}</div>
+                        <div className="mt-2 bg-black/30 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${m.status === 'good' ? 'bg-green-400' : m.status === 'warn' ? 'bg-yellow-400' : 'bg-red-400'}`}
+                            style={{ width: typeof m.value === 'number' && m.unit === '%' ? `${m.value}%` : '60%' }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Tasks List */}

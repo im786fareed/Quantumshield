@@ -34,13 +34,13 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // FIXED: Added YouTube domains to allow scripts and styles for education videos
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://*.youtube.com https://s.ytimg.com https://*.youtube-nocookie.com",
+      // FIXED: Added YouTube + MediaPipe CDN. Removed unsafe-eval (not needed in production builds)
+      "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://*.youtube.com https://s.ytimg.com https://*.youtube-nocookie.com https://cdn.jsdelivr.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com",
-      // FIXED: connect-src allows the AI and DNS tests to reach external APIs
-      "connect-src 'self' https://*.vercel.app https://vitals.vercel-insights.com https://*.vercel-insights.com https://1.1.1.1",
+      // FIXED: connect-src allows AI, DNS tests, MediaPipe WASM, and phish.rocks URL lookup
+      "connect-src 'self' https://*.vercel.app https://vitals.vercel-insights.com https://*.vercel-insights.com https://1.1.1.1 https://cdn.jsdelivr.net https://api.phish.rocks",
       // FIXED: frame-src is CRITICAL to allow the Education page to show YouTube videos
       "frame-src 'self' https://www.youtube.com https://youtube.com https://*.youtube.com https://*.youtube-nocookie.com",
       "frame-ancestors 'none'",

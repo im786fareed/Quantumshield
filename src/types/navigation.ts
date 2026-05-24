@@ -26,6 +26,7 @@ export const TAB_IDS = [
   'awareness',
   'privacy',
   'system-guardian',
+  'phoneguard',
 ] as const;
 
 export type TabId = (typeof TAB_IDS)[number];

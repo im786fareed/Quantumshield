@@ -40,6 +40,7 @@ const LABELS: Record<TabId, string> = {
   awareness: 'Scam Awareness',
   privacy: 'Privacy Shield',
   'system-guardian': 'System Guardian',
+  phoneguard: 'Phone Number Guard',
 };
 
 export default function CommandPalette() {

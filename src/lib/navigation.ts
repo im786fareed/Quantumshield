@@ -20,6 +20,7 @@ import {
   MessageCircle,
   Newspaper,
   Search,
+  PhoneCall,
 } from 'lucide-react';
 
 export type NavItem = {
@@ -57,6 +58,7 @@ export const NAV_ITEMS: Record<'en' | 'hi', NavItem[]> = {
     { id: 'awareness', label: 'Scam Alerts', icon: Newspaper },
     { id: 'privacy', label: 'Privacy Shield', icon: Lock },
     { id: 'system-guardian', label: 'System Guardian', icon: Shield },
+    { id: 'phoneguard', label: 'Phone Guard', icon: PhoneCall },
   ],
   hi: [
     { id: 'home', label: 'होम', icon: Home },
@@ -86,5 +88,6 @@ export const NAV_ITEMS: Record<'en' | 'hi', NavItem[]> = {
     { id: 'awareness', label: 'घोटाला अलर्ट', icon: Newspaper },
     { id: 'privacy', label: 'गोपनीयता शील्ड', icon: Lock },
     { id: 'system-guardian', label: 'सिस्टम गार्जियन', icon: Shield },
+    { id: 'phoneguard', label: 'फोन गार्ड', icon: PhoneCall },
   ],
 };

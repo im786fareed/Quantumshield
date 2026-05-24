@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Android build secrets & helpers
+android/keystore-base64.txt
+scripts/b64.js

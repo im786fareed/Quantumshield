@@ -5,7 +5,7 @@ import {
   Lock, Scan, Smartphone, Globe, Activity,
   Brain, BookOpen, Newspaper, Bell, ChevronDown,
   Zap, CreditCard, Scale, MessageSquare, Database,
-  TrendingUp, X, ExternalLink
+  TrendingUp, X, ExternalLink, PhoneCall
 } from 'lucide-react';
 
 interface Tool {
@@ -91,6 +91,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     { id: 'reporter',     name: 'Police Reporter',     nameHi: 'पुलिस रिपोर्टर',   description: 'Generate structured FIR-ready report',     descriptionHi: 'FIR रिपोर्ट बनाएं',               icon: FileText,     path: '/reporter',        category: 'more' },
     { id: 'whatsapp',     name: 'WhatsApp Guard',      nameHi: 'WhatsApp गार्ड',   description: 'Detect ghost pairing & account hijack',    descriptionHi: 'Ghost pairing पहचान',              icon: MessageSquare,path: '/whatsapp',        category: 'more' },
     { id: 'aboutai',      name: 'About Our AI',        nameHi: 'हमारा AI',         description: 'How QuantumShield\'s AI engine works',     descriptionHi: 'AI इंजन कैसे काम करता है',         icon: Brain,        path: '/aboutai',         category: 'more' },
+    { id: 'phoneguard',   name: 'Phone Number Guard',  nameHi: 'फोन नंबर गार्ड',   description: 'Detect scam calls · TRAI · VoIP · Spoofed', descriptionHi: 'स्कैम कॉल पहचान · TRAI · VoIP',    icon: PhoneCall,    path: '/phoneguard',      category: 'antifraud' },
   ];
 
   /* ── Real 2025-26 threat data ── */
