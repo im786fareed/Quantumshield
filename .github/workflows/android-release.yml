@@ -4,13 +4,13 @@ on:
   push:
     branches: [main]
     tags: ['v*']
-  workflow_dispatch:   # ← lets you manually trigger from GitHub Actions tab
+  workflow_dispatch:   # ← manually trigger from GitHub Actions tab
 
 jobs:
   build-android:
     name: Build & Sign Android AAB
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       # ── 1. Checkout ──────────────────────────────────────────────────────
@@ -32,70 +32,89 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      # ── 4. Android SDK (command-line tools) ──────────────────────────────
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # ── 4. Android SDK — accept licences + install API 36 ────────────────
+      #    ubuntu-latest already has the Android SDK at $ANDROID_HOME.
+      #    We just need to install the specific API level the project requires.
+      - name: Accept Android SDK licences
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || \
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || \
+          true
+
+      - name: Install Android API 36 + build-tools
+        run: |
+          SDK=$ANDROID_HOME
+          MGR="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          # Fallback path for some runner images
+          [ -f "$MGR" ] || MGR="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          # Install the components our project needs
+          "$MGR" \
+            "platforms;android-36" \
+            "build-tools;36.0.0" \
+            "platform-tools"
+          echo "Android SDK ready:"
+          echo "  compileSdkVersion=36"
+          ls "$SDK/platforms/" 2>/dev/null || true
 
       # ── 5. Install npm dependencies ──────────────────────────────────────
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: npm ci
 
-      # ── 6. Create placeholder web dir (Capacitor uses server.url live) ───
-      #    The APK loads from https://quantumguard.vercel.app — the 'out'
-      #    folder is only used when there is NO server.url. We create a
-      #    stub so 'npx cap sync' doesn't fail.
+      # ── 6. Create stub web output dir ────────────────────────────────────
+      #    The APK loads from https://quantumguard.vercel.app via server.url.
+      #    The local 'out/' folder is not used but Capacitor sync requires it.
       - name: Create stub web output directory
         run: |
           mkdir -p out
           echo '<html><body>QuantumShield</body></html>' > out/index.html
 
-      # ── 7. Capacitor sync (copies config into Android project) ───────────
+      # ── 7. Capacitor sync ─────────────────────────────────────────────────
       - name: Sync Capacitor → Android
         run: npx cap sync android
 
-      # ── 8. Write google-services.json (optional — only for push notifications)
-      #    If you don't have a Firebase project, leave the secret empty.
-      #    The build.gradle already handles the missing-file case gracefully.
+      # ── 8. google-services.json (optional — push notifications only) ──────
       - name: Write google-services.json
         run: |
           if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
             echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
           fi
-          # If secret is not set, the file simply won't exist and Firebase/FCM
-          # will be skipped by the try/catch in app/build.gradle — that's fine.
 
-      # ── 9. Decode keystore (stored as base64 GitHub Secret) ──────────────
-      - name: Decode keystore
+      # ── 9. Restore signing keystore ───────────────────────────────────────
+      - name: Decode keystore from secret
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/quantumshield-release.jks
+          echo "Keystore decoded: $(ls -lh android/quantumshield-release.jks)"
 
       # ── 10. Write keystore.properties ────────────────────────────────────
-      #    storeFile is relative to the android/ folder (where build.gradle is)
+      #    Uses printf to avoid any heredoc indentation issues.
       - name: Write keystore.properties
         run: |
-          cat > android/keystore.properties << 'EOF'
-          storeFile=quantumshield-release.jks
-          storePassword=${{ secrets.KEYSTORE_STORE_PASSWORD }}
-          keyAlias=quantumshield
-          keyPassword=${{ secrets.KEYSTORE_KEY_PASSWORD }}
-          EOF
+          printf 'storeFile=quantumshield-release.jks\nstorePassword=${{ secrets.KEYSTORE_STORE_PASSWORD }}\nkeyAlias=quantumshield\nkeyPassword=${{ secrets.KEYSTORE_KEY_PASSWORD }}\n' \
+            > android/keystore.properties
+          echo "keystore.properties written:"
+          cat android/keystore.properties
 
       # ── 11. Gradle permissions ────────────────────────────────────────────
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # ── 12. Build signed release AAB (for Play Store) ────────────────────
+      # ── 12. Build signed release AAB (Play Store) ─────────────────────────
       - name: Build release AAB
         working-directory: android
         run: ./gradlew bundleRelease --no-daemon --stacktrace
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          JAVA_HOME: ${{ env.JAVA_HOME }}
 
-      # ── 13. Build signed release APK (for direct device testing) ─────────
+      # ── 13. Build signed release APK (direct install / testing) ──────────
       - name: Build release APK
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
       # ── 14. Upload AAB artifact ───────────────────────────────────────────
-      - name: Upload AAB
+      - name: Upload AAB (Play Store bundle)
         uses: actions/upload-artifact@v4
         with:
           name: QuantumShield-v${{ github.run_number }}.aab
@@ -103,14 +122,14 @@ jobs:
           retention-days: 30
 
       # ── 15. Upload APK artifact ───────────────────────────────────────────
-      - name: Upload APK
+      - name: Upload APK (direct install)
         uses: actions/upload-artifact@v4
         with:
           name: QuantumShield-v${{ github.run_number }}.apk
           path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
 
-      # ── 16. Create GitHub Release (only on tag push like v1.1) ────────────
+      # ── 16. GitHub Release on tag push (e.g. git tag v1.1 && git push --tags)
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
