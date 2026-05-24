@@ -8,6 +8,7 @@ import Logo from "@/components/Logo";
 import InstallPrompt from "@/components/InstallPrompt";
 import CommandPalette from "@/components/CommandPalette";
 import ConsentPopup from "@/components/ConsentPopup"; // The Legal Layer
+import FloatingRecorder from "@/components/FloatingRecorder";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({
         <ConsentPopup />
         <InstallPrompt />
         <CommandPalette />
+        <FloatingRecorder />
 
         {/* TOP NAVIGATION HEADER */}
         <header className="border-b border-white/10 bg-black/60 backdrop-blur sticky top-0 z-50">
