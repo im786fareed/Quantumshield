@@ -60,13 +60,11 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      # ── 6. Create stub web output dir ────────────────────────────────────
-      #    The APK loads from https://quantumguard.vercel.app via server.url.
-      #    The local 'out/' folder is not used but Capacitor sync requires it.
-      - name: Create stub web output directory
-        run: |
-          mkdir -p out
-          echo '<html><body>QuantumShield</body></html>' > out/index.html
+      # ── 6. Build the real web bundle into out/ ───────────────────────────
+      #    The APK ships the full app (Google Play "minimum functionality").
+      #    API calls go to the production deployment via src/lib/apiBase.ts.
+      - name: Build static web bundle
+        run: npm run build:android
 
       # ── 7. Capacitor sync ─────────────────────────────────────────────────
       - name: Sync Capacitor → Android

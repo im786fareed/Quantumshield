@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { ShieldCheck, AlertTriangle, Search, ExternalLink, Database } from 'lucide-react';
+import { apiUrl } from '@/lib/apiBase';
 
 interface BreachResult {
   breached: boolean;
@@ -72,7 +73,7 @@ export default function DataBreachChecker({ lang = 'en' }: { lang?: 'en' | 'hi' 
     setResult(null);
     setError(null);
     try {
-      const res = await fetch('/api/check-breach', {
+      const res = await fetch(apiUrl('/api/check-breach'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: trimmed }),

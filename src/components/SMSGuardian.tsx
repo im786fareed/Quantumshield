@@ -1,6 +1,7 @@
 'use client';
 import { MessageSquare, Shield, AlertTriangle, CheckCircle, XCircle, TrendingUp, Loader2, ExternalLink, Info } from 'lucide-react';
 import { useState } from 'react';
+import { apiUrl } from '@/lib/apiBase';
 
 interface Props { lang: 'en' | 'hi' }
 
@@ -30,7 +31,7 @@ export default function SMSGuardian({ lang }: Props) {
     setResult(null);
     setError('');
     try {
-      const res  = await fetch('/api/check-spam', {
+      const res  = await fetch(apiUrl('/api/check-spam'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),

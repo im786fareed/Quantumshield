@@ -53,15 +53,27 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // This ensures the security headers are applied to every page of your app
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: securityHeaders,
-      },
-    ];
-  },
+
+  // CAPACITOR_BUILD=true → static export bundled into the Android APK.
+  // API routes are excluded by scripts/build-android.mjs; the app calls
+  // the production deployment instead (see src/lib/apiBase.ts).
+  ...(process.env.CAPACITOR_BUILD === "true"
+    ? {
+        output: "export" as const,
+        images: { unoptimized: true },
+      }
+    : {
+        // Security headers apply to the server deployment only
+        // (static export cannot set response headers).
+        async headers() {
+          return [
+            {
+              source: "/(.*)",
+              headers: securityHeaders,
+            },
+          ];
+        },
+      }),
 };
 
 export default nextConfig;

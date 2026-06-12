@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build --webpack",
+    "build:android": "node scripts/build-android.mjs",
     "start": "next start",
     "lint": "next lint"
   },

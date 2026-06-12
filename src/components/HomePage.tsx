@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import {
   Shield, AlertTriangle, Phone, FileText, Mic,
-  Lock, Scan, Smartphone, Globe, Activity,
-  Brain, BookOpen, Newspaper, Bell, ChevronDown,
+  Lock, Scan, Smartphone, Activity,
+  Brain, BookOpen, Newspaper, Bell, ChevronDown, ChevronUp,
   Zap, CreditCard, Scale, MessageSquare, Database,
-  TrendingUp, X, ExternalLink, PhoneCall
+  TrendingUp, X, ExternalLink, PhoneCall, Users, Link2, ArrowRight
 } from 'lucide-react';
 
 interface Tool {
@@ -22,76 +22,101 @@ interface Tool {
 export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   const [language] = useState<'en' | 'hi'>(lang);
   const [betaDismissed, setBetaDismissed] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   /* ── i18n ── */
   const t = {
     en: {
       betaText: 'BETA — Some features are demonstrations. For actual cybercrime report to',
       title: 'QuantumShield',
-      subtitle: 'AI-Powered Cyber Protection for India',
-      tagline: 'On-device · Zero storage · Free forever',
+      pitch: 'When a scammer has you on the phone,',
+      pitchAccent: 'your phone warns you — and your family knows.',
+      tagline: 'AI-powered protection during the scam, not after · Free forever',
+      heroCallTitle: 'AI Call Analyzer',
+      heroCallDesc: 'Listens to a suspicious call live, on your device, and warns you the moment digital-arrest or fraud patterns appear.',
+      heroCallCta: 'Start live protection',
+      heroCbTitle: 'Circuit Breaker',
+      heroCbDesc: 'The instant a scam is detected, your chosen family members get an alert with your location. Scammers depend on isolating you — this breaks it.',
+      heroCbCta: 'Set up family alerts',
+      quickTitle: 'Got something suspicious right now?',
+      quickMsg: 'Check a message', quickMsgDesc: 'SMS · WhatsApp · Email',
+      quickUrl: 'Check a link', quickUrlDesc: 'Phishing & fake sites',
+      quickNum: 'Check a number', quickNumDesc: 'Scam caller lookup',
       statsCases: '28.15 Lakh', statsCasesLabel: 'Cases in India 2025',
-      statsLost: '₹22,495 Cr',  statsLostLabel: 'Lost to fraud 2025',
-      statsSaved: '₹8,189 Cr',  statsSavedLabel: 'Saved by I4C helpline',
+      statsLost: '₹22,495 Cr', statsLostLabel: 'Lost to fraud 2025',
+      statsSaved: '₹8,189 Cr', statsSavedLabel: 'Saved by I4C helpline',
       statsSource: 'Source: I4C / MHA Annual Report, Feb 2026',
+      coreTitle: 'Core Protection',
+      threatsTitle: 'Live Threat Watch · India 2025–26',
+      showAllBtn: 'All tools',
+      hideAllBtn: 'Hide extra tools',
       secEmergency: '🚨 Emergency',
       secScan: '🔍 Scan & Detect',
       secProtect: '🛡️ Protect',
       secLearn: '📚 Learn',
       secAntifraud: '⚡ Anti-Fraud',
       secMore: '🔧 More Tools',
-      threatsTitle: 'Live Threat Watch · India 2025–26',
     },
     hi: {
       betaText: 'बीटा — कुछ फीचर प्रदर्शन हैं। साइबर अपराध के लिए',
       title: 'क्वांटमशील्ड',
-      subtitle: 'भारत के लिए AI साइबर सुरक्षा',
-      tagline: 'ऑन-डिवाइस · जीरो स्टोरेज · हमेशा मुफ्त',
+      pitch: 'जब स्कैमर आपको फोन पर फंसाए,',
+      pitchAccent: 'आपका फोन आपको चेताएगा — और परिवार को पता चलेगा।',
+      tagline: 'स्कैम के दौरान सुरक्षा, बाद में नहीं · हमेशा मुफ्त',
+      heroCallTitle: 'AI कॉल विश्लेषक',
+      heroCallDesc: 'संदिग्ध कॉल को आपके डिवाइस पर लाइव सुनता है और डिजिटल-अरेस्ट या धोखाधड़ी के संकेत मिलते ही चेतावनी देता है।',
+      heroCallCta: 'लाइव सुरक्षा शुरू करें',
+      heroCbTitle: 'सर्किट ब्रेकर',
+      heroCbDesc: 'स्कैम पकड़ते ही आपके चुने परिवार के सदस्यों को आपकी लोकेशन के साथ अलर्ट मिलता है। स्कैमर आपको अकेला करके लूटते हैं — यह उस अकेलेपन को तोड़ता है।',
+      heroCbCta: 'परिवार अलर्ट सेट करें',
+      quickTitle: 'अभी कुछ संदिग्ध मिला है?',
+      quickMsg: 'मैसेज जांचें', quickMsgDesc: 'SMS · WhatsApp · ईमेल',
+      quickUrl: 'लिंक जांचें', quickUrlDesc: 'फ़िशिंग और नकली साइट',
+      quickNum: 'नंबर जांचें', quickNumDesc: 'स्कैम कॉलर खोज',
       statsCases: '28.15 लाख', statsCasesLabel: '2025 में साइबर मामले',
       statsLost: '₹22,495 करोड़', statsLostLabel: '2025 में नुकसान',
       statsSaved: '₹8,189 करोड़', statsSavedLabel: 'I4C ने बचाए',
       statsSource: 'स्रोत: I4C / MHA वार्षिक रिपोर्ट, फरवरी 2026',
+      coreTitle: 'मुख्य सुरक्षा',
+      threatsTitle: 'लाइव खतरे · भारत 2025–26',
+      showAllBtn: 'सभी टूल',
+      hideAllBtn: 'अतिरिक्त टूल छिपाएं',
       secEmergency: '🚨 आपातकाल',
       secScan: '🔍 स्कैन',
       secProtect: '🛡️ सुरक्षा',
       secLearn: '📚 सीखें',
       secAntifraud: '⚡ एंटी-फ्रॉड',
       secMore: '🔧 अधिक टूल',
-      threatsTitle: 'लाइव खतरे · भारत 2025–26',
     }
   }[language];
 
-  /* ── Tools ── */
-  const TOOLS: Tool[] = [
-    // Emergency
-    { id: 'circuitbreaker', name: 'Circuit Breaker',     nameHi: 'सर्किट ब्रेकर',    description: 'Anti-isolation · 6h unknown call alert',  descriptionHi: '6 घंटे अज्ञात कॉल → परिवार अलर्ट', icon: Zap,          path: '/circuit-breaker', category: 'emergency' },
-    { id: 'evidence',     name: 'Evidence Vault',      nameHi: 'एविडेंस वॉल्ट',    description: 'Record tamper-proof video proof',          descriptionHi: 'वीडियो सबूत रिकॉर्ड करें',         icon: FileText,     path: '/evidence',        category: 'emergency' },
-    { id: 'emergency',    name: 'Emergency Contacts',  nameHi: 'आपातकालीन संपर्क',  description: 'One-tap 1930 & cybercrime helpline',       descriptionHi: '1930 त्वरित पहुंच',                icon: Phone,        path: '/emergency',       category: 'emergency' },
-    { id: 'aianalyzer',   name: 'AI Call & Deepfake Analyzer', nameHi: 'AI कॉल और डीपफेक विश्लेषक', description: 'Detect voice clones, synthetic video calls, and scam scripts', descriptionHi: 'आवाज क्लोन, नकली वीडियो कॉल और धोखाधड़ी बातचीत की पहचान', icon: Mic, path: '/aianalyzer', category: 'emergency' },
-    // Scan
-    { id: 'scanner',      name: 'AI Universal Scanner',nameHi: 'AI यूनिवर्सल स्कैनर',description: 'URLs · Files · APKs · Steganography',    descriptionHi: 'URL, फ़ाइल, APK स्कैन',            icon: Scan,         path: '/scanner',         category: 'scan' },
-    { id: 'devicescan',   name: 'Device Scanner',      nameHi: 'डिवाइस स्कैनर',    description: 'Full device security assessment',          descriptionHi: 'डिवाइस सुरक्षा जांच',             icon: Smartphone,   path: '/devicescan',      category: 'scan' },
-    // Protect
-    { id: 'simprotect',   name: 'SIM Protection',      nameHi: 'SIM सुरक्षा',       description: 'Detect SIM swap attacks',                  descriptionHi: 'SIM स्वैप पहचान',                  icon: Smartphone,   path: '/simprotection',   category: 'protect' },
-    { id: 'privacy',      name: 'Privacy Shield',      nameHi: 'गोपनीयता ढाल',     description: 'Audit app permissions & data leaks',       descriptionHi: 'ऐप अनुमति ऑडिट',                   icon: Lock,         path: '/privacy',         category: 'protect' },
-    { id: 'guardian',     name: 'System Guardian',     nameHi: 'सिस्टम गार्जियन',  description: 'Breach check & ransomware protection',     descriptionHi: 'ब्रीच और रैनसमवेयर सुरक्षा',      icon: Shield,       path: '/system-guardian', category: 'protect' },
-    { id: 'device',       name: 'Device Health',       nameHi: 'डिवाइस स्वास्थ्य', description: 'Overall security health score',            descriptionHi: 'सुरक्षा स्वास्थ्य स्कोर',          icon: Activity,     path: '/device',          category: 'protect' },
-    { id: 'encryption',   name: 'File Encryption',     nameHi: 'फ़ाइल एन्क्रिप्शन', description: 'Encrypt sensitive files on-device',        descriptionHi: 'फ़ाइलें एन्क्रिप्ट करें',           icon: Lock,         path: '/encryption',      category: 'protect' },
-    // Anti-Fraud
-    { id: 'tuneup',       name: 'System Tune-Up',      nameHi: 'सिस्टम ट्यून-अप',  description: 'One-tap RAM clean · cache wipe · sweep',   descriptionHi: 'एक टैप: RAM, कैश, सुरक्षा जांच', icon: Zap,          path: '/tuneup',          category: 'antifraud' },
-    { id: 'upiguard',     name: 'UPI & QR Guard',      nameHi: 'UPI/QR गार्ड',     description: 'Detect fake UPI IDs before you pay',       descriptionHi: 'नकली UPI ID पकड़ें',               icon: CreditCard,   path: '/upi-guard',       category: 'antifraud' },
-    { id: 'legalaid',     name: 'Cyber Legal First Aid',nameHi: 'साइबर कानूनी सहायता',description: 'Digital Arrest guide · FIR · Rights',   descriptionHi: 'डिजिटल अरेस्ट गाइड + FIR',        icon: Scale,        path: '/legal-aid',       category: 'antifraud' },
-    // Learn
-    { id: 'education',    name: 'Learn Safety',        nameHi: 'सुरक्षा सीखें',    description: '48 expert fraud awareness videos',         descriptionHi: '48 विशेषज्ञ वीडियो',               icon: BookOpen,     path: '/education',       category: 'learn' },
-    { id: 'awareness',    name: 'Scam Awareness',      nameHi: 'स्कैम जागरूकता',   description: 'Latest scam alerts & patterns',            descriptionHi: 'नवीनतम स्कैम अलर्ट',              icon: Bell,         path: '/awareness',       category: 'learn' },
-    { id: 'news',         name: 'Cyber News',          nameHi: 'साइबर समाचार',     description: 'Real-time fraud news · verified sources',  descriptionHi: 'सत्यापित साइबर समाचार',            icon: Newspaper,    path: '/news',            category: 'learn' },
-    // More
-    { id: 'scamdb',       name: 'Scam Database',       nameHi: 'स्कैम डेटाबेस',    description: 'Search known scammer numbers & patterns',  descriptionHi: 'स्कैमर नंबर खोजें',               icon: Database,     path: '/scamdb',          category: 'more' },
-    { id: 'threats',      name: 'Threat Intelligence', nameHi: 'खतरा विश्लेषण',    description: 'Live threat map & intelligence feed',      descriptionHi: 'लाइव खतरा मैप',                    icon: TrendingUp,   path: '/threats',         category: 'more' },
-    { id: 'reporter',     name: 'Police Reporter',     nameHi: 'पुलिस रिपोर्टर',   description: 'Generate structured FIR-ready report',     descriptionHi: 'FIR रिपोर्ट बनाएं',               icon: FileText,     path: '/reporter',        category: 'more' },
-    { id: 'whatsapp',     name: 'WhatsApp Guard',      nameHi: 'WhatsApp गार्ड',   description: 'Detect ghost pairing & account hijack',    descriptionHi: 'Ghost pairing पहचान',              icon: MessageSquare,path: '/whatsapp',        category: 'more' },
-    { id: 'aboutai',      name: 'About Our AI',        nameHi: 'हमारा AI',         description: 'How QuantumShield\'s AI engine works',     descriptionHi: 'AI इंजन कैसे काम करता है',         icon: Brain,        path: '/aboutai',         category: 'more' },
-    { id: 'phoneguard',   name: 'Phone Number Guard',  nameHi: 'फोन नंबर गार्ड',   description: 'Detect scam calls · TRAI · VoIP · Spoofed', descriptionHi: 'स्कैम कॉल पहचान · TRAI · VoIP',    icon: PhoneCall,    path: '/phoneguard',      category: 'antifraud' },
+  /* ── Core tools — the curated grid shown to everyone ── */
+  const CORE_TOOLS: Tool[] = [
+    { id: 'scanner',    name: 'AI Scam Scanner',      nameHi: 'AI स्कैम स्कैनर',     description: 'Paste any message — AI explains if it\'s a scam', descriptionHi: 'कोई भी मैसेज पेस्ट करें — AI बताएगा स्कैम है या नहीं', icon: Scan,       path: '/scanner',        category: 'core' },
+    { id: 'upiguard',   name: 'UPI & QR Guard',       nameHi: 'UPI/QR गार्ड',        description: 'Detect fake UPI IDs before you pay',             descriptionHi: 'भुगतान से पहले नकली UPI ID पकड़ें',                   icon: CreditCard, path: '/upi-guard',      category: 'core' },
+    { id: 'evidence',   name: 'Evidence Vault',       nameHi: 'एविडेंस वॉल्ट',       description: 'Record tamper-proof proof of the scam',          descriptionHi: 'स्कैम का पक्का सबूत रिकॉर्ड करें',                     icon: FileText,   path: '/evidence',       category: 'core' },
+    { id: 'reporter',   name: 'Police Reporter',      nameHi: 'पुलिस रिपोर्टर',      description: 'Generate an FIR-ready complaint in minutes',     descriptionHi: 'मिनटों में FIR-तैयार शिकायत बनाएं',                    icon: Scale,      path: '/reporter',       category: 'core' },
+    { id: 'guardian',   name: 'Breach Check',         nameHi: 'ब्रीच जांच',          description: 'See if your email leaked in real data breaches', descriptionHi: 'जांचें कि आपका ईमेल डेटा लीक में है या नहीं',          icon: Database,   path: '/system-guardian',category: 'core' },
+    { id: 'education',  name: 'Learn Safety',         nameHi: 'सुरक्षा सीखें',        description: '48 expert fraud-awareness videos',               descriptionHi: '48 विशेषज्ञ वीडियो',                                   icon: BookOpen,   path: '/education',      category: 'core' },
+    { id: 'emergency',  name: 'Emergency: 1930',      nameHi: 'आपातकाल: 1930',       description: 'One-tap national cybercrime helpline',           descriptionHi: 'एक टैप में राष्ट्रीय हेल्पलाइन',                       icon: Phone,      path: '/emergency',      category: 'core' },
+    { id: 'legalaid',   name: 'Cyber Legal First Aid',nameHi: 'साइबर कानूनी सहायता', description: 'Digital Arrest guide · FIR · your rights',       descriptionHi: 'डिजिटल अरेस्ट गाइड · FIR · आपके अधिकार',              icon: Shield,     path: '/legal-aid',      category: 'core' },
+  ];
+
+  /* ── Everything else — available under "All tools" ── */
+  const MORE_TOOLS: Tool[] = [
+    { id: 'devicescan', name: 'Device Scanner',     nameHi: 'डिवाइस स्कैनर',    description: 'Full device security assessment',          descriptionHi: 'डिवाइस सुरक्षा जांच',          icon: Smartphone,    path: '/devicescan',     category: 'scan' },
+    { id: 'simprotect', name: 'SIM Protection',     nameHi: 'SIM सुरक्षा',       description: 'Detect SIM swap attacks',                  descriptionHi: 'SIM स्वैप पहचान',               icon: Smartphone,    path: '/simprotection',  category: 'protect' },
+    { id: 'privacy',    name: 'Privacy Shield',     nameHi: 'गोपनीयता ढाल',     description: 'Audit app permissions & data leaks',       descriptionHi: 'ऐप अनुमति ऑडिट',                icon: Lock,          path: '/privacy',        category: 'protect' },
+    { id: 'device',     name: 'Device Health',      nameHi: 'डिवाइस स्वास्थ्य', description: 'Overall security health score',            descriptionHi: 'सुरक्षा स्वास्थ्य स्कोर',       icon: Activity,      path: '/device',         category: 'protect' },
+    { id: 'encryption', name: 'File Encryption',    nameHi: 'फ़ाइल एन्क्रिप्शन', description: 'Encrypt sensitive files on-device',        descriptionHi: 'फ़ाइलें एन्क्रिप्ट करें',        icon: Lock,          path: '/encryption',     category: 'protect' },
+    { id: 'tuneup',     name: 'Device Health Check',nameHi: 'डिवाइस स्वास्थ्य जांच', description: 'Real metrics + guided cleanup',       descriptionHi: 'वास्तविक माप + निर्देशित सफाई', icon: Zap,           path: '/tuneup',         category: 'protect' },
+    { id: 'phoneguard', name: 'Phone Number Guard', nameHi: 'फोन नंबर गार्ड',   description: 'Detect scam calls · TRAI · VoIP · Spoofed', descriptionHi: 'स्कैम कॉल पहचान',               icon: PhoneCall,     path: '/phoneguard',     category: 'antifraud' },
+    { id: 'awareness',  name: 'Scam Awareness',     nameHi: 'स्कैम जागरूकता',   description: 'Latest scam alerts & patterns',            descriptionHi: 'नवीनतम स्कैम अलर्ट',           icon: Bell,          path: '/awareness',      category: 'learn' },
+    { id: 'news',       name: 'Cyber News',         nameHi: 'साइबर समाचार',     description: 'Real-time fraud news · verified sources',  descriptionHi: 'सत्यापित साइबर समाचार',         icon: Newspaper,     path: '/news',           category: 'learn' },
+    { id: 'scamdb',     name: 'Scam Database',      nameHi: 'स्कैम डेटाबेस',    description: 'Search known scammer numbers & patterns',  descriptionHi: 'स्कैमर नंबर खोजें',            icon: Database,      path: '/scamdb',         category: 'more' },
+    { id: 'threats',    name: 'Threat Intelligence',nameHi: 'खतरा विश्लेषण',    description: 'Live threat map & intelligence feed',      descriptionHi: 'लाइव खतरा मैप',                 icon: TrendingUp,    path: '/threats',        category: 'more' },
+    { id: 'whatsapp',   name: 'WhatsApp Guard',     nameHi: 'WhatsApp गार्ड',   description: 'Detect ghost pairing & account hijack',    descriptionHi: 'Ghost pairing पहचान',           icon: MessageSquare, path: '/whatsapp',       category: 'more' },
+    { id: 'aboutai',    name: 'About Our AI',       nameHi: 'हमारा AI',         description: 'How QuantumShield\'s AI engine works',     descriptionHi: 'AI इंजन कैसे काम करता है',      icon: Brain,         path: '/aboutai',        category: 'more' },
   ];
 
   /* ── Real 2025-26 threat data ── */
@@ -109,47 +134,21 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     s === 'high'     ? 'border-orange-500/40 bg-orange-500/10 text-orange-400' :
                        'border-yellow-500/30 bg-yellow-500/10 text-yellow-400';
 
-  const getByCat = (cat: string) => TOOLS.filter(t => t.category === cat);
-
-  /* ── Section renderer ── */
-  const ToolGrid = ({ cat, cols = 3, accent = 'blue' }: { cat: string; cols?: number; accent?: string }) => {
-    const tools = getByCat(cat);
-    const accentMap: Record<string, string> = {
-      red:    'hover:border-red-400/70 text-red-400',
-      purple: 'hover:border-purple-400/70 text-purple-400',
-      blue:   'hover:border-blue-400/70 text-blue-400',
-      green:  'hover:border-green-400/70 text-green-400',
-      teal:   'hover:border-teal-400/70 text-teal-400',
-      cyan:   'hover:border-cyan-400/70 text-cyan-400',
-      gray:   'hover:border-gray-400/70 text-gray-400',
-    };
-    const ac = accentMap[accent] ?? accentMap.blue;
-    const gridCls = cols === 3
-      ? 'grid grid-cols-2 md:grid-cols-3 gap-3'
-      : 'grid grid-cols-2 md:grid-cols-4 gap-3';
-
+  const ToolCard = ({ tool, accent = 'text-blue-400' }: { tool: Tool; accent?: string }) => {
+    const Icon = tool.icon;
     return (
-      <div className={gridCls}>
-        {tools.map(tool => {
-          const Icon = tool.icon;
-          const [iconColor] = ac.split(' ');
-          return (
-            <a
-              key={tool.id}
-              href={tool.path}
-              className={`bg-white/5 border border-white/10 rounded-xl p-4 transition-all hover:bg-white/10 ${ac} group`}
-            >
-              <Icon className={`w-7 h-7 mb-2.5 transition-transform group-hover:scale-110 ${iconColor}`} />
-              <h4 className="font-bold text-sm mb-1 leading-snug">
-                {language === 'en' ? tool.name : tool.nameHi}
-              </h4>
-              <p className="text-[11px] text-gray-500 leading-snug">
-                {language === 'en' ? tool.description : tool.descriptionHi}
-              </p>
-            </a>
-          );
-        })}
-      </div>
+      <a
+        href={tool.path}
+        className="bg-white/5 border border-white/10 rounded-xl p-4 transition-all hover:bg-white/10 hover:border-blue-400/60 group"
+      >
+        <Icon className={`w-7 h-7 mb-2.5 transition-transform group-hover:scale-110 ${accent}`} />
+        <h4 className="font-bold text-sm mb-1 leading-snug">
+          {language === 'en' ? tool.name : tool.nameHi}
+        </h4>
+        <p className="text-[11px] text-gray-500 leading-snug">
+          {language === 'en' ? tool.description : tool.descriptionHi}
+        </p>
+      </a>
     );
   };
 
@@ -177,18 +176,88 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
 
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
 
-        {/* ── Hero ── */}
+        {/* ── Brand + pitch ── */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/30 to-purple-600/30 border border-blue-500/40 mb-5">
             <Shield className="w-9 h-9 text-blue-400" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-black mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">
+          <h1 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">
             {t.title}
           </h1>
-          <p className="text-xl font-bold text-gray-200 mb-1">{t.subtitle}</p>
-          <p className="text-sm text-gray-500 mb-8">{t.tagline}</p>
+          <p className="text-xl md:text-3xl font-bold text-gray-100 leading-snug max-w-3xl mx-auto">
+            {t.pitch}<br />
+            <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">{t.pitchAccent}</span>
+          </p>
+          <p className="text-sm text-gray-500 mt-4">{t.tagline}</p>
+        </div>
 
-          {/* Stats — real I4C 2025 data */}
+        {/* ── HERO: the two features nobody else has ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+          <a href="/aianalyzer"
+            className="relative overflow-hidden bg-gradient-to-br from-red-600/25 via-orange-600/15 to-transparent border-2 border-red-500/50 rounded-2xl p-7 hover:border-red-400 hover:from-red-600/35 transition-all group">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-red-500/25 flex items-center justify-center">
+                <Mic className="w-6 h-6 text-red-400" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-red-400 bg-red-500/15 border border-red-500/40 rounded-full px-3 py-1">
+                {language === 'en' ? 'Live · During the call' : 'लाइव · कॉल के दौरान'}
+              </span>
+            </div>
+            <h2 className="text-2xl font-black mb-2">{t.heroCallTitle}</h2>
+            <p className="text-sm text-gray-300 leading-relaxed mb-5">{t.heroCallDesc}</p>
+            <span className="inline-flex items-center gap-2 font-bold text-red-300 group-hover:gap-3 transition-all">
+              {t.heroCallCta} <ArrowRight className="w-4 h-4" />
+            </span>
+          </a>
+
+          <a href="/circuit-breaker"
+            className="relative overflow-hidden bg-gradient-to-br from-amber-500/25 via-yellow-600/10 to-transparent border-2 border-amber-500/50 rounded-2xl p-7 hover:border-amber-400 hover:from-amber-500/35 transition-all group">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/25 flex items-center justify-center">
+                <Users className="w-6 h-6 text-amber-400" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/15 border border-amber-500/40 rounded-full px-3 py-1">
+                {language === 'en' ? 'Family alert network' : 'परिवार अलर्ट नेटवर्क'}
+              </span>
+            </div>
+            <h2 className="text-2xl font-black mb-2">{t.heroCbTitle}</h2>
+            <p className="text-sm text-gray-300 leading-relaxed mb-5">{t.heroCbDesc}</p>
+            <span className="inline-flex items-center gap-2 font-bold text-amber-300 group-hover:gap-3 transition-all">
+              {t.heroCbCta} <ArrowRight className="w-4 h-4" />
+            </span>
+          </a>
+        </div>
+
+        {/* ── Quick check row ── */}
+        <section className="mb-10">
+          <h2 className="text-lg font-black mb-3 text-gray-200">{t.quickTitle}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <a href="/spam" className="flex items-center gap-4 bg-purple-600/15 border border-purple-500/40 rounded-xl p-4 hover:border-purple-400 hover:bg-purple-600/25 transition-all group">
+              <MessageSquare className="w-6 h-6 text-purple-400 shrink-0 group-hover:scale-110 transition-transform" />
+              <div>
+                <div className="font-bold text-sm">{t.quickMsg}</div>
+                <div className="text-[11px] text-gray-500">{t.quickMsgDesc}</div>
+              </div>
+            </a>
+            <a href="/scanner" className="flex items-center gap-4 bg-blue-600/15 border border-blue-500/40 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-600/25 transition-all group">
+              <Link2 className="w-6 h-6 text-blue-400 shrink-0 group-hover:scale-110 transition-transform" />
+              <div>
+                <div className="font-bold text-sm">{t.quickUrl}</div>
+                <div className="text-[11px] text-gray-500">{t.quickUrlDesc}</div>
+              </div>
+            </a>
+            <a href="/phoneguard" className="flex items-center gap-4 bg-teal-600/15 border border-teal-500/40 rounded-xl p-4 hover:border-teal-400 hover:bg-teal-600/25 transition-all group">
+              <PhoneCall className="w-6 h-6 text-teal-400 shrink-0 group-hover:scale-110 transition-transform" />
+              <div>
+                <div className="font-bold text-sm">{t.quickNum}</div>
+                <div className="text-[11px] text-gray-500">{t.quickNumDesc}</div>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        {/* ── Stats — real I4C 2025 data ── */}
+        <div className="mb-10">
           <div className="grid grid-cols-3 gap-3 mb-2">
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 md:p-4">
               <div className="text-xl md:text-3xl font-black text-red-400">{t.statsCases}</div>
@@ -203,61 +272,31 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
               <div className="text-[11px] md:text-sm text-gray-400 mt-0.5">{t.statsSavedLabel}</div>
             </div>
           </div>
-          <p className="text-[10px] text-gray-600">{t.statsSource}</p>
+          <p className="text-[10px] text-gray-600 text-center">{t.statsSource}</p>
         </div>
 
-        {/* ── Emergency ── */}
+        {/* ── Core tools ── */}
         <section className="mb-8">
-          <h2 className="text-lg font-black uppercase tracking-widest text-red-400 mb-3 flex items-center gap-2">
-            <span>{t.secEmergency}</span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {getByCat('emergency').map(tool => {
-              const Icon = tool.icon;
-              return (
-                <a key={tool.id} href={tool.path}
-                  className="bg-gradient-to-br from-red-600/20 to-orange-600/15 border border-red-500/40 rounded-xl p-5 hover:border-red-400 hover:from-red-600/30 transition-all group flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-5 h-5 text-red-400 group-hover:scale-110 transition-transform" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm mb-1">{language === 'en' ? tool.name : tool.nameHi}</h3>
-                    <p className="text-[11px] text-gray-400">{language === 'en' ? tool.description : tool.descriptionHi}</p>
-                  </div>
-                </a>
-              );
-            })}
+          <h2 className="text-lg font-black uppercase tracking-widest text-blue-400 mb-3">{t.coreTitle}</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {CORE_TOOLS.map(tool => <ToolCard key={tool.id} tool={tool} />)}
           </div>
         </section>
 
-        {/* ── Scan ── */}
-        <section className="mb-8">
-          <h2 className="text-lg font-black uppercase tracking-widest text-purple-400 mb-3">{t.secScan}</h2>
-          <ToolGrid cat="scan" cols={3} accent="purple" />
-        </section>
-
-        {/* ── Protect ── */}
-        <section className="mb-8">
-          <h2 className="text-lg font-black uppercase tracking-widest text-blue-400 mb-3">{t.secProtect}</h2>
-          <ToolGrid cat="protect" cols={3} accent="blue" />
-        </section>
-
-        {/* ── Anti-Fraud ── */}
-        <section className="mb-8">
-          <h2 className="text-lg font-black uppercase tracking-widest text-green-400 mb-3">{t.secAntifraud}</h2>
-          <ToolGrid cat="antifraud" cols={3} accent="green" />
-        </section>
-
-        {/* ── Learn ── */}
-        <section className="mb-8">
-          <h2 className="text-lg font-black uppercase tracking-widest text-cyan-400 mb-3">{t.secLearn}</h2>
-          <ToolGrid cat="learn" cols={3} accent="cyan" />
-        </section>
-
-        {/* ── More Tools ── */}
+        {/* ── All tools (collapsed by default) ── */}
         <section className="mb-10">
-          <h2 className="text-lg font-black uppercase tracking-widest text-gray-400 mb-3">{t.secMore}</h2>
-          <ToolGrid cat="more" cols={4} accent="gray" />
+          <button
+            onClick={() => setShowAll(s => !s)}
+            className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-3 font-bold text-sm text-gray-300 transition"
+          >
+            {showAll ? t.hideAllBtn : t.showAllBtn}
+            {showAll ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+          {showAll && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+              {MORE_TOOLS.map(tool => <ToolCard key={tool.id} tool={tool} accent="text-gray-400" />)}
+            </div>
+          )}
         </section>
 
         {/* ── Live Threat Watch ── */}

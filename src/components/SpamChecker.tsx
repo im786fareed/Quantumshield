@@ -1,7 +1,19 @@
 'use client';
 
-import { Phone, AlertTriangle, CheckCircle, XCircle, Mail, Link as LinkIcon, ShieldAlert, ShieldCheck, Loader2 } from 'lucide-react';
+import { Phone, AlertTriangle, CheckCircle, XCircle, Mail, Link as LinkIcon, ShieldAlert, ShieldCheck, Loader2, Brain } from 'lucide-react';
 import { useState } from 'react';
+import { apiUrl } from '@/lib/apiBase';
+
+interface AiVerdict {
+  spam: boolean;
+  score: number;
+  level: string;
+  threatType: string;
+  message: string;
+  reasons: string[];
+  recommendation?: string;
+  language?: string;
+}
 
 interface Props {
   lang: 'en' | 'hi';
@@ -350,6 +362,8 @@ export default function SpamChecker({ lang }: Props) {
   const [input, setInput] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<CheckResult | null>(null);
+  const [aiVerdict, setAiVerdict] = useState<AiVerdict | null>(null);
+  const [aiStatus, setAiStatus] = useState<'idle' | 'checking' | 'done' | 'unavailable'>('idle');
   const content = CONTENT[lang];
 
   const extractUrls = (text: string): string[] => {
@@ -381,9 +395,28 @@ export default function SpamChecker({ lang }: Props) {
 
     setIsChecking(true);
     setResult(null);
+    setAiVerdict(null);
+    setAiStatus('checking');
 
-    // Give visual loading response to build tension and feel elite
-    await new Promise(resolve => setTimeout(resolve, 1200));
+    // Deep AI analysis runs server-side in parallel with the instant
+    // on-device heuristics below; the panel updates when it returns.
+    fetch(apiUrl('/api/check-spam'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: input }),
+    })
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => {
+        // Only surface the panel for genuine AI verdicts — the rule-engine
+        // fallback adds nothing beyond the local heuristics already shown.
+        if (data && data.engine === 'ai') {
+          setAiVerdict(data as AiVerdict);
+          setAiStatus('done');
+        } else {
+          setAiStatus('unavailable');
+        }
+      })
+      .catch(() => setAiStatus('unavailable'));
 
     // Deobfuscation step
     const { normalized, zeroWidthCount, mathStyleCount, homoglyphsCount, foundEvasions } = normalizeUnicodeText(input);
@@ -733,6 +766,54 @@ export default function SpamChecker({ lang }: Props) {
 
       {result && (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-500">
+
+          {/* ── AI deep-analysis verdict ── */}
+          {aiStatus === 'checking' && (
+            <div className="bg-violet-500/10 border border-violet-500/30 rounded-xl p-4 flex items-center gap-3">
+              <Brain className="w-6 h-6 text-violet-400 animate-pulse shrink-0" />
+              <p className="text-sm text-violet-200">
+                {lang === 'en'
+                  ? 'AI is reading the message (understands Hindi, Hinglish & disguised text)…'
+                  : 'AI संदेश पढ़ रहा है (हिंदी, हिंग्लिश और छिपा टेक्स्ट समझता है)…'}
+              </p>
+            </div>
+          )}
+          {aiVerdict && (
+            <div className={`rounded-2xl border-2 p-6 ${aiVerdict.spam
+              ? 'bg-rose-500/10 border-rose-500/50'
+              : 'bg-emerald-500/10 border-emerald-500/40'}`}>
+              <div className="flex items-center gap-3 mb-3">
+                <Brain className={`w-7 h-7 ${aiVerdict.spam ? 'text-rose-400' : 'text-emerald-400'}`} />
+                <h3 className="font-black text-lg">
+                  {lang === 'en' ? 'AI Verdict' : 'AI निर्णय'}
+                </h3>
+                <span className={`ml-auto text-sm font-black px-3 py-1 rounded-full ${aiVerdict.spam
+                  ? 'bg-rose-500/20 text-rose-300'
+                  : 'bg-emerald-500/20 text-emerald-300'}`}>
+                  {aiVerdict.score}/100 · {aiVerdict.threatType?.replace(/_/g, ' ')}
+                </span>
+              </div>
+              <p className="text-gray-100 font-semibold mb-3">{aiVerdict.message}</p>
+              {aiVerdict.reasons?.length > 0 && (
+                <ul className="space-y-1.5 mb-3">
+                  {aiVerdict.reasons.map((r, i) => (
+                    <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                      <span className={`mt-1 w-1.5 h-1.5 rounded-full shrink-0 ${aiVerdict.spam ? 'bg-rose-400' : 'bg-emerald-400'}`} />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {aiVerdict.recommendation && (
+                <p className={`text-sm font-semibold rounded-lg p-3 ${aiVerdict.spam
+                  ? 'bg-rose-950/40 text-rose-200'
+                  : 'bg-emerald-950/40 text-emerald-200'}`}>
+                  {aiVerdict.recommendation}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Warning disclaimer */}
           <div className="bg-cyan-500/10 border border-cyan-500/20 backdrop-blur rounded-xl p-4 flex gap-3 items-center">
             <ShieldAlert className="w-6 h-6 text-cyan-400 flex-shrink-0" />
@@ -893,7 +974,7 @@ export default function SpamChecker({ lang }: Props) {
           </div>
 
           <button
-            onClick={() => { setResult(null); setInput(''); }}
+            onClick={() => { setResult(null); setInput(''); setAiVerdict(null); setAiStatus('idle'); }}
             className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl font-bold transition-all duration-300 border border-white/10 active:scale-[0.99]"
           >
             {content.checkAnother}

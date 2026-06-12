@@ -31,7 +31,8 @@ export async function logError(
     console.error("[QuantumShield Error]", payload);
 
     // OPTIONAL remote logging (safe)
-    await fetch("/api/log-error", {
+    const { apiUrl } = await import("./apiBase");
+    await fetch(apiUrl("/api/log-error"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
