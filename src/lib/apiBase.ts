@@ -7,7 +7,7 @@ import { Capacitor } from '@capacitor/core';
  * - In the bundled Android/iOS app (Capacitor static export), there is no
  *   local server → calls go to the production deployment.
  */
-const PROD_API_ORIGIN = 'https://quantumguard.vercel.app';
+const PROD_API_ORIGIN = 'https://quantumshield.in';
 
 export function apiUrl(path: string): string {
   try {
