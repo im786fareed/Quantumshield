@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 import { analyzeText } from "@/lib/ai/textAnalyzer";
 import { analyzeThreat } from "@/lib/ai/threatEngine";
+import { analyzeWithLlm } from "@/lib/ai/llmAnalyzer";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "text field required" }, { status: 400 });
     }
 
+    // Primary engine: Claude (real language understanding — English,
+    // Hindi, Hinglish, obfuscated text). Falls back to the deterministic
+    // rule engine when the API key is absent or the call fails.
+    const llm = await analyzeWithLlm(text);
+    if (llm) {
+      return NextResponse.json({
+        success: true,
+        type,
+        engine: "ai",
+        score: llm.score,
+        level: llm.level,
+        isThreat: llm.isThreat,
+        threatType: llm.threatType,
+        riskLevel: llm.isThreat ? (llm.score >= 60 ? "dangerous" : "suspicious") : "safe",
+        message: llm.message,
+        reasons: llm.reasons,
+        indicators: llm.indicators,
+        language: llm.language,
+        recommendation: llm.recommendation,
+      });
+    }
+
     const textResult = analyzeText(text);
     const threatResult = analyzeThreat(text);
 
@@ -26,6 +49,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       type,
+      engine: "rules",
       score: combinedScore,
       level: textResult.level,
       isThreat,

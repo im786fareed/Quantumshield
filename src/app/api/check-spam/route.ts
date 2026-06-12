@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 import { analyzeText } from "@/lib/ai/textAnalyzer";
 import { analyzeThreat } from "@/lib/ai/threatEngine";
+import { analyzeWithLlm } from "@/lib/ai/llmAnalyzer";
 
 export async function POST(req: NextRequest) {
   const limited = rateLimit(req, { limit: 40, windowMs: 60_000 });
@@ -18,7 +19,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Text too short" }, { status: 400 });
     }
 
-    // Run both engines
+    // Primary engine: Claude. Falls back to the rule engine when
+    // unavailable (no API key, network failure, rate limit).
+    const llm = await analyzeWithLlm(trimmed);
+    if (llm) {
+      return NextResponse.json({
+        spam: llm.isThreat,
+        engine: "ai",
+        confidence: parseFloat(Math.min(0.99, llm.score / 100 + 0.05).toFixed(2)),
+        score: llm.score,
+        level: llm.level,
+        threatType: llm.threatType,
+        message: llm.isThreat ? llm.message : "No scam indicators detected in this message.",
+        reasons: llm.reasons,
+        indicators: llm.indicators,
+        language: llm.language,
+        recommendation: llm.recommendation,
+      });
+    }
+
+    // Run both rule engines
     const textResult = analyzeText(trimmed);
     const threatResult = analyzeThreat(trimmed);
 
@@ -29,6 +49,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       spam: isSpam,
+      engine: "rules",
       confidence: parseFloat(confidence.toFixed(2)),
       score: combinedScore,
       level: textResult.level,

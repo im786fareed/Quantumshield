@@ -1,264 +1,105 @@
-# 🛡️ QuantumGuard - AI-Powered Cyber Fraud Prevention
+# 🛡️ QuantumShield — AI-Powered Cyber Fraud Protection for India
 
-**India's First AI-Driven Cyber Safety Platform**
+**The app that protects you *during* the scam, not after.**
 
-QuantumGuard uses advanced machine learning algorithms to detect scams, phishing, malware, and cyber threats targeting Indian users.
-
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://quantumguard-3axu68sqf-shaik-fareeds-projects.vercel.app)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/im786fareed/QuantumGuard)
+QuantumShield detects digital-arrest scams, UPI fraud, phishing, and OTP theft targeting Indian users — and when a scam is detected mid-call, it can instantly alert the victim's family.
 
 ---
 
-## 🤖 **AI Features**
+## 🚨 The Problem
 
-- **AI Scam Detection** - NLP-based text analysis for social engineering patterns
-- **Steganography Detection** - Computer vision algorithms detect hidden malware in images
-- **Spam Intelligence** - Behavioral analysis for phishing and spam
-- **File Analysis** - Deep learning file signature detection
-- **Real-time Processing** - Under 2-second threat analysis
+Indians lost **₹2,140+ crore** to digital-arrest scams in 2024. Victims are kept isolated on a video call for hours while scammers impersonate CBI/police officers. By the time anyone finds out, the money is gone.
+
+**QuantumShield breaks that isolation.**
 
 ---
 
-## 🎯 **Key Features**
+## ⭐ Hero Features
 
-1. ✅ **AI Scanner** - Text & Image fraud detection with steganography analysis
-2. ✅ **URL Checker** - Phishing link detection
-3. ✅ **Spam AI** - Advanced spam and fraud detection
-4. ✅ **File AI** - Malware signature analysis (max 4MB)
-5. ✅ **Device Check** - Security status assessment
-6. ✅ **Latest Threats** - Real-time cyber threat intelligence for India
-7. ✅ **Education** - 48 curated cybersecurity videos
-8. ✅ **AI Technology** - Learn about our ML algorithms
-9. ✅ **Bilingual** - English + Hindi support
+1. **AI Call Analyzer** — listens to a live call's speech in real time (on-device speech recognition) and warns the user the moment scam patterns appear.
+2. **Circuit Breaker** — when a scam is detected, instantly alerts pre-registered family members' phones via push notification, with the victim's location.
+3. **AI Scam Scanner** — paste any suspicious message (English, Hindi, Hinglish, or regional languages) and Claude-powered AI explains whether it's a scam and why.
 
----
+## 🔍 Supporting Features
 
-## 🇮🇳 **India-Specific Protection**
-
-- Digital Arrest scam detection (₹2,140 crore lost in 2024)
-- UPI fraud patterns (85% surge)
-- Fake KYC alerts
-- WhatsApp OTP hijacking
-- Steganography detection (hidden malware in images)
-- 1930 helpline integration
+- **URL Checker** — heuristic analysis + Google Safe Browsing (the same threat database Chrome uses)
+- **Breach Checker** — real lookups against the XposedOrNot public breach database
+- **Spam AI, File Scanner, APK Guardian** — multi-layer threat checks
+- **Evidence Vault & Police Reporter** — collect proof and file complaints (1930 / cybercrime.gov.in)
+- **Device Health Check** — honest, real browser measurements + guided cleanup (no fake "boosting")
+- **Education Center** — curated cyber-safety videos
+- **Bilingual throughout** — English + Hindi
 
 ---
 
-## 🚀 **Live Demo**
+## 🧠 How Detection Works (honestly)
 
-**Try it now:** [QuantumGuard Live](https://quantumguard-3axu68sqf-shaik-fareeds-projects.vercel.app)
+QuantumShield uses a **two-layer engine**:
+
+1. **Claude AI (primary)** — a frontier language model analyzes the text with real language understanding. It reads Hindi/Hinglish, sees through deliberate misspellings ("0TP", "k.y.c"), and recognizes *new* scam scripts it has never seen verbatim. Requires an `ANTHROPIC_API_KEY` (server-side).
+2. **Rule engine (fallback)** — a deterministic, transparent pattern engine covering known India-specific fraud signals (digital arrest, KYC fraud, remote-access demands). Runs when the AI is unavailable, so the app always answers.
+
+External data sources: Google Safe Browsing (URLs), XposedOrNot (breaches).
+
+We do not publish accuracy percentages because we have not yet run an independent benchmark. When we do, the methodology will be published here.
 
 ---
 
-## 💻 **Tech Stack**
+## 🛡️ Privacy
+
+- **No account required** — anonymous usage
+- **Scans are ephemeral** — analyzed in memory, never stored on our servers
+- **Breach checks** query the public XposedOrNot API; your email is not stored by QuantumShield
+- **Analytics** — privacy-first, cookieless Vercel Analytics (aggregate page counts only, no personal tracking)
+
+---
+
+## 💻 Tech Stack
 
 - **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS
-- **AI/ML:** Pattern recognition algorithms, NLP, Computer Vision
-- **Icons:** Lucide React
+- **AI:** Anthropic Claude API (server-side), Web Speech API (on-device, for live call analysis)
+- **Threat data:** Google Safe Browsing v4, XposedOrNot
+- **Family alerts:** Firebase Cloud Messaging (Mumbai region)
+- **Mobile:** Capacitor (Android)
 - **Deployment:** Vercel
-- **Analytics:** Privacy-first (no tracking)
 
 ---
 
-## 📦 **Quick Start**
-```bash
-# Clone repository
-git clone https://github.com/im786fareed/QuantumGuard.git
-cd QuantumGuard
+## 📦 Quick Start
 
-# Install dependencies
+```bash
+git clone https://github.com/im786fareed/Quantumshield.git
+cd quantumshield
 npm install
 
-# Run development server
-npm run dev
+# Optional but recommended — enables the real AI engine:
+#   ANTHROPIC_API_KEY=sk-ant-...        (console.anthropic.com)
+#   GOOGLE_SAFE_BROWSING_KEY=...        (Google Cloud Console, free)
+# Put these in .env.local for local dev, or in Vercel → Settings → Environment Variables.
 
-# Build for production
-npm run build
-
-# Deploy to Vercel
-vercel --prod
+npm run dev      # http://localhost:3000
+npm run build    # production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
+Without the keys, the app still works fully — it uses the rule engine and heuristics.
 
 ---
 
-## 🔧 **Project Structure**
-```
-quantumguard/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx          # Main app with navigation
-│   │   ├── layout.tsx         # Root layout
-│   │   ├── globals.css        # Global styles
-│   │   └── api/
-│   │       └── analyze/
-│   │           └── route.ts   # AI analysis API
-│   └── components/
-│       ├── Scanner.tsx        # AI scam scanner
-│       ├── SpamChecker.tsx    # AI spam detection
-│       ├── FileScanner.tsx    # AI file analysis
-│       ├── UrlChecker.tsx     # URL safety check
-│       ├── DeviceCheck.tsx    # Device security
-│       ├── LatestNews.tsx     # Threat intelligence
-│       ├── Education.tsx      # 48 videos
-│       ├── AboutAI.tsx        # AI technology page
-│       └── Disclaimer.tsx     # Legal disclaimer
-├── package.json
-├── next.config.ts
-└── tailwind.config.ts
-```
+## 📞 Report Cybercrime (India)
+
+📞 **Call 1930** — National Cybercrime Helpline (24/7)
+🌐 **[cybercrime.gov.in](https://cybercrime.gov.in)**
+
+*QuantumShield is a protection and awareness tool. For financial or legal decisions, always verify independently.*
 
 ---
 
-## 🎨 **AI Detection Methods**
+## 👨‍💻 Author
 
-### **Text Analysis (NLP)**
-- 50+ scam keyword patterns
-- Urgency detection algorithms
-- Money mention analysis
-- Suspicious link extraction
-- Phone number pattern matching
+**Fareed Shaik** — [@im786fareed](https://github.com/im786fareed)
 
-### **Image Analysis (Computer Vision)**
-- APK signature detection (steganography)
-- Base64 forensics
-- Hidden data pattern recognition
-- Suspicious metadata analysis
+*Mission: protect 1.4 billion Indians from cyber fraud — one call at a time.*
 
-### **File Analysis**
-- Extension-based risk scoring
-- Signature pattern matching
-- Size anomaly detection
-- Malware wrapper detection
+## 📄 License
 
----
-
-## 📊 **Detection Accuracy**
-
-- **Known scam patterns:** 94%+
-- **Steganography detection:** 89%+
-- **Spam identification:** 92%+
-- **Phishing URLs:** 87%+
-
-*Continuously improving through algorithmic updates*
-
----
-
-## 🛡️ **Privacy & Security**
-
-- ✅ **Zero data storage** - All analysis is ephemeral
-- ✅ **No tracking** - Zero analytics, zero cookies
-- ✅ **No login required** - Anonymous usage
-- ✅ **Privacy-first AI** - Processing happens securely
-- ✅ **Open source** - Transparent algorithms
-
----
-
-## 🎯 **Use Cases**
-
-| User | Benefit |
-|------|---------|
-| **Individuals** | Check suspicious messages before responding |
-| **Senior Citizens** | Simplified scam detection interface |
-| **Small Businesses** | Verify customer communications |
-| **Students** | Learn cyber safety practices |
-| **NGOs** | Distribute for awareness programs |
-
----
-
-## 📈 **Roadmap**
-
-### **✅ Phase 1 (Completed - Dec 2024)**
-- AI-powered detection engine
-- 48 educational videos
-- Bilingual support (English/Hindi)
-- 7 core security features
-
-### **🚧 Phase 2 (Q1 2025)**
-- Real-time threat intelligence API
-- User reporting system (crowdsourced)
-- PWA (installable web app)
-- Regional languages (Tamil, Telugu, Bengali)
-
-### **🔮 Phase 3 (Q2 2025)**
-- Native mobile apps (React Native)
-- Advanced ML models (TensorFlow.js)
-- Bank partnerships
-- Enterprise version
-
----
-
-## 🤝 **Contributing**
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
-
----
-
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 **Author**
-
-**Fareed Shaik**
-
-- GitHub: [@im786fareed](https://github.com/im786fareed)
-- Working in: Investment Banking
-- Vision: AI professional protecting 1.4 billion Indians from cyber fraud
-
----
-
-## 🙏 **Acknowledgments**
-
-- Indian Cyber Crime Coordination Centre (I4C)
-- National Cyber Crime Reporting Portal (NCRP)
-- Reserve Bank of India - Cyber Safety Guidelines
-- Open source community
-
----
-
-## 📞 **Report Cybercrime**
-
-**If you're a victim of cyber fraud:**
-
-📞 **Call: 1930** (National Cybercrime Helpline - 24/7)  
-🌐 **Report Online:** [cybercrime.gov.in](https://cybercrime.gov.in)
-
-*This tool is for education and awareness. Always verify independently for critical decisions.*
-
----
-
-## ⭐ **Support This Project**
-
-If QuantumGuard helped you stay safe from cyber fraud, please:
-
-- ⭐ **Star this repository**
-- 🔄 **Share with family and friends**
-- 📢 **Spread awareness on social media**
-
----
-
-## 📊 **Project Stats**
-
-- **Total Lines of Code:** ~3,500
-- **Detection Patterns:** 50+
-- **Educational Videos:** 48
-- **Languages Supported:** 2 (English, Hindi)
-- **API Response Time:** <2 seconds
-- **File Size Limit:** 4MB
-- **Deployment:** Vercel Edge Network
-
----
-
-**Made with ❤️ for India's Cyber Safety**
-
-*Protecting 1.4 billion people, one scan at a time.*
+MIT
