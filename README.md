@@ -18,7 +18,7 @@ Indians lost **₹2,140+ crore** to digital-arrest scams in 2024. Victims are ke
 
 1. **AI Call Analyzer** — listens to a live call's speech in real time (on-device speech recognition) and warns the user the moment scam patterns appear.
 2. **Circuit Breaker** — when a scam is detected, instantly alerts pre-registered family members' phones via push notification, with the victim's location.
-3. **AI Scam Scanner** — paste any suspicious message (English, Hindi, Hinglish, or regional languages) and Claude-powered AI explains whether it's a scam and why.
+3. **AI Scam Scanner** — paste any suspicious message (English, Hindi, Hinglish, or regional languages) and Gemini-powered AI explains whether it's a scam and why.
 
 ## 🔍 Supporting Features
 
@@ -36,7 +36,7 @@ Indians lost **₹2,140+ crore** to digital-arrest scams in 2024. Victims are ke
 
 QuantumShield uses a **two-layer engine**:
 
-1. **Claude AI (primary)** — a frontier language model analyzes the text with real language understanding. It reads Hindi/Hinglish, sees through deliberate misspellings ("0TP", "k.y.c"), and recognizes *new* scam scripts it has never seen verbatim. Requires an `ANTHROPIC_API_KEY` (server-side).
+1. **Gemini AI (primary)** — a frontier language model analyzes the text with real language understanding. It reads Hindi/Hinglish, sees through deliberate misspellings ("0TP", "k.y.c"), and recognizes *new* scam scripts it has never seen verbatim. Requires a `GEMINI_API_KEY` (server-side).
 2. **Rule engine (fallback)** — a deterministic, transparent pattern engine covering known India-specific fraud signals (digital arrest, KYC fraud, remote-access demands). Runs when the AI is unavailable, so the app always answers.
 
 External data sources: Google Safe Browsing (URLs), XposedOrNot (breaches).
@@ -57,7 +57,7 @@ We do not publish accuracy percentages because we have not yet run an independen
 ## 💻 Tech Stack
 
 - **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS
-- **AI:** Anthropic Claude API (server-side), Web Speech API (on-device, for live call analysis)
+- **AI:** Google Gemini API (server-side), Web Speech API (on-device, for live call analysis)
 - **Threat data:** Google Safe Browsing v4, XposedOrNot
 - **Family alerts:** Firebase Cloud Messaging (Mumbai region)
 - **Mobile:** Capacitor (Android)
@@ -73,7 +73,7 @@ cd quantumshield
 npm install
 
 # Optional but recommended — enables the real AI engine:
-#   ANTHROPIC_API_KEY=sk-ant-...        (console.anthropic.com)
+#   GEMINI_API_KEY=...                  (aistudio.google.com)
 #   GOOGLE_SAFE_BROWSING_KEY=...        (Google Cloud Console, free)
 # Put these in .env.local for local dev, or in Vercel → Settings → Environment Variables.
 

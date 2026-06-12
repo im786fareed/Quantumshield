@@ -1,15 +1,14 @@
 /* =========================================================
    QuantumShield – LLM Scam Analyzer (real AI engine)
-   Server-side only. Uses the Anthropic Claude API to classify
+   Server-side only. Uses the Google Gemini API to classify
    scam/fraud content with multilingual understanding
    (English, Hindi, Hinglish, regional languages).
 
-   Requires the ANTHROPIC_API_KEY environment variable.
+   Requires the GEMINI_API_KEY environment variable.
    When the key is missing or the API call fails, callers fall
    back to the deterministic rule engine (textAnalyzer/threatEngine).
    ========================================================= */
 
-import Anthropic from "@anthropic-ai/sdk";
 import type { RiskLevel } from "./textAnalyzer";
 
 export interface LlmAnalysis {
@@ -24,9 +23,9 @@ export interface LlmAnalysis {
   language: string;
 }
 
-// To reduce cost, this can be switched to "claude-haiku-4-5"
-// (faster, ~5x cheaper, slightly less accurate on subtle scams).
-const MODEL = "claude-opus-4-8";
+// Fast, low-cost model with a generous free tier.
+// Can be switched to "gemini-2.5-pro" for higher accuracy at higher cost.
+const MODEL = "gemini-2.5-flash";
 
 const SYSTEM_PROMPT = `You are the detection engine of QuantumShield, a cyber-fraud protection app for users in India. You analyze a message, call transcript, or text snippet and decide whether it is a scam.
 
@@ -56,18 +55,19 @@ Rules:
 - "recommendation" tells the user exactly what to do next. For serious scams in India, always include: hang up / do not reply, never share OTP, and report to the 1930 cybercrime helpline or cybercrime.gov.in.
 - "language" is the detected input language (e.g. "English", "Hindi", "Hinglish", "Telugu").`;
 
-const OUTPUT_SCHEMA = {
-  type: "object" as const,
+// Gemini structured-output schema (OpenAPI subset, uppercase type names)
+const RESPONSE_SCHEMA = {
+  type: "OBJECT",
   properties: {
-    score: { type: "integer" },
-    level: { type: "string", enum: ["safe", "low", "medium", "high", "critical"] },
-    isThreat: { type: "boolean" },
-    threatType: { type: "string" },
-    message: { type: "string" },
-    reasons: { type: "array", items: { type: "string" } },
-    indicators: { type: "array", items: { type: "string" } },
-    recommendation: { type: "string" },
-    language: { type: "string" },
+    score: { type: "INTEGER" },
+    level: { type: "STRING", enum: ["safe", "low", "medium", "high", "critical"] },
+    isThreat: { type: "BOOLEAN" },
+    threatType: { type: "STRING" },
+    message: { type: "STRING" },
+    reasons: { type: "ARRAY", items: { type: "STRING" } },
+    indicators: { type: "ARRAY", items: { type: "STRING" } },
+    recommendation: { type: "STRING" },
+    language: { type: "STRING" },
   },
   required: [
     "score",
@@ -80,54 +80,59 @@ const OUTPUT_SCHEMA = {
     "recommendation",
     "language",
   ],
-  additionalProperties: false,
 };
 
 export function isLlmAvailable(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
-}
-
-let client: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (!client) {
-    client = new Anthropic({
-      // Hard cap so the user-facing scan never hangs; rule engine takes over.
-      timeout: 25_000,
-      maxRetries: 1,
-    });
-  }
-  return client;
+  return Boolean(process.env.GEMINI_API_KEY);
 }
 
 /**
- * Analyze text with Claude. Returns null when the API is not configured
+ * Analyze text with Gemini. Returns null when the API is not configured
  * or the call fails — callers must fall back to the rule engine.
  */
 export async function analyzeWithLlm(text: string): Promise<LlmAnalysis | null> {
-  if (!isLlmAvailable()) return null;
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return null;
 
   try {
-    const response = await getClient().messages.create({
-      model: MODEL,
-      max_tokens: 2000,
-      thinking: { type: "adaptive" },
-      output_config: {
-        effort: "low",
-        format: { type: "json_schema", schema: OUTPUT_SCHEMA },
-      },
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: `Analyze this content for fraud/scam signals:\n\n${text.slice(0, 8000)}`,
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": key,
         },
-      ],
-    });
+        // Hard cap so the user-facing scan never hangs; rule engine takes over.
+        signal: AbortSignal.timeout(25_000),
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: `Analyze this content for fraud/scam signals:\n\n${text.slice(0, 8000)}`,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: RESPONSE_SCHEMA,
+            maxOutputTokens: 2000,
+          },
+        }),
+      }
+    );
 
-    const textBlock = response.content.find((b) => b.type === "text");
-    if (!textBlock || textBlock.type !== "text") return null;
+    if (!res.ok) return null;
+    const data = await res.json();
+    const jsonText: string | undefined =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!jsonText) return null;
 
-    const parsed = JSON.parse(textBlock.text) as LlmAnalysis;
+    const parsed = JSON.parse(jsonText) as LlmAnalysis;
 
     // Clamp and sanity-check so the UI never receives garbage.
     parsed.score = Math.max(0, Math.min(100, Math.round(parsed.score)));
