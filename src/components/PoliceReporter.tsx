@@ -69,7 +69,10 @@ function genRefId() {
 export default function PoliceReporter({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   const en = lang !== 'hi';
   const [evidenceCount, setEvidenceCount] = useState(0);
-  const [refId] = useState(genRefId);
+  // Generated on the client only — Math.random() must not run during SSR,
+  // or the server and browser produce different IDs (hydration mismatch).
+  const [refId, setRefId] = useState('');
+  useEffect(() => { setRefId(genRefId()); }, []);
   const [generated, setGenerated] = useState(false);
 
   /* ── Form state ── */
@@ -253,7 +256,7 @@ Ref: ${refId}
         </p>
         <div className="mt-3 flex items-center gap-2 text-xs text-red-200">
           <Hash className="w-3 h-3" />
-          {en ? `Reference: ${refId}` : `संदर्भ: ${refId}`}
+          {en ? `Reference: ${refId || '…'}` : `संदर्भ: ${refId || '…'}`}
         </div>
       </div>
 

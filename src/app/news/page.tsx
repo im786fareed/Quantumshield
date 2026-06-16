@@ -1,6 +1,5 @@
 'use client';
-import LatestNews from '@/components/LatestNews';
-
+import ScamIntelHub from '@/components/ScamIntelHub';
 export default function NewsPage() {
-  return <LatestNews />;
+  return <ScamIntelHub defaultTab="news" />;
 }

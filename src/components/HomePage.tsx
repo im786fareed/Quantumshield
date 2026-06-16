@@ -3,9 +3,9 @@ import { useState } from 'react';
 import {
   Shield, AlertTriangle, Phone, FileText, Mic,
   Lock, Scan, Smartphone, Activity,
-  Brain, BookOpen, Newspaper, Bell, ChevronDown, ChevronUp,
-  Zap, CreditCard, Scale, MessageSquare, Database,
-  TrendingUp, X, ExternalLink, PhoneCall, Users, Link2, ArrowRight
+  Brain, BookOpen, Newspaper, ChevronDown, ChevronUp,
+  CreditCard, Scale, MessageSquare, Database,
+  X, ExternalLink, PhoneCall, Users, Link2, ArrowRight
 } from 'lucide-react';
 
 interface Tool {
@@ -102,20 +102,21 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     { id: 'legalaid',   name: 'Cyber Legal First Aid',nameHi: 'साइबर कानूनी सहायता', description: 'Digital Arrest guide · FIR · your rights',       descriptionHi: 'डिजिटल अरेस्ट गाइड · FIR · आपके अधिकार',              icon: Shield,     path: '/legal-aid',      category: 'core' },
   ];
 
-  /* ── Everything else — available under "All tools" ── */
+  /* ── Everything else — available under "All tools".
+        Consolidated: 3 device tools → one Device Checkup,
+        4 news/threat tools → one Scam Intel hub. ── */
   const MORE_TOOLS: Tool[] = [
-    { id: 'devicescan', name: 'Device Scanner',     nameHi: 'डिवाइस स्कैनर',    description: 'Full device security assessment',          descriptionHi: 'डिवाइस सुरक्षा जांच',          icon: Smartphone,    path: '/devicescan',     category: 'scan' },
+    // Phone & number safety
+    { id: 'phoneguard', name: 'Phone Number Guard', nameHi: 'फोन नंबर गार्ड',   description: 'Detect scam calls · TRAI · VoIP · Spoofed', descriptionHi: 'स्कैम कॉल पहचान',               icon: PhoneCall,     path: '/phoneguard',     category: 'antifraud' },
+    { id: 'scamdb',     name: 'Scam Number Lookup', nameHi: 'स्कैम नंबर खोज',   description: 'Check a number against known scammers',     descriptionHi: 'ज्ञात स्कैमर नंबर जांचें',       icon: Database,      path: '/scamdb',         category: 'antifraud' },
+    // Device safety — one place
+    { id: 'tuneup',     name: 'Device Checkup',     nameHi: 'डिवाइस जांच',       description: 'Battery, storage & full security scan',     descriptionHi: 'बैटरी, स्टोरेज और सुरक्षा स्कैन', icon: Activity,      path: '/tuneup',         category: 'protect' },
     { id: 'simprotect', name: 'SIM Protection',     nameHi: 'SIM सुरक्षा',       description: 'Detect SIM swap attacks',                  descriptionHi: 'SIM स्वैप पहचान',               icon: Smartphone,    path: '/simprotection',  category: 'protect' },
     { id: 'privacy',    name: 'Privacy Shield',     nameHi: 'गोपनीयता ढाल',     description: 'Audit app permissions & data leaks',       descriptionHi: 'ऐप अनुमति ऑडिट',                icon: Lock,          path: '/privacy',        category: 'protect' },
-    { id: 'device',     name: 'Device Health',      nameHi: 'डिवाइस स्वास्थ्य', description: 'Overall security health score',            descriptionHi: 'सुरक्षा स्वास्थ्य स्कोर',       icon: Activity,      path: '/device',         category: 'protect' },
     { id: 'encryption', name: 'File Encryption',    nameHi: 'फ़ाइल एन्क्रिप्शन', description: 'Encrypt sensitive files on-device',        descriptionHi: 'फ़ाइलें एन्क्रिप्ट करें',        icon: Lock,          path: '/encryption',     category: 'protect' },
-    { id: 'tuneup',     name: 'Device Health Check',nameHi: 'डिवाइस स्वास्थ्य जांच', description: 'Real metrics + guided cleanup',       descriptionHi: 'वास्तविक माप + निर्देशित सफाई', icon: Zap,           path: '/tuneup',         category: 'protect' },
-    { id: 'phoneguard', name: 'Phone Number Guard', nameHi: 'फोन नंबर गार्ड',   description: 'Detect scam calls · TRAI · VoIP · Spoofed', descriptionHi: 'स्कैम कॉल पहचान',               icon: PhoneCall,     path: '/phoneguard',     category: 'antifraud' },
-    { id: 'awareness',  name: 'Scam Awareness',     nameHi: 'स्कैम जागरूकता',   description: 'Latest scam alerts & patterns',            descriptionHi: 'नवीनतम स्कैम अलर्ट',           icon: Bell,          path: '/awareness',      category: 'learn' },
-    { id: 'news',       name: 'Cyber News',         nameHi: 'साइबर समाचार',     description: 'Real-time fraud news · verified sources',  descriptionHi: 'सत्यापित साइबर समाचार',         icon: Newspaper,     path: '/news',           category: 'learn' },
-    { id: 'scamdb',     name: 'Scam Database',      nameHi: 'स्कैम डेटाबेस',    description: 'Search known scammer numbers & patterns',  descriptionHi: 'स्कैमर नंबर खोजें',            icon: Database,      path: '/scamdb',         category: 'more' },
-    { id: 'threats',    name: 'Threat Intelligence',nameHi: 'खतरा विश्लेषण',    description: 'Live threat map & intelligence feed',      descriptionHi: 'लाइव खतरा मैप',                 icon: TrendingUp,    path: '/threats',        category: 'more' },
-    { id: 'whatsapp',   name: 'WhatsApp Guard',     nameHi: 'WhatsApp गार्ड',   description: 'Detect ghost pairing & account hijack',    descriptionHi: 'Ghost pairing पहचान',           icon: MessageSquare, path: '/whatsapp',       category: 'more' },
+    { id: 'whatsapp',   name: 'WhatsApp Guard',     nameHi: 'WhatsApp गार्ड',   description: 'Detect ghost pairing & account hijack',    descriptionHi: 'Ghost pairing पहचान',           icon: MessageSquare, path: '/whatsapp',       category: 'protect' },
+    // News, alerts & threat map — one hub
+    { id: 'news',       name: 'Scam Intel',         nameHi: 'स्कैम इंटेल',      description: 'News, alerts & live threat map in one feed', descriptionHi: 'समाचार, अलर्ट और लाइव खतरा मैप',  icon: Newspaper,     path: '/news',           category: 'learn' },
     { id: 'aboutai',    name: 'About Our AI',       nameHi: 'हमारा AI',         description: 'How QuantumShield\'s AI engine works',     descriptionHi: 'AI इंजन कैसे काम करता है',      icon: Brain,         path: '/aboutai',        category: 'more' },
   ];
 

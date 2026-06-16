@@ -1,6 +1,6 @@
 'use client';
-import { Shield, Mic, Lock, Smartphone, FileText, Zap, Activity, LayoutGrid, PlayCircle } from 'lucide-react';
-import ThreatMap from '@/components/ThreatMap';
+import { Shield, Mic, Lock, Smartphone, FileText, Zap, ShieldCheck, LayoutGrid, PlayCircle } from 'lucide-react';
+import ConsumerProtection from '@/components/ConsumerProtection';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -33,14 +33,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. TRACES OF CYBER FRAUD (The Map from your screenshot) */}
+      {/* 2. REAL PROTECTION — your activity + India's verified scam data */}
       <section className="bg-slate-900/30 border border-slate-800 rounded-[3rem] overflow-hidden">
         <div className="p-8 border-b border-slate-800 flex items-center gap-3">
-          <Activity className="text-red-500 w-5 h-5" />
-          <h2 className="text-xl font-black uppercase tracking-tighter">Traces of Cyber Fraud Worldwide</h2>
+          <ShieldCheck className="text-green-400 w-5 h-5" />
+          <h2 className="text-xl font-black uppercase tracking-tighter">Your Protection &amp; India&apos;s Live Scam Picture</h2>
         </div>
         <div className="p-8">
-          <ThreatMap />
+          <ConsumerProtection />
         </div>
       </section>
 

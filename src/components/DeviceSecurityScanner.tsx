@@ -221,7 +221,7 @@ async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanResult[]
   return { results, health: Math.min(100, score) };
 }
 
-export default function DeviceSecurityScanner({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
+export default function DeviceSecurityScanner({ lang = 'en', embedded = false }: { lang?: 'en' | 'hi'; embedded?: boolean }) {
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>(lang);
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
@@ -282,7 +282,7 @@ export default function DeviceSecurityScanner({ lang = 'en' }: { lang?: 'en' | '
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 bg-black/40 border border-slate-800 rounded-[2.5rem] shadow-2xl relative overflow-hidden backdrop-blur-md">
-      <BackToHome />
+      {!embedded && <BackToHome />}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent blur-sm" />
 
       {/* Header */}

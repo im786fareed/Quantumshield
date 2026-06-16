@@ -1,5 +1,5 @@
 'use client';
-import SystemTuneUp from '@/components/SystemTuneUp';
+import DeviceCheckupHub from '@/components/DeviceCheckupHub';
 export default function TuneUpPage() {
-  return <SystemTuneUp />;
+  return <DeviceCheckupHub defaultTab="health" />;
 }

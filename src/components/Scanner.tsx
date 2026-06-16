@@ -1,5 +1,6 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { logCheck } from '@/lib/activity';
 import { 
   Scan, Globe, FileText, Image as ImageIcon, 
   ShieldCheck, CheckCircle2, Loader2, ShieldAlert,
@@ -156,6 +157,11 @@ export default function Scanner({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   const [result, setResult] = useState<any>(null);
   const [input, setInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Record every real scan to the on-device protection log (honest counters).
+  useEffect(() => {
+    if (result && result.status) logCheck(result.status !== 'secure');
+  }, [result]);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';

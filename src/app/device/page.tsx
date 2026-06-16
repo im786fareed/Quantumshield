@@ -1,12 +1,5 @@
 'use client';
-
-import DeviceCheck from '@/components/DeviceCheck';
-import PageWrapper from '../_shared/PageWrapper';
-
-export default function devicePage() {
-  return (
-    <PageWrapper>
-      <DeviceCheck lang="en" />
-    </PageWrapper>
-  );
+import DeviceCheckupHub from '@/components/DeviceCheckupHub';
+export default function DevicePage() {
+  return <DeviceCheckupHub defaultTab="health" />;
 }

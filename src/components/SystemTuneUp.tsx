@@ -223,7 +223,7 @@ function GuideCard({ step, lang, checked, onToggle }: {
   );
 }
 
-export default function SystemTuneUp() {
+export default function SystemTuneUp({ embedded = false }: { embedded?: boolean } = {}) {
   const [lang, setLang] = useState<'en' | 'hi'>('en');
   const [activeTab, setActiveTab] = useState<'tuneup' | 'battery'>('tuneup');
   const [metrics, setMetrics] = useState<TuneMetric[]>([]);
@@ -272,7 +272,7 @@ export default function SystemTuneUp() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-4xl mx-auto p-6">
-        <BackToHome />
+        {!embedded && <BackToHome />}
 
         {/* Header */}
         <div className="text-center mb-8">
