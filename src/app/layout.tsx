@@ -9,6 +9,9 @@ import InstallPrompt from "@/components/InstallPrompt";
 import CommandPalette from "@/components/CommandPalette";
 import ConsentPopup from "@/components/ConsentPopup"; // The Legal Layer
 import FloatingRecorder from "@/components/FloatingRecorder";
+import { AuthProvider } from "@/context/AuthContext";
+import AuthGate from "@/components/AuthGate";
+import AccountButton from "@/components/AccountButton";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -26,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased bg-black text-white min-h-screen font-sans flex flex-col">
+        <AuthProvider>
         {/* GLOBAL SECURITY LAYERS */}
         <ConsentPopup />
         <InstallPrompt />
@@ -49,6 +53,9 @@ export default function RootLayout({
               <Link href="/" className="hidden md:block text-xs font-bold hover:text-blue-400 transition uppercase tracking-widest">
                 Home
               </Link>
+              <Link href="/legal-rights" className="hidden md:block text-xs font-bold hover:text-indigo-400 transition uppercase tracking-widest">
+                My Rights
+              </Link>
               <Link href="/education" className="hidden md:block text-xs font-bold hover:text-blue-400 transition uppercase tracking-widest">
                 Education
               </Link>
@@ -58,13 +65,14 @@ export default function RootLayout({
               >
                 🚨 Emergency 1930
               </a>
+              <AccountButton />
             </div>
           </div>
         </header>
 
         {/* MAIN CONTENT AREA */}
         <main className="flex-1">
-          {children}
+          <AuthGate>{children}</AuthGate>
         </main>
 
         {/* SITE FOOTER */}
@@ -107,6 +115,7 @@ export default function RootLayout({
         {/* ANALYTICS (Client-Side) */}
         <Analytics />
         <SpeedInsights />
+        </AuthProvider>
       </body>
     </html>
   );

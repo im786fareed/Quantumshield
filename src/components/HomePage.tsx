@@ -229,6 +229,29 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
           </a>
         </div>
 
+        {/* ── My Legal Rights — second home / legal intelligence engine ── */}
+        <a href="/legal-rights"
+          className="relative overflow-hidden flex items-center gap-5 bg-gradient-to-r from-indigo-600/25 via-violet-600/15 to-transparent border-2 border-indigo-500/50 rounded-2xl p-6 mb-10 hover:border-indigo-400 hover:from-indigo-600/35 transition-all group">
+          <Scale className="absolute right-5 bottom-3 w-24 h-24 opacity-10" />
+          <div className="w-12 h-12 rounded-xl bg-indigo-500/25 flex items-center justify-center shrink-0">
+            <Scale className="w-6 h-6 text-indigo-300" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-xl font-black">{language === 'en' ? 'My Legal Rights' : 'मेरे कानूनी अधिकार'}</h2>
+              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 bg-indigo-500/15 border border-indigo-500/40 rounded-full px-2.5 py-0.5">
+                {language === 'en' ? 'New' : 'नया'}
+              </span>
+            </div>
+            <p className="text-sm text-gray-300 leading-snug">
+              {language === 'en'
+                ? 'Faced a scam, harassment, fraud or rights violation? Describe it — AI maps your rights, relevant laws, the right authority, and builds a report-ready case file.'
+                : 'धोखाधड़ी, उत्पीड़न या अधिकार हनन? बताएं — AI आपके अधिकार, कानून, सही प्राधिकरण बताकर रिपोर्ट-तैयार केस फाइल बनाता है।'}
+            </p>
+          </div>
+          <ArrowRight className="w-5 h-5 text-indigo-300 shrink-0 group-hover:translate-x-1 transition-transform" />
+        </a>
+
         {/* ── Quick check row ── */}
         <section className="mb-10">
           <h2 className="text-lg font-black mb-3 text-gray-200">{t.quickTitle}</h2>

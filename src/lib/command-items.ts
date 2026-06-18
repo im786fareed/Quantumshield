@@ -31,4 +31,5 @@ export const COMMAND_ITEMS: CommandItem[] = [
   { id: 'aianalyzer', label: 'AI Call Analyzer', keywords: 'call fraud deepfake' },
   { id: 'emergency', label: 'Emergency Contacts', keywords: 'help sos' },
   { id: 'aboutai', label: 'About AI', keywords: 'about' },
+  { id: 'legal-rights', label: 'My Legal Rights', keywords: 'legal rights complaint law fir authority report incident lawyer' },
 ];

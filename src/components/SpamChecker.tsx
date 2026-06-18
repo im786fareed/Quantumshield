@@ -3,6 +3,7 @@
 import { Phone, AlertTriangle, CheckCircle, XCircle, Mail, Link as LinkIcon, ShieldAlert, ShieldCheck, Loader2, Brain } from 'lucide-react';
 import { useState } from 'react';
 import { apiUrl } from '@/lib/apiBase';
+import VoiceDictationButton from './VoiceDictationButton';
 
 interface AiVerdict {
   spam: boolean;
@@ -364,6 +365,7 @@ export default function SpamChecker({ lang }: Props) {
   const [result, setResult] = useState<CheckResult | null>(null);
   const [aiVerdict, setAiVerdict] = useState<AiVerdict | null>(null);
   const [aiStatus, setAiStatus] = useState<'idle' | 'checking' | 'done' | 'unavailable'>('idle');
+  const [dictating, setDictating] = useState<{ on: boolean; lang: 'en-IN' | 'hi-IN' }>({ on: false, lang: 'en-IN' });
   const content = CONTENT[lang];
 
   const extractUrls = (text: string): string[] => {
@@ -731,6 +733,17 @@ export default function SpamChecker({ lang }: Props) {
       </div>
 
       <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl p-6 space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+            {lang === 'en' ? 'Paste or speak the message' : 'संदेश पेस्ट करें या बोलें'}
+          </span>
+          <VoiceDictationButton
+            value={input}
+            onChange={setInput}
+            idleLabel={lang === 'en' ? 'Speak' : 'बोलें'}
+            onListeningChange={(on, l) => setDictating({ on, lang: l })}
+          />
+        </div>
         <div className="relative">
           <textarea
             value={input}
@@ -747,6 +760,14 @@ export default function SpamChecker({ lang }: Props) {
             </button>
           )}
         </div>
+        {dictating.on && (
+          <p className="text-[11px] text-red-300 -mt-3 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
+            {lang === 'en'
+              ? `Listening in ${dictating.lang === 'en-IN' ? 'English' : 'Hindi'}… speak now. Tap “Stop” when done.`
+              : `${dictating.lang === 'en-IN' ? 'अंग्रेज़ी' : 'हिंदी'} में सुन रहे हैं… अब बोलें। पूरा होने पर "Stop" दबाएं।`}
+          </p>
+        )}
 
         <button
           onClick={handleCheck}

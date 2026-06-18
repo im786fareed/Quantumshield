@@ -6,6 +6,7 @@ import {
   Clock, Hash, Landmark, MessageSquare, ChevronDown
 } from 'lucide-react';
 import BackToHome from './BackToHome';
+import VoiceDictationButton from './VoiceDictationButton';
 
 /* ── Legal sections by crime type ── */
 const LEGAL_SECTIONS: Record<string, { section: string; desc: string }[]> = {
@@ -91,6 +92,7 @@ export default function PoliceReporter({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
   const [calledHelpline, setCalledHelpline] = useState(false);
   const [filedOnline,    setFiledOnline]    = useState(false);
   const [bankInformed,   setBankInformed]   = useState(false);
+  const [dictating, setDictating] = useState<{ on: boolean; lang: 'en-IN' | 'hi-IN' }>({ on: false, lang: 'en-IN' });
 
   useEffect(() => {
     const req = indexedDB.open('QuantumShieldVault', 1);
@@ -356,19 +358,35 @@ Ref: ${refId}
 
         {/* Section 4: Description */}
         <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
-          <h2 className="text-white font-bold mb-4 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-blue-400" />
-            {en ? '4. What Happened (step-by-step)' : '4. क्या हुआ (चरण-दर-चरण)'}
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h2 className="text-white font-bold flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-blue-400" />
+              {en ? '4. What Happened (step-by-step)' : '4. क्या हुआ (चरण-दर-चरण)'}
+            </h2>
+            <VoiceDictationButton
+              value={description}
+              onChange={setDescription}
+              idleLabel={en ? 'Speak' : 'बोलें'}
+              onListeningChange={(on, lang) => setDictating({ on, lang })}
+            />
+          </div>
           <textarea
             rows={5}
             placeholder={en
-              ? 'Example: On [date], I received a call from +91-XXXXXXXXXX claiming to be from CBI. They said my Aadhaar was linked to a drug parcel. They kept me on a WhatsApp video call for 3 hours threatening "digital arrest". They asked me to transfer ₹XX,XXX to "clear my name"...'
-              : 'उदाहरण: [तारीख] को मुझे +91-XXXXXXXXXX से कॉल आया जिसने CBI से होने का दावा किया। उन्होंने कहा मेरा आधार ड्रग पार्सल से जुड़ा है...'}
+              ? 'Type, or tap "Speak" to dictate in English or Hindi. Example: On [date], I received a call from +91-XXXXXXXXXX claiming to be from CBI. They said my Aadhaar was linked to a drug parcel. They kept me on a WhatsApp video call for 3 hours threatening "digital arrest". They asked me to transfer ₹XX,XXX to "clear my name"...'
+              : 'टाइप करें, या "बोलें" दबाकर हिंदी/अंग्रेज़ी में बोलें। उदाहरण: [तारीख] को मुझे +91-XXXXXXXXXX से कॉल आया जिसने CBI से होने का दावा किया...'}
             value={description}
             onChange={e => setDescription(e.target.value)}
             className={`${inputCls} h-auto resize-y`}
           />
+          {dictating.on && (
+            <p className="text-[11px] text-red-300 mt-2 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
+              {en
+                ? `Listening in ${dictating.lang === 'en-IN' ? 'English' : 'Hindi'}… speak now. Tap “Stop” when done.`
+                : `${dictating.lang === 'en-IN' ? 'अंग्रेज़ी' : 'हिंदी'} में सुन रहे हैं… अब बोलें। पूरा होने पर "Stop" दबाएं।`}
+            </p>
+          )}
         </div>
 
         {/* Section 5: Legal sections preview */}

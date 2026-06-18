@@ -41,6 +41,7 @@ const LABELS: Record<TabId, string> = {
   privacy: 'Privacy Shield',
   'system-guardian': 'System Guardian',
   phoneguard: 'Phone Number Guard',
+  'legal-rights': 'My Legal Rights',
 };
 
 export default function CommandPalette() {
