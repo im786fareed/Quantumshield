@@ -405,7 +405,7 @@ Ref: ${caseId}
             </span>
           </p>
           <p className="text-sm text-gray-500 mt-4">
-            AI-powered Citizen Rights, Incident Analysis &amp; Reporting Assistant · India · Free
+            AI-powered Citizen Rights, Incident Analysis &amp; Reporting Assistant · India
           </p>
         </div>
 

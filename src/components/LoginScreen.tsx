@@ -76,7 +76,7 @@ export default function LoginScreen() {
           <h1 className="text-3xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             QuantumShield
           </h1>
-          <p className="text-sm text-gray-500 mt-2">Sign in to continue · Free forever</p>
+          <p className="text-sm text-gray-500 mt-2">Sign in to continue</p>
         </div>
 
         <div className="bg-slate-900/70 border border-slate-700/50 rounded-2xl p-6 space-y-4">

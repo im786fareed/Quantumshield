@@ -77,6 +77,40 @@ export default function RootLayout({
 
         {/* SITE FOOTER */}
         <footer className="border-t border-white/10 bg-black/50 mt-12">
+          {/* FOUNDER — WHY I BUILT THIS */}
+          <div className="bg-gradient-to-b from-white/[0.03] to-transparent border-b border-white/5">
+            <div className="max-w-4xl mx-auto px-6 py-14">
+              <div className="flex flex-col sm:flex-row items-center gap-8 text-center sm:text-left">
+                <img
+                  src="/founder.png"
+                  alt="Fareed Shaik, founder of QuantumShield"
+                  className="w-28 h-28 rounded-2xl object-cover ring-2 ring-purple-500/40 shadow-lg shadow-purple-900/30 shrink-0"
+                />
+                <div>
+                  <h3 className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-3">
+                    Why I Built QuantumShield
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed text-sm">
+                    Every day, ordinary people — parents, students, shopkeepers — lose their hard-earned
+                    money to scam calls, fake links, and digital fraud. Most never see it coming, and the
+                    tools to stay safe are scattered, confusing, or hidden behind a price. I built
+                    QuantumShield to change that: one trusted shield that anyone in India can use to check a
+                    suspicious message, verify a caller, understand their rights, and act quickly when
+                    something feels wrong. If this app stops even one family from being cheated, it has
+                    done its job.
+                  </p>
+                  <p className="mt-4 text-sm font-semibold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Every citizen should know their legal rights.
+                  </p>
+                  <p className="mt-4 text-sm font-semibold text-white">
+                    Fareed Shaik
+                    <span className="text-gray-500 font-normal"> · Founder, QuantumShield</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-12 text-center md:text-left">
             <div>
               <div className="flex items-center justify-center md:justify-start gap-2 mb-4">

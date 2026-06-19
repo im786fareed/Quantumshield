@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
 import {
-  Shield, AlertTriangle, Phone, FileText, Mic,
+  Shield, Phone, FileText, Mic,
   Lock, Scan, Smartphone, Activity,
   Brain, BookOpen, Newspaper, ChevronDown, ChevronUp,
   CreditCard, Scale, MessageSquare, Database,
-  X, ExternalLink, PhoneCall, Users, Link2, ArrowRight
+  ExternalLink, PhoneCall, Users, Link2, ArrowRight
 } from 'lucide-react';
 
 interface Tool {
@@ -21,17 +21,15 @@ interface Tool {
 
 export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   const [language] = useState<'en' | 'hi'>(lang);
-  const [betaDismissed, setBetaDismissed] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
   /* ── i18n ── */
   const t = {
     en: {
-      betaText: 'BETA — Some features are demonstrations. For actual cybercrime report to',
       title: 'QuantumShield',
       pitch: 'When a scammer has you on the phone,',
       pitchAccent: 'your phone warns you — and your family knows.',
-      tagline: 'AI-powered protection during the scam, not after · Free forever',
+      tagline: 'AI-powered protection during the scam, not after',
       heroCallTitle: 'AI Call Analyzer',
       heroCallDesc: 'Listens to a suspicious call live, on your device, and warns you the moment digital-arrest or fraud patterns appear.',
       heroCallCta: 'Start live protection',
@@ -58,11 +56,10 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       secMore: '🔧 More Tools',
     },
     hi: {
-      betaText: 'बीटा — कुछ फीचर प्रदर्शन हैं। साइबर अपराध के लिए',
       title: 'क्वांटमशील्ड',
       pitch: 'जब स्कैमर आपको फोन पर फंसाए,',
       pitchAccent: 'आपका फोन आपको चेताएगा — और परिवार को पता चलेगा।',
-      tagline: 'स्कैम के दौरान सुरक्षा, बाद में नहीं · हमेशा मुफ्त',
+      tagline: 'स्कैम के दौरान सुरक्षा, बाद में नहीं',
       heroCallTitle: 'AI कॉल विश्लेषक',
       heroCallDesc: 'संदिग्ध कॉल को आपके डिवाइस पर लाइव सुनता है और डिजिटल-अरेस्ट या धोखाधड़ी के संकेत मिलते ही चेतावनी देता है।',
       heroCallCta: 'लाइव सुरक्षा शुरू करें',
@@ -155,25 +152,6 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
 
   return (
     <div className="min-h-screen bg-black text-white">
-
-      {/* ── BETA banner ── */}
-      {!betaDismissed && (
-        <div className="bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-2.5">
-          <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-            <p className="text-sm text-white flex items-center gap-2 flex-wrap">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
-              {t.betaText}{' '}
-              <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer"
-                className="underline font-bold whitespace-nowrap">
-                cybercrime.gov.in
-              </a>
-            </p>
-            <button onClick={() => setBetaDismissed(true)} className="shrink-0 text-white/70 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
 

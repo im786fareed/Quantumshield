@@ -478,7 +478,7 @@ export default function Education({ lang }: Props) {
         <p className="text-gray-300 mb-5">{content.shareMsg}</p>
         <button
           onClick={() => {
-            const msg = 'QuantumShield - 48 Free Cyber Safety Videos. Stay Protected! https://quantumshield.vercel.app/education';
+            const msg = 'QuantumShield - 48 Cyber Safety Videos. Stay Protected! https://quantumshield.vercel.app/education';
             if (navigator.share) { navigator.share({ text: msg }); } else { navigator.clipboard.writeText(msg); }
           }}
           className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full font-bold text-lg hover:scale-105 transition"
