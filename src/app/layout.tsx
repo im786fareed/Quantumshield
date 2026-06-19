@@ -91,13 +91,11 @@ export default function RootLayout({
                     Why I Built QuantumShield
                   </h3>
                   <p className="text-gray-300 leading-relaxed text-sm">
-                    Every day, ordinary people — parents, students, shopkeepers — lose their hard-earned
-                    money to scam calls, fake links, and digital fraud. Most never see it coming, and the
-                    tools to stay safe are scattered, confusing, or hidden behind a price. I built
-                    QuantumShield to change that: one trusted shield that anyone in India can use to check a
-                    suspicious message, verify a caller, understand their rights, and act quickly when
-                    something feels wrong. If this app stops even one family from being cheated, it has
-                    done its job.
+                    Scams often work by isolating the victim and creating pressure before anyone
+                    around them realizes what is happening. QuantumShield is built to reduce that gap
+                    by watching for suspicious signals, not by promising perfect protection. If the
+                    app can help surface unusual behavior early enough for family to step in, it gives
+                    people a better chance to avoid fraud before the damage is done.
                   </p>
                   <p className="mt-4 text-sm font-semibold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                     Every citizen should know their legal rights.

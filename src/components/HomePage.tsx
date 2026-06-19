@@ -27,8 +27,8 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   const t = {
     en: {
       title: 'QuantumShield',
-      pitch: 'When a scammer has you on the phone,',
-      pitchAccent: 'your phone warns you — and your family knows.',
+      pitch: 'QuantumShield:',
+      pitchAccent: 'AI cyber defender for your loved ones.',
       tagline: 'AI-powered protection during the scam, not after',
       heroCallTitle: 'AI Call Analyzer',
       heroCallDesc: 'Listens to a suspicious call live, on your device, and warns you the moment digital-arrest or fraud patterns appear.',
@@ -57,8 +57,8 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     },
     hi: {
       title: 'क्वांटमशील्ड',
-      pitch: 'जब स्कैमर आपको फोन पर फंसाए,',
-      pitchAccent: 'आपका फोन आपको चेताएगा — और परिवार को पता चलेगा।',
+      pitch: 'क्वांटमशील्ड:',
+      pitchAccent: 'आपके अपनों के लिए AI साइबर रक्षक।',
       tagline: 'स्कैम के दौरान सुरक्षा, बाद में नहीं',
       heroCallTitle: 'AI कॉल विश्लेषक',
       heroCallDesc: 'संदिग्ध कॉल को आपके डिवाइस पर लाइव सुनता है और डिजिटल-अरेस्ट या धोखाधड़ी के संकेत मिलते ही चेतावनी देता है।',
@@ -157,8 +157,14 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
 
         {/* ── Brand + pitch ── */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/30 to-purple-600/30 border border-blue-500/40 mb-5">
-            <Shield className="w-9 h-9 text-blue-400" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600/30 to-purple-600/30 border border-blue-500/40 mb-5 overflow-hidden">
+            <img
+              src="/logo.png"
+              alt="QuantumShield logo"
+              width={80}
+              height={80}
+              className="w-full h-full object-contain p-1.5"
+            />
           </div>
           <h1 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">
             {t.title}
