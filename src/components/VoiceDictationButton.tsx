@@ -64,17 +64,25 @@ export default function VoiceDictationButton({
     finalRef.current = '';
 
     r.onresult = (e: SpeechRecognitionEvent) => {
+      // Rebuild this session's text from the full results list every event.
+      // Appending incrementally double-counts on Android Chrome, which
+      // re-reports earlier results after each pause/auto-restart.
+      let sessionFinal = '';
       let interim = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
+      for (let i = 0; i < e.results.length; i++) {
         const res = e.results[i];
-        if (res.isFinal) finalRef.current += res[0].transcript + ' ';
+        if (res.isFinal) sessionFinal += res[0].transcript + ' ';
         else interim += res[0].transcript;
       }
-      onChange((baseTextRef.current + finalRef.current + interim).replace(/\s{2,}/g, ' '));
+      finalRef.current = sessionFinal;
+      onChange((baseTextRef.current + sessionFinal + interim).replace(/\s{2,}/g, ' '));
     };
     r.onerror = () => stop();
     r.onend = () => {
-      // The API stops after a pause; keep going until the user taps Stop.
+      // The API stops after a pause; lock in what was said this session,
+      // then start a fresh session so its result list begins empty.
+      baseTextRef.current = (baseTextRef.current + finalRef.current).replace(/\s{2,}/g, ' ');
+      finalRef.current = '';
       if (listeningRef.current) { try { r.start(); } catch {} }
     };
 
