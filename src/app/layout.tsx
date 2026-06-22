@@ -8,6 +8,7 @@ import Logo from "@/components/Logo";
 import InstallPrompt from "@/components/InstallPrompt";
 import CommandPalette from "@/components/CommandPalette";
 import ConsentPopup from "@/components/ConsentPopup"; // The Legal Layer
+import SecurityCheck from "@/components/SecurityCheck"; // On-launch real security check
 import FloatingRecorder from "@/components/FloatingRecorder";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthGate from "@/components/AuthGate";
@@ -32,6 +33,7 @@ export default function RootLayout({
         <AuthProvider>
         {/* GLOBAL SECURITY LAYERS */}
         <ConsentPopup />
+        <SecurityCheck />
         <InstallPrompt />
         <CommandPalette />
         <FloatingRecorder />

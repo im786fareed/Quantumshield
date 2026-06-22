@@ -59,3 +59,76 @@ body {
     background: linear-gradient(to bottom right, #7c3aed, #3b82f6);
   }
 }
+
+/* ─────────────────────────────────────────────
+   Premium home visuals (honest content, premium feel)
+   ───────────────────────────────────────────── */
+@property --qs-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes qs-spin { to { --qs-angle: 360deg; } }
+
+@keyframes qs-breathe {
+  0%, 100% { transform: scale(1);    opacity: 0.7; }
+  50%      { transform: scale(1.14); opacity: 1;   }
+}
+
+@keyframes qs-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* Rotating gradient ring (sits behind a rounded element) */
+.qs-ring { position: relative; }
+.qs-ring::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--qs-angle),
+    transparent 50%,
+    #60a5fa 72%,
+    #c084fc 86%,
+    #f472b6 94%,
+    transparent 100%
+  );
+  animation: qs-spin 6s linear infinite;
+  z-index: -1;
+}
+
+/* Breathing glow */
+.qs-glow { animation: qs-breathe 4.5s ease-in-out infinite; }
+
+/* Animated gradient text */
+.qs-shimmer {
+  background-size: 200% auto;
+  animation: qs-shimmer 6s linear infinite;
+}
+
+/* Card edge that lights up on hover */
+.qs-card { position: relative; }
+.qs-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #60a5fa, transparent 38%, transparent 62%, #c084fc);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.qs-card:hover::before { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .qs-ring::before,
+  .qs-glow,
+  .qs-shimmer { animation: none; }
+}
