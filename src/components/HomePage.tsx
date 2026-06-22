@@ -181,7 +181,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       showAllBtn: 'All tools',
       hideAllBtn: 'Hide extra tools',
       trustDevice: 'On-device AI', trustDeviceSub: 'Analysis runs on your phone',
-      trustStorage: 'Zero server storage', trustStorageSub: 'Your data never leaves',
+      trustStorage: 'Zero server storage', trustStorageSub: "We don't keep your data",
       trustLang: 'English & हिन्दी', trustLangSub: 'Built for India',
       trustHelp: 'Helpline 1930', trustHelpSub: 'One-tap national line',
     },
@@ -211,7 +211,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       showAllBtn: 'सभी टूल',
       hideAllBtn: 'अतिरिक्त टूल छिपाएं',
       trustDevice: 'डिवाइस पर AI', trustDeviceSub: 'विश्लेषण आपके फ़ोन पर',
-      trustStorage: 'सर्वर पर शून्य भंडारण', trustStorageSub: 'डेटा कभी बाहर नहीं जाता',
+      trustStorage: 'सर्वर पर शून्य भंडारण', trustStorageSub: 'हम आपका डेटा नहीं रखते',
       trustLang: 'English & हिन्दी', trustLangSub: 'भारत के लिए बनाया',
       trustHelp: 'हेल्पलाइन 1930', trustHelpSub: 'एक टैप राष्ट्रीय लाइन',
     }

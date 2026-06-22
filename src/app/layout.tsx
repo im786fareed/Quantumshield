@@ -118,8 +118,8 @@ export default function RootLayout({
                 <span className="font-semibold uppercase tracking-widest text-xs text-white">QuantumShield</span>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">
-                Shielding the nation from cyber threats through 
-                on-device AI analysis and zero-storage vaults.
+                Shielding the nation from cyber threats through
+                real-time AI threat analysis and local-only evidence vaults.
               </p>
             </div>
 
@@ -142,7 +142,7 @@ export default function RootLayout({
           </div>
 
           <div className="text-center text-[10px] text-gray-600 border-t border-white/5 py-6 font-mono tracking-widest uppercase">
-            © {new Date().getFullYear()} QUANTUMSHIELD. NO DATA IS STORED ON SERVERS.
+            © {new Date().getFullYear()} QUANTUMSHIELD · LOCAL-FIRST — WE DON'T STORE YOUR SCANS OR EVIDENCE.
           </div>
         </footer>
 
