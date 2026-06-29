@@ -13,6 +13,7 @@ import FloatingRecorder from "@/components/FloatingRecorder";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthGate from "@/components/AuthGate";
 import AccountButton from "@/components/AccountButton";
+import LanguageToggle from "@/components/LanguageToggle";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -67,6 +68,7 @@ export default function RootLayout({
               >
                 🚨 Emergency 1930
               </a>
+              <LanguageToggle />
               <AccountButton />
             </div>
           </div>

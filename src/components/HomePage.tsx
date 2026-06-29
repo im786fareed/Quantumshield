@@ -7,8 +7,9 @@ import {
   Brain, BookOpen, Newspaper, ChevronDown, ChevronUp,
   CreditCard, Scale, MessageSquare, Database,
   ExternalLink, PhoneCall, Users, Link2, ArrowRight,
-  Cpu, ServerOff, Languages, BadgeCheck, ShieldCheck
+  Cpu, ServerOff, Languages, BadgeCheck, ShieldCheck, Radar
 } from 'lucide-react';
+import { useLanguage } from '@/lib/useLanguage';
 
 interface Tool {
   id: string;
@@ -143,8 +144,11 @@ const reveal = {
   }),
 };
 
-export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
-  const [language] = useState<'en' | 'hi'>(lang);
+export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
+  // Global language store is the source of truth; an explicit `lang`
+  // prop (if passed) still wins as an override.
+  const storeLang = useLanguage((s) => s.lang);
+  const language: 'en' | 'hi' = lang ?? storeLang;
   const [showAll, setShowAll] = useState(false);
 
   const openSecurityCheck = () => {
@@ -227,6 +231,7 @@ export default function HomePage({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     { id: 'education',  name: 'Learn Safety',         nameHi: 'सुरक्षा सीखें',        description: '48 expert fraud-awareness videos',               descriptionHi: '48 विशेषज्ञ वीडियो',                                   icon: BookOpen,   path: '/education',      category: 'core' },
     { id: 'emergency',  name: 'Emergency: 1930',      nameHi: 'आपातकाल: 1930',       description: 'One-tap national cybercrime helpline',           descriptionHi: 'एक टैप में राष्ट्रीय हेल्पलाइन',                       icon: Phone,      path: '/emergency',      category: 'core' },
     { id: 'legalaid',   name: 'Cyber Legal First Aid',nameHi: 'साइबर कानूनी सहायता', description: 'Digital Arrest guide · FIR · your rights',       descriptionHi: 'डिजिटल अरेस्ट गाइड · FIR · आपके अधिकार',              icon: Shield,     path: '/legal-aid',      category: 'core' },
+    { id: 'sentinel',   name: 'Sentinel · Privacy Sweep', nameHi: 'सेंटिनल · प्राइवेसी स्वीप', description: 'Find hidden cameras, mics & trackers with AI', descriptionHi: 'AI से छुपे कैमरे, माइक और ट्रैकर खोजें',         icon: Radar,      path: '/sentinel',       category: 'core' },
   ];
 
   /* ── Everything else — available under "All tools".
