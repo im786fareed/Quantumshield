@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { Shield, Mail, Phone, Loader2, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import type { ConfirmationResult } from 'firebase/auth';
@@ -172,8 +173,8 @@ export default function LoginScreen() {
 
         <p className="text-center text-[11px] text-slate-600 mt-5 leading-relaxed">
           By continuing you agree to our{' '}
-          <a href="/terms" className="underline">Terms</a> and{' '}
-          <a href="/privacy" className="underline">Privacy Policy</a>.
+          <Link href="/terms" className="underline">Terms</Link> and{' '}
+          <Link href="/privacy" className="underline">Privacy Policy</Link>.
         </p>
       </div>
     </div>

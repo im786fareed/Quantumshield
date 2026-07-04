@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useLanguage } from '@/lib/useLanguage';
 import {
   CreditCard, AlertTriangle, CheckCircle, XCircle,
   Search, Shield, QrCode, ChevronRight, Info,
@@ -95,7 +96,7 @@ function analyzeUPI(input: string): RiskResult {
 }
 
 export default function UPIGuard() {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const { lang, setLang } = useLanguage();
   const [input, setInput] = useState('');
   const [result, setResult] = useState<RiskResult | null>(null);
   const [activeTab, setActiveTab] = useState<'check' | 'patterns' | 'safety'>('check');
@@ -175,7 +176,7 @@ export default function UPIGuard() {
             <span className="text-red-300">₹95 Crore lost to UPI fraud annually in India</span>
           </div>
           <div className="mt-2">
-            <button onClick={() => setLang(l => l === 'en' ? 'hi' : 'en')} className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">
+            <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">
               {lang === 'en' ? 'हिन्दी में देखें' : 'View in English'}
             </button>
           </div>

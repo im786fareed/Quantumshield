@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useLanguage } from '@/lib/useLanguage';
 import {
   ShieldCheck, ScanLine, AlertTriangle, GraduationCap, Users,
   CalendarDays, TrendingUp, ArrowRight,
@@ -28,7 +29,8 @@ const sevText = (s: string) =>
   s === 'high'     ? 'text-orange-400' :
                      'text-yellow-400';
 
-export default function ConsumerProtection({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
+export default function ConsumerProtection(_props?: { lang?: 'en' | 'hi' }) {
+  const { lang } = useLanguage();
   const [stats, setStats] = useState<ProtectionStats | null>(null);
 
   useEffect(() => {

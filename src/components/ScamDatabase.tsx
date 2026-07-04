@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useLanguage } from '@/lib/useLanguage';
 import {
   Search, ShieldAlert, CheckCircle, Database,
   Phone, CreditCard, User, AlertTriangle, Info, ExternalLink
@@ -119,7 +120,8 @@ function analyseAccount(acc: string): { suspicious: boolean; reasons: string[]; 
 }
 
 /* ─── Component ─── */
-export default function ScamDatabase({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
+export default function ScamDatabase(_props?: { lang?: 'en' | 'hi' }) {
+  const { lang } = useLanguage();
   const [query, setQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'phone' | 'account' | 'entity'>('phone');
   const en = lang !== 'hi';

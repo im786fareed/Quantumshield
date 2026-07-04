@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/lib/useLanguage';
 import {
   Zap, Cpu, HardDrive, Battery, Trash2, CheckCircle,
   Shield, BatteryCharging, MemoryStick, Moon, Wifi, Info,
@@ -224,7 +225,7 @@ function GuideCard({ step, lang, checked, onToggle }: {
 }
 
 export default function SystemTuneUp({ embedded = false }: { embedded?: boolean } = {}) {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const { lang, setLang } = useLanguage();
   const [activeTab, setActiveTab] = useState<'tuneup' | 'battery'>('tuneup');
   const [metrics, setMetrics] = useState<TuneMetric[]>([]);
   const [done, setDone] = useState<Record<string, boolean>>({});
@@ -285,7 +286,7 @@ export default function SystemTuneUp({ embedded = false }: { embedded?: boolean 
           <p className="text-xl text-gray-300 font-bold mb-1">{t.subtitle}</p>
           <p className="text-gray-500">{t.tagline}</p>
           <button
-            onClick={() => setLang(l => l === 'en' ? 'hi' : 'en')}
+            onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
             className="mt-4 text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition"
           >
             {lang === 'en' ? 'हिन्दी में देखें' : 'View in English'}

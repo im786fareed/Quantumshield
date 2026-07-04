@@ -4,6 +4,7 @@ import { Activity, ShieldCheck } from 'lucide-react';
 import BackToHome from './BackToHome';
 import SystemTuneUp from './SystemTuneUp';
 import DeviceSecurityScanner from './DeviceSecurityScanner';
+import { useLanguage } from '@/lib/useLanguage';
 
 type DeviceTab = 'health' | 'scan';
 
@@ -14,11 +15,11 @@ const TABS: { id: DeviceTab; label: string; labelHi: string; icon: any }[] = [
 
 export default function DeviceCheckupHub({
   defaultTab = 'health',
-  lang = 'en',
 }: {
   defaultTab?: DeviceTab;
   lang?: 'en' | 'hi';
 }) {
+  const { lang } = useLanguage();
   const [tab, setTab] = useState<DeviceTab>(defaultTab);
 
   return (
@@ -65,7 +66,7 @@ export default function DeviceCheckupHub({
         {tab === 'health' ? (
           <SystemTuneUp embedded />
         ) : (
-          <DeviceSecurityScanner lang={lang} embedded />
+          <DeviceSecurityScanner embedded />
         )}
       </div>
     </div>

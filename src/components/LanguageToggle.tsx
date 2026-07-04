@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Globe } from 'lucide-react';
 import { useLanguage } from '@/lib/useLanguage';
 
@@ -11,6 +12,10 @@ import { useLanguage } from '@/lib/useLanguage';
 export default function LanguageToggle() {
   const lang = useLanguage((s) => s.lang);
   const toggle = useLanguage((s) => s.toggle);
+  // Keep <html lang> in sync for screen readers and search engines.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   return (
     <button
       onClick={toggle}

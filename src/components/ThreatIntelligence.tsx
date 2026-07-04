@@ -1,11 +1,7 @@
 'use client';
 
-import { Shield, TrendingUp, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
-import { useState, useEffect } from 'react';
-
-interface Props {
-  lang: 'en' | 'hi';
-}
+import { Shield, TrendingUp, AlertTriangle, BookOpen } from 'lucide-react';
+import { useLanguage } from '@/lib/useLanguage';
 
 interface Threat {
   id: string;
@@ -19,101 +15,82 @@ interface Threat {
 
 const CONTENT = {
   en: {
-    title: 'Live Threat Intelligence',
-    subtitle: 'QuantumGuard learns from latest cyber threats 24/7',
-    lastUpdated: 'Last Updated',
-    threatsBlocked: 'Active Threat Patterns',
-    newToday: 'New Threats Detected Today',
-    protected: 'You Are Protected',
-    updateButton: 'Check for New Threats',
-    updating: 'Updating threat database...',
-    categories: 'Threat Categories',
-    viewDetails: 'View Details'
+    title: 'Threat Pattern Library',
+    subtitle: 'The documented scam patterns QuantumShield checks every scan against',
+    protected: 'Detection Patterns',
+    howTitle: 'How this library works:',
+    how: 'These patterns are built into QuantumShield\'s detection engines — the rule engine that runs on every scan, and the AI engine (when configured) that reads messages the way a fraud investigator would. The library is curated from public advisories (CERT-In, I4C, cybercrime.gov.in) and ships with app updates — it is not a live feed.',
+    listTitle: 'Documented Major Scam Patterns',
+    documented: 'Documented',
+    protection: 'QuantumShield Protection:',
   },
   hi: {
-    title: 'लाइव खतरा खुफिया',
-    subtitle: 'QuantumGuard 24/7 नवीनतम साइबर खतरों से सीखता है',
-    lastUpdated: 'अंतिम अपडेट',
-    threatsBlocked: 'सक्रिय खतरा पैटर्न',
-    newToday: 'आज पाए गए नए खतरे',
-    protected: 'आप सुरक्षित हैं',
-    updateButton: 'नए खतरों की जांच करें',
-    updating: 'खतरा डेटाबेस अपडेट हो रहा है',
-    categories: 'खतरे की श्रेणियां',
-    viewDetails: 'विवरण देखें'
+    title: 'खतरा पैटर्न लाइब्रेरी',
+    subtitle: 'दस्तावेज़ित स्कैम पैटर्न जिनसे QuantumShield हर स्कैन की जांच करता है',
+    protected: 'डिटेक्शन पैटर्न',
+    howTitle: 'यह लाइब्रेरी कैसे काम करती है:',
+    how: 'ये पैटर्न QuantumShield के डिटेक्शन इंजन में बने हैं — नियम इंजन जो हर स्कैन पर चलता है, और AI इंजन (कॉन्फ़िगर होने पर)। लाइब्रेरी सार्वजनिक सलाह (CERT-In, I4C, cybercrime.gov.in) से बनाई गई है और ऐप अपडेट के साथ आती है — यह लाइव फ़ीड नहीं है।',
+    listTitle: 'दस्तावेज़ित प्रमुख स्कैम पैटर्न',
+    documented: 'दस्तावेज़ित',
+    protection: 'QuantumShield सुरक्षा:',
   }
 };
 
 // Number of active detection patterns across textAnalyzer.ts + threatEngine.ts engines
 const ACTIVE_PATTERNS = 47;
 
-export default function ThreatIntelligence({ lang }: Props) {
-  const [threats, setThreats] = useState<Threat[]>([]);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<string>('');
+// Curated from public advisories; shipped with app updates (not a live feed).
+const DOCUMENTED_THREATS: Threat[] = [
+  {
+    id: '1',
+    title: 'Digital Arrest Scam via Fake CBI Calls',
+    description: 'Scammers impersonating CBI/Police officers claiming arrest warrant, demanding money transfer to "clear charges". Uses video calls to appear legitimate.',
+    severity: 'CRITICAL',
+    date: '2025-12',
+    source: 'I4C / cybercrime.gov.in',
+    category: 'Social Engineering'
+  },
+  {
+    id: '2',
+    title: 'Fake UPI Cashback APK Distribution',
+    description: 'Malicious APK disguised as "UPI Cashback" app spreading via WhatsApp. Steals banking credentials and OTPs.',
+    severity: 'CRITICAL',
+    date: '2025-12',
+    source: 'CERT-In Alert',
+    category: 'APK Malware'
+  },
+  {
+    id: '3',
+    title: 'Aadhaar Update Verification Scam',
+    description: 'SMS claiming Aadhaar will be blocked unless user clicks link to "verify". Link leads to fake UIDAI website stealing personal data.',
+    severity: 'HIGH',
+    date: '2025-12',
+    source: 'Cybercrime.gov.in',
+    category: 'Phishing'
+  },
+  {
+    id: '4',
+    title: 'Modified WhatsApp App Trojan (GB/Plus)',
+    description: 'Modified WhatsApp apps (WhatsApp Plus, GB WhatsApp) containing spyware. Distributed outside Play Store, monitors all messages and calls.',
+    severity: 'HIGH',
+    date: '2025-12',
+    source: 'Public security advisories',
+    category: 'APK Malware'
+  },
+  {
+    id: '5',
+    title: 'Fake Parcel Delivery SMS Ransomware',
+    description: 'SMS claiming package delivery with APK link. Installing encrypts device files and demands ransom.',
+    severity: 'CRITICAL',
+    date: '2025-12',
+    source: 'Public security advisories',
+    category: 'Ransomware'
+  }
+];
+
+export default function ThreatIntelligence(_props?: { lang?: 'en' | 'hi' }) {
+  const { lang } = useLanguage();
   const content = CONTENT[lang];
-
-  // Simulated threat database (in production, fetch from API)
-  const mockThreats: Threat[] = [
-    {
-      id: '1',
-      title: 'Digital Arrest Scam via Fake CBI Calls',
-      description: 'Scammers impersonating CBI/Police officers claiming arrest warrant, demanding money transfer to "clear charges". Uses video calls to appear legitimate.',
-      severity: 'CRITICAL',
-      date: '2025-12-14',
-      source: 'CybersecurityNews.com',
-      category: 'Social Engineering'
-    },
-    {
-      id: '2',
-      title: 'Fake UPI Cashback APK Distribution',
-      description: 'Malicious APK disguised as "UPI Cashback 2025" app spreading via WhatsApp. Steals banking credentials and OTPs.',
-      severity: 'CRITICAL',
-      date: '2025-12-13',
-      source: 'CERT-In Alert',
-      category: 'APK Malware'
-    },
-    {
-      id: '3',
-      title: 'Aadhar Update Verification Scam',
-      description: 'SMS claiming Aadhar will be blocked unless user clicks link to "verify". Link leads to fake UIDAI website stealing personal data.',
-      severity: 'HIGH',
-      date: '2025-12-12',
-      source: 'Cybercrime.gov.in',
-      category: 'Phishing'
-    },
-    {
-      id: '4',
-      title: 'WhatsApp Plus Modified App Trojan',
-      description: 'Modified WhatsApp app (WhatsApp Plus, GB WhatsApp) containing spyware. Distributed outside Play Store, monitors all messages and calls.',
-      severity: 'HIGH',
-      date: '2025-12-11',
-      source: 'Reddit r/Scams',
-      category: 'APK Malware'
-    },
-    {
-      id: '5',
-      title: 'Fake Parcel Delivery SMS Ransomware',
-      description: 'SMS claiming package delivery with APK link. Installing encrypts device files and demands ₹5,000 ransom.',
-      severity: 'CRITICAL',
-      date: '2025-12-10',
-      source: 'ET CIO',
-      category: 'Ransomware'
-    }
-  ];
-
-  useEffect(() => {
-    // Load initial threats
-    setThreats(mockThreats);
-    setLastUpdate(new Date().toLocaleString());
-  }, []);
-
-  const handleUpdate = async () => {
-    setIsUpdating(true);
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    setLastUpdate(new Date().toLocaleString());
-    setIsUpdating(false);
-  };
 
   const getSeverityColor = (severity: string) => {
     if (severity === 'CRITICAL') return 'bg-red-500/20 border-red-500 text-red-400';
@@ -144,7 +121,7 @@ export default function ThreatIntelligence({ lang }: Props) {
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <div className="bg-green-900/40 backdrop-blur rounded-2xl border-2 border-green-500 p-6">
           <div className="flex items-center gap-3 mb-3">
-            <CheckCircle className="w-8 h-8 text-green-400" />
+            <Shield className="w-8 h-8 text-green-400" />
             <h3 className="text-lg font-bold text-white">{content.protected}</h3>
           </div>
           <p className="text-5xl font-bold text-green-400 mb-2">{ACTIVE_PATTERNS}</p>
@@ -166,30 +143,30 @@ export default function ThreatIntelligence({ lang }: Props) {
           </p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6 flex items-center justify-center">
-          <button
-            onClick={handleUpdate}
-            disabled={isUpdating}
-            className="flex flex-col items-center gap-3 hover:scale-105 transition disabled:opacity-50"
-          >
-            <RefreshCw className={`w-12 h-12 text-cyan-400 ${isUpdating ? 'animate-spin' : ''}`} />
-            <span className="font-bold text-white text-center text-sm">
-              {isUpdating ? content.updating : content.updateButton}
-            </span>
-            {lastUpdate && <span className="text-xs text-slate-500">{lastUpdate}</span>}
-          </button>
+        <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <BookOpen className="w-8 h-8 text-cyan-400" />
+            <h3 className="text-lg font-bold text-white">
+              {lang === 'en' ? 'Curated Library' : 'क्यूरेटेड लाइब्रेरी'}
+            </h3>
+          </div>
+          <p className="text-sm text-gray-300 leading-relaxed">
+            {lang === 'en'
+              ? 'Compiled from CERT-In, I4C and cybercrime.gov.in advisories. Updated with app releases — not a live feed.'
+              : 'CERT-In, I4C और cybercrime.gov.in की सलाह से संकलित। ऐप रिलीज़ के साथ अपडेट — लाइव फ़ीड नहीं।'}
+          </p>
         </div>
       </div>
 
-      {/* Latest Threats */}
+      {/* Documented Threat Patterns */}
       <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-8">
         <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
           <AlertTriangle className="w-6 h-6 text-red-400" />
-          {lang === 'en' ? 'Latest Threat Patterns (Last 5 Days)' : 'नवीनतम खतरा पैटर्न (पिछले 5 दिन)'}
+          {content.listTitle}
         </h3>
 
         <div className="space-y-4">
-          {threats.map((threat) => (
+          {DOCUMENTED_THREATS.map((threat) => (
             <div
               key={threat.id}
               className={`rounded-xl border-2 p-6 ${getSeverityColor(threat.severity)}`}
@@ -200,7 +177,7 @@ export default function ThreatIntelligence({ lang }: Props) {
                   <div>
                     <h4 className="text-xl font-bold text-white mb-1">{threat.title}</h4>
                     <div className="flex items-center gap-3 text-sm text-gray-300">
-                      <span>{threat.date}</span>
+                      <span>{content.documented}: {threat.date}</span>
                       <span>•</span>
                       <span>{threat.source}</span>
                       <span>•</span>
@@ -217,11 +194,11 @@ export default function ThreatIntelligence({ lang }: Props) {
 
               <div className="bg-black/30 rounded-lg p-4">
                 <p className="text-sm text-green-300">
-                  ✅ <strong>{lang === 'en' ? 'QuantumGuard Protection:' : 'QuantumGuard सुरक्षा:'}</strong>
+                  ✅ <strong>{content.protection}</strong>
                   {' '}
                   {lang === 'en'
-                    ? `This threat is now in our detection database. ${threat.category === 'APK Malware' ? 'APK Guardian will block it.' : threat.category === 'Phishing' ? 'URL Checker will detect it.' : 'AI Scanner will identify it.'}`
-                    : `यह खतरा अब हमारे डिटेक्शन डेटाबेस में है। ${threat.category === 'APK Malware' ? 'APK Guardian इसे ब्लॉक करेगा।' : threat.category === 'Phishing' ? 'URL चेकर इसे पहचानेगा।' : 'AI स्कैनर इसे पहचानेगा।'}`}
+                    ? `This pattern is in the detection database. ${threat.category === 'APK Malware' ? 'APK Guardian checks for it.' : threat.category === 'Phishing' ? 'URL Checker checks for it.' : 'The message/call analyzers check for it.'}`
+                    : `यह पैटर्न डिटेक्शन डेटाबेस में है। ${threat.category === 'APK Malware' ? 'APK Guardian इसकी जांच करता है।' : threat.category === 'Phishing' ? 'URL चेकर इसकी जांच करता है।' : 'मैसेज/कॉल एनालाइज़र इसकी जांच करते हैं।'}`}
                 </p>
               </div>
             </div>
@@ -235,11 +212,9 @@ export default function ThreatIntelligence({ lang }: Props) {
           <Shield className="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1" />
           <div>
             <p className="text-sm text-cyan-200">
-              <strong>{lang === 'en' ? 'How Threat Intelligence Works:' : 'खतरा खुफिया कैसे काम करता है:'}</strong>
+              <strong>{content.howTitle}</strong>
               {' '}
-              {lang === 'en'
-                ? 'QuantumGuard monitors 50+ cybersecurity sources daily (CybersecurityNews.com, CERT-In, Cybercrime.gov.in, security forums). Our AI extracts new scam patterns, malware signatures, and attack techniques. These patterns are added to all detection features (APK Guardian, URL Checker, Spam AI, etc.) within hours of discovery. You get protection against brand-new threats before they spread widely.'
-                : 'QuantumGuard प्रतिदिन 50+ साइबर सुरक्षा स्रोतों की निगरानी करता है। हमारी AI नए स्कैम पैटर्न, मैलवेयर हस्ताक्षर और हमले की तकनीकें निकालती है। ये पैटर्न खोज के कुछ घंटों के भीतर सभी डिटेक्शन सुविधाओं में जोड़े जाते हैं। आपको व्यापक रूप से फैलने से पहले नए खतरों से सुरक्षा मिलती है।'}
+              {content.how}
             </p>
           </div>
         </div>

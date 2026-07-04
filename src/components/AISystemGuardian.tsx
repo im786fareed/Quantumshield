@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useLanguage } from '@/lib/useLanguage';
 import {
   Shield, Activity, Cpu, HardDrive, Wifi, Battery, MemoryStick,
   AlertTriangle, CheckCircle, Zap, Gauge, Monitor, Globe,
@@ -14,7 +15,7 @@ import BackToHome from './BackToHome';
 const T = {
   en: {
     title: "AI SYSTEM GUARDIAN",
-    subtitle: "Real-time system diagnostics, RAM optimization & secure file erasure",
+    subtitle: "Real-time system diagnostics, RAM optimization & file fingerprinting",
     systemMetrics: "System Performance Metrics",
     systemMetricsDesc: "Scan your device heap allocations, hardware threads, secure battery status, and execution contexts.",
     liveRamMonitor: "Live RAM Monitor",
@@ -24,22 +25,22 @@ const T = {
     runScan: "RUN SYSTEM DIAGNOSTICS",
     runningScan: "SCANNING SYSTEM POSTURE...",
     integrityScanner: "On-Device Cryptographic Scanner",
-    integrityDesc: "Select local files to compute cryptographic SHA-256 signatures and secure erase.",
+    integrityDesc: "Select local files to compute cryptographic SHA-256 fingerprints — 100% on-device, nothing is uploaded.",
     computeHashes: "Computing SHA-256 Hashes...",
     selectFiles: "Select Files to Scan",
     scannedCount: (count: number) => `${count} file(s) loaded`,
     selectAll: "Select All",
     deselectAll: "Deselect All",
-    secureDelete: (count: number) => `Secure Delete (${count})`,
-    erasing: "Shredding...",
-    dodTitle: "DoD 5220.22-M Secure Wipe Protocol",
+    secureDelete: (count: number) => `Remove from List (${count})`,
+    erasing: "Removing...",
+    dodTitle: "What This Tool Can & Cannot Do",
     dodSteps: [
-      "Overwrite entire address space with zeros (0x00)",
-      "Overwrite with cryptographically random bytes",
-      "Final overwrite verification with zeros (0x00)"
+      "CAN: compute a SHA-256 fingerprint of any file, fully on-device — use it later to prove the file was not modified",
+      "CANNOT: shred or overwrite files on your disk — no web app can, and any that claims to is lying",
+      "To permanently delete a file: remove it in your file manager, then empty the Recycle Bin / Trash"
     ],
-    auditLogTitle: "Deletion Audit Log (Local Only)",
-    auditPasses: "passes",
+    auditLogTitle: "Activity Log (Local Only)",
+    auditPasses: "file(s)",
     healthScore: "Health Score",
     ramUsage: "RAM Usage",
     storage: "Storage",
@@ -51,7 +52,7 @@ const T = {
     detailedScan: "Detailed Scan Results",
     passedCount: (passed: number, total: number) => `${passed}/${total} passed`,
     rescan: "Re-scan System",
-    localFootnote: "On-Device Sovereignty: All diagnostics, cryptographic hashing, and secure byte-overwriting execute 100% locally inside your browser's secure sandbox. Zero telemetry is collected.",
+    localFootnote: "On-Device Sovereignty: All diagnostics and cryptographic hashing execute 100% locally inside your browser's secure sandbox. Zero telemetry is collected.",
     viewStorage: (used: string, total: string) => `${used} used of ${total}`,
     pressure: {
       low: "LOW",
@@ -69,7 +70,7 @@ const T = {
   },
   hi: {
     title: "AI सिस्टम गार्जियन",
-    subtitle: "रीयल-टाइम सिस्टम डायग्नोस्टिक्स, RAM ऑप्टिमाइजेशन और सुरक्षित फ़ाइल विलोपन",
+    subtitle: "रीयल-टाइम सिस्टम डायग्नोस्टिक्स, RAM ऑप्टिमाइजेशन और फ़ाइल फ़िंगरप्रिंटिंग",
     systemMetrics: "सिस्टम प्रदर्शन मेट्रिक्स",
     systemMetricsDesc: "अपने डिवाइस हीप आवंटन, हार्डवेयर थ्रेड्स, सुरक्षित बैटरी स्थिति और निष्पादन संदर्भों को स्कैन करें।",
     liveRamMonitor: "लाइव RAM मॉनिटर",
@@ -79,22 +80,22 @@ const T = {
     runScan: "सिस्टम डायग्नोस्टिक्स चलाएं",
     runningScan: "सिस्टम का विश्लेषण किया जा रहा है...",
     integrityScanner: "ऑन-डिवाइस क्रिप्टोग्राफ़िक स्कैनर",
-    integrityDesc: "क्रिप्टोग्राफ़िक SHA-256 हस्ताक्षर की गणना और सुरक्षित विलोपन के लिए स्थानीय फ़ाइलें चुनें।",
+    integrityDesc: "SHA-256 फ़िंगरप्रिंट की गणना के लिए स्थानीय फ़ाइलें चुनें — 100% डिवाइस पर, कुछ भी अपलोड नहीं होता।",
     computeHashes: "SHA-256 हैश की गणना की जा रही है...",
     selectFiles: "स्कैन करने के लिए फ़ाइलें चुनें",
     scannedCount: (count: number) => `${count} फ़ाइल(एं) लोड की गईं`,
     selectAll: "सभी चुनें",
     deselectAll: "चयन रद्द करें",
-    secureDelete: (count: number) => `सुरक्षित हटाएं (${count})`,
-    erasing: "श्रेड किया जा रहा है...",
-    dodTitle: "DoD 5220.22-M सुरक्षित वाइप प्रोटोकॉल",
+    secureDelete: (count: number) => `सूची से हटाएं (${count})`,
+    erasing: "हटाया जा रहा है...",
+    dodTitle: "यह टूल क्या कर सकता है और क्या नहीं",
     dodSteps: [
-      "संपूर्ण पता स्थान को शून्य (0x00) से अधिलेखित करें",
-      "क्रिप्टोग्राफ़िक रूप से यादृच्छिक बाइट्स के साथ अधिलेखित करें",
-      "शून्य (0x00) के साथ अंतिम अधिलेखन सत्यापन"
+      "कर सकता है: किसी भी फ़ाइल का SHA-256 फ़िंगरप्रिंट, पूरी तरह डिवाइस पर — बाद में साबित करने के लिए कि फ़ाइल बदली नहीं गई",
+      "नहीं कर सकता: डिस्क पर फ़ाइलें श्रेड/ओवरराइट करना — कोई भी वेब ऐप ऐसा नहीं कर सकता",
+      "फ़ाइल स्थायी रूप से हटाने के लिए: फ़ाइल मैनेजर में हटाएं, फिर रीसायकल बिन खाली करें"
     ],
-    auditLogTitle: "विलोपन ऑडिट लॉग (केवल स्थानीय)",
-    auditPasses: "पास",
+    auditLogTitle: "गतिविधि लॉग (केवल स्थानीय)",
+    auditPasses: "फ़ाइल(एं)",
     healthScore: "स्वास्थ्य स्कोर",
     ramUsage: "RAM उपयोग",
     storage: "स्टोरेज",
@@ -106,7 +107,7 @@ const T = {
     detailedScan: "विस्तृत स्कैन परिणाम",
     passedCount: (passed: number, total: number) => `${passed}/${total} पास`,
     rescan: "सिस्टम पुनः स्कैन करें",
-    localFootnote: "ऑन-डिवाइस संप्रभुता: सभी निदान, क्रिप्टोग्राफ़िक हैशिंग, और सुरक्षित बाइट-ओवरराइटिंग आपके ब्राउज़र के सुरक्षित सैंडबॉक्स में 100% स्थानीय रूप से निष्पादित होते हैं। शून्य टेलीमेट्री एकत्र की जाती है।",
+    localFootnote: "ऑन-डिवाइस संप्रभुता: सभी निदान और क्रिप्टोग्राफ़िक हैशिंग आपके ब्राउज़र के सुरक्षित सैंडबॉक्स में 100% स्थानीय रूप से निष्पादित होते हैं। शून्य टेलीमेट्री एकत्र की जाती है।",
     viewStorage: (used: string, total: string) => `${total} में से ${used} उपयोग किया गया`,
     pressure: {
       low: "कम",
@@ -287,32 +288,8 @@ async function computeSHA256(file: File): Promise<string> {
   return sha256Fallback(buffer);
 }
 
-async function secureErase(size: number): Promise<void> {
-  const buf = new Uint8Array(Math.min(size, 64 * 1024));
-  buf.fill(0x00);
-  await new Promise(r => setTimeout(r, 60));
-  
-  if (typeof window !== 'undefined' && window.crypto && typeof window.crypto.getRandomValues === 'function') {
-    try {
-      window.crypto.getRandomValues(buf);
-    } catch (e) {
-      for (let i = 0; i < buf.length; i++) {
-        buf[i] = Math.floor(Math.random() * 256);
-      }
-    }
-  } else {
-    for (let i = 0; i < buf.length; i++) {
-      buf[i] = Math.floor(Math.random() * 256);
-    }
-  }
-
-  await new Promise(r => setTimeout(r, 60));
-  buf.fill(0x00);
-  await new Promise(r => setTimeout(r, 60));
-}
-
-export default function AISystemGuardian({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
-  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>(lang);
+export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
+  const { lang: currentLang, setLang: setCurrentLang } = useLanguage();
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanPhase, setScanPhase] = useState('');
@@ -671,15 +648,13 @@ export default function AISystemGuardian({ lang = 'en' }: { lang?: 'en' | 'hi' }
     if (!toDelete.length) return;
     setShredding(true);
 
-    for (const f of toDelete) {
-      await secureErase(f.size);
-    }
-
+    // Browsers cannot touch the original files on disk — this only clears
+    // the fingerprints and metadata this page holds in memory.
     const entry: AuditEntry = {
       timestamp: new Date().toLocaleString(currentLang === 'en' ? 'en-US' : 'hi-IN'),
-      action: currentLang === 'en' ? 'DoD 3-Pass Shred' : 'DoD 3-पास श्रेड',
+      action: currentLang === 'en' ? 'Removed from scan list' : 'स्कैन सूची से हटाया गया',
       fileNames: toDelete.map(f => f.name),
-      passes: 3,
+      passes: toDelete.length,
     };
     const newLog = [entry, ...auditLog].slice(0, 50);
     setAuditLog(newLog);
@@ -710,7 +685,7 @@ export default function AISystemGuardian({ lang = 'en' }: { lang?: 'en' | 'hi' }
             </div>
           </div>
           <button
-            onClick={() => setCurrentLang(prev => prev === 'en' ? 'hi' : 'en')}
+            onClick={() => setCurrentLang(currentLang === 'en' ? 'hi' : 'en')}
             className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/20 text-xs font-black text-white flex items-center gap-1.5 transition"
           >
             <Globe className="w-4 h-4 text-cyan-300" />

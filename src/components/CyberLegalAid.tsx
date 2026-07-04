@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
+import { useLanguage } from '@/lib/useLanguage';
 import {
   Scale, Shield, Phone, FileText, CheckSquare,
   ChevronRight, AlertTriangle, BookOpen, MessageCircle,
@@ -134,7 +136,7 @@ const RESOURCES = [
 ];
 
 export default function CyberLegalAid() {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const { lang, setLang } = useLanguage();
   const [activeTab, setActiveTab] = useState<'response' | 'fir' | 'rights' | 'resources'>('response');
   const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
 
@@ -212,7 +214,7 @@ export default function CyberLegalAid() {
           </h1>
           <p className="text-gray-300 font-semibold">{t.subtitle}</p>
           <p className="text-gray-500 text-sm mt-1">{t.tagline}</p>
-          <button onClick={() => setLang(l => l === 'en' ? 'hi' : 'en')} className="mt-3 text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">
+          <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} className="mt-3 text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">
             {lang === 'en' ? 'हिन्दी में देखें' : 'View in English'}
           </button>
         </div>
@@ -384,18 +386,18 @@ export default function CyberLegalAid() {
                 QuantumShield Tools for Legal Cases
               </h3>
               <div className="space-y-3">
-                <a href="/evidence" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
+                <Link href="/evidence" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
                   <ChevronRight className="w-4 h-4 text-blue-400" />
                   Evidence Vault — Record & preserve tamper-proof proof
-                </a>
-                <a href="/aianalyzer" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
+                </Link>
+                <Link href="/aianalyzer" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
                   <ChevronRight className="w-4 h-4 text-blue-400" />
                   AI Call Analyzer — Detect scam call patterns in real-time
-                </a>
-                <a href="/reporter" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
+                </Link>
+                <Link href="/reporter" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
                   <ChevronRight className="w-4 h-4 text-blue-400" />
                   Police Reporter — Generate structured report for FIR
-                </a>
+                </Link>
               </div>
             </div>
           </div>

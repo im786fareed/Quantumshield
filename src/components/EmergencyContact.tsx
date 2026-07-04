@@ -1,281 +1,148 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import {
-  MapPin,
-  Phone,
-  Shield,
-  Activity,
-  Eye,
-  BellRing,
-  Smartphone,
-  Users,
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Phone, Users, MessageCircle, MessageSquare, Info } from 'lucide-react';
+import { useLanguage } from '@/lib/useLanguage';
 
 interface TrustedContact {
   name: string;
   phone: string;
   relation: string;
-  email?: string;
 }
 
-interface PoliceStation {
-  name: string;
-  address: string;
-  phone: string;
-  distance?: number;
-  lat?: number;
-  lng?: number;
+/* ============================================================
+   Emergency Contacts — honest by design.
+   Nothing here is automatic: the app cannot listen to calls or
+   detect scams in the background from a web page. What it CAN
+   do is make asking for help one tap: prewritten alert messages
+   to trusted family via WhatsApp/SMS, and direct helpline dials.
+   Contacts are stored only on this device (localStorage).
+============================================================ */
+
+const CONTENT = {
+  en: {
+    title: '🚨 Emergency Contacts',
+    subtitle: 'One tap to alert family and reach official helplines',
+
+    quickAlert: 'Quick Family Alert',
+    quickAlertDesc:
+      'If a scam call is pressuring you right now, tap a contact below to send them a prewritten alert by WhatsApp or SMS. You stay in control — nothing is ever sent automatically.',
+    noContactsYet: 'Add up to 3 trusted contacts to enable one-tap alerts.',
+    honestyNote:
+      'QuantumShield does not monitor your calls or send alerts by itself — a web app cannot do that honestly. This tool makes it fast for YOU to call for help.',
+
+    maxContacts: 'You can add a maximum of 3 trusted contacts.',
+
+    trustedContacts: 'Trusted Emergency Contacts',
+    trustedContactsDesc: 'Add up to 3 family members you can alert in one tap. Saved only on this device.',
+    addContact: 'Add Contact',
+    contactName: 'Contact Name',
+    contactPhone: 'Phone Number (with country code, e.g. 98765 43210)',
+    contactRelation: 'Relation',
+    relations: ['Spouse', 'Parent', 'Child', 'Sibling', 'Friend', 'Other'],
+    saveContact: 'Save Contact',
+    cancel: 'Cancel',
+    remove: 'Remove',
+
+    alertMessage:
+      '🚨 EMERGENCY ALERT from QuantumShield\n\nI may be targeted by a scam call (possible digital arrest / fraud). Please call me RIGHT NOW and stay on the line with me.\n\nIf you cannot reach me: Police 100, Cybercrime helpline 1930.',
+
+    nationalHelplines: 'National Emergency Helplines',
+    callNow: 'Call Now',
+
+    helplines: {
+      cybercrime: {
+        name: 'National Cybercrime Helpline',
+        number: '1930',
+        description: 'Report cyber frauds',
+        available: '24/7',
+      },
+      police: {
+        name: 'Police Emergency',
+        number: '100',
+        description: 'Immediate police help',
+        available: '24/7',
+      },
+    },
+  },
+
+  hi: {
+    title: '🚨 आपातकालीन संपर्क',
+    subtitle: 'एक टैप में परिवार को अलर्ट और आधिकारिक हेल्पलाइन',
+
+    quickAlert: 'त्वरित पारिवारिक अलर्ट',
+    quickAlertDesc:
+      'अगर अभी कोई स्कैम कॉल आप पर दबाव डाल रही है, तो नीचे किसी संपर्क पर टैप करके WhatsApp या SMS से पहले से लिखा अलर्ट भेजें। नियंत्रण आपके पास है — कुछ भी अपने आप नहीं भेजा जाता।',
+    noContactsYet: 'एक-टैप अलर्ट के लिए 3 तक विश्वसनीय संपर्क जोड़ें।',
+    honestyNote:
+      'QuantumShield आपकी कॉल की निगरानी नहीं करता और न ही खुद अलर्ट भेजता है — वेब ऐप ईमानदारी से ऐसा नहीं कर सकता। यह टूल आपके लिए मदद मांगना तेज़ बनाता है।',
+
+    maxContacts: 'आप केवल 3 विश्वसनीय संपर्क जोड़ सकते हैं।',
+
+    trustedContacts: 'विश्वसनीय आपातकालीन संपर्क',
+    trustedContactsDesc: '3 तक परिजन जोड़ें जिन्हें एक टैप में अलर्ट कर सकें। केवल इसी डिवाइस पर सहेजा जाता है।',
+    addContact: 'संपर्क जोड़ें',
+    contactName: 'नाम',
+    contactPhone: 'फोन नंबर (कंट्री कोड सहित)',
+    contactRelation: 'संबंध',
+    relations: ['पति/पत्नी', 'माता-पिता', 'बच्चा', 'भाई-बहन', 'मित्र', 'अन्य'],
+    saveContact: 'सहेजें',
+    cancel: 'रद्द करें',
+    remove: 'हटाएं',
+
+    alertMessage:
+      '🚨 आपातकालीन अलर्ट (QuantumShield)\n\nमुझ पर स्कैम कॉल (संभावित डिजिटल अरेस्ट/धोखाधड़ी) का दबाव हो सकता है। कृपया मुझे अभी कॉल करें और लाइन पर बने रहें।\n\nसंपर्क न हो तो: पुलिस 100, साइबर क्राइम 1930।',
+
+    nationalHelplines: 'राष्ट्रीय हेल्पलाइन',
+    callNow: 'कॉल करें',
+
+    helplines: {
+      cybercrime: {
+        name: 'राष्ट्रीय साइबर अपराध हेल्पलाइन',
+        number: '1930',
+        description: 'साइबर अपराध रिपोर्ट करें',
+        available: '24/7',
+      },
+      police: {
+        name: 'पुलिस आपातकाल',
+        number: '100',
+        description: 'तत्काल सहायता',
+        available: '24/7',
+      },
+    },
+  },
+};
+
+/** Digits only; assume India (91) when a bare 10-digit number is given. */
+function waNumber(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) return `91${digits}`;
+  return digits;
 }
 
-interface UserLocation {
-  lat: number;
-  lng: number;
-  city: string;
-  state: string;
-}
-
-interface ScamAlert {
-  timestamp: string;
-  riskScore: number;
-  indicators: string[];
-  location?: UserLocation;
-  alertSent: boolean;
-}
-
-export default function EmergencyContact({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [nearestStations, setNearestStations] = useState<PoliceStation[]>([]);
+export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
+  const { lang } = useLanguage();
   const [trustedContacts, setTrustedContacts] = useState<TrustedContact[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [monitoringEnabled, setMonitoringEnabled] = useState(false);
-  const [riskScore, setRiskScore] = useState(0);
-  const [currentIndicators, setCurrentIndicators] = useState<string[]>([]);
-  const [alertHistory, setAlertHistory] = useState<ScamAlert[]>([]);
   const [showAddContact, setShowAddContact] = useState(false);
-
   const [newContact, setNewContact] = useState<TrustedContact>({
     name: '',
     phone: '',
     relation: '',
   });
 
-  const monitoringIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  /* ============================================================
-     TRANSLATIONS (FIXED — maxContacts added)
-  ============================================================ */
-  const content = {
-    en: {
-      title: '🚨 Emergency Contacts',
-      subtitle: 'Get help immediately - Find nearest police station and emergency numbers',
-
-      aiProtection: 'AI Scam Protection',
-      aiProtectionDesc: 'Automatically alert your family if digital arrest scam is detected',
-      enableMonitoring: 'Enable AI Monitoring',
-      disableMonitoring: 'Disable Monitoring',
-      monitoringActive: 'AI Protection Active',
-      monitoringInactive: 'AI Protection Inactive',
-
-      currentRisk: 'Current Risk Level',
-
-      maxContacts: 'You can add a maximum of 3 trusted contacts.',
-
-      riskLevels: {
-        safe: 'Safe',
-        low: 'Low Risk',
-        medium: 'Medium Risk',
-        high: 'High Risk',
-        critical: 'CRITICAL - Alert Sent!',
-      },
-
-      trustedContacts: 'Trusted Emergency Contacts',
-      trustedContactsDesc: 'Add 3 family members who will be auto-alerted if scam is detected',
-      addContact: 'Add Contact',
-      contactName: 'Contact Name',
-      contactPhone: 'Phone Number',
-      contactRelation: 'Relation',
-      relations: ['Spouse', 'Parent', 'Child', 'Sibling', 'Friend', 'Other'],
-      saveContact: 'Save Contact',
-      cancel: 'Cancel',
-
-      detectionIndicators: 'What We Monitor',
-      indicators: {
-        longCall: 'Long call with unknown number',
-        bankingApp: 'Banking app used during call',
-        ignoredCalls: 'Ignored calls from known contacts',
-        screenShare: 'Screen sharing detected',
-        suspiciousKeywords: 'Scam keywords detected',
-        locationChange: 'Unusual location detected',
-      },
-
-      alertSystem: 'How Auto Alert Works',
-      alertSteps: [
-        'AI continuously monitors activity patterns',
-        'Detects digital arrest scam indicators',
-        'Triggers alert at 70% risk score',
-        'Sends SMS / WhatsApp to trusted contacts',
-        'Advises emergency action immediately',
-      ],
-
-      alertMessage: 'Alert Message Preview',
-      alertPreview:
-        '🚨 EMERGENCY ALERT\n\nPossible digital arrest scam detected.\nPlease contact immediately.\n\nCall police: 100\nCybercrime: 1930',
-
-      nationalHelplines: 'National Emergency Helplines',
-      callNow: 'Call Now',
-
-      helplines: {
-        cybercrime: {
-          name: 'National Cybercrime Helpline',
-          number: '1930',
-          description: 'Report cyber frauds',
-          available: '24/7',
-        },
-        police: {
-          name: 'Police Emergency',
-          number: '100',
-          description: 'Immediate police help',
-          available: '24/7',
-        },
-      },
-
-      locationError: 'Could not access your location.',
-      permissionDenied: 'Location permission denied.',
-    },
-
-    hi: {
-      title: '🚨 आपातकालीन संपर्क',
-      subtitle: 'तुरंत सहायता प्राप्त करें',
-
-      aiProtection: 'AI घोटाला सुरक्षा',
-      aiProtectionDesc: 'डिजिटल अरेस्ट घोटाले पर परिवार को स्वतः सूचना',
-      enableMonitoring: 'AI निगरानी चालू करें',
-      disableMonitoring: 'निगरानी बंद करें',
-      monitoringActive: 'AI सुरक्षा सक्रिय',
-      monitoringInactive: 'AI सुरक्षा बंद',
-
-      currentRisk: 'वर्तमान जोखिम स्तर',
-
-      maxContacts: 'आप केवल 3 विश्वसनीय संपर्क जोड़ सकते हैं।',
-
-      riskLevels: {
-        safe: 'सुरक्षित',
-        low: 'कम जोखिम',
-        medium: 'मध्यम जोखिम',
-        high: 'उच्च जोखिम',
-        critical: 'गंभीर – अलर्ट भेजा गया!',
-      },
-
-      trustedContacts: 'विश्वसनीय संपर्क',
-      trustedContactsDesc: '3 लोगों को जोड़ें जिन्हें आपात में सूचना मिलेगी',
-      addContact: 'संपर्क जोड़ें',
-      contactName: 'नाम',
-      contactPhone: 'फोन नंबर',
-      contactRelation: 'संबंध',
-      relations: ['पति/पत्नी', 'माता-पिता', 'बच्चा', 'भाई-बहन', 'मित्र', 'अन्य'],
-      saveContact: 'सहेजें',
-      cancel: 'रद्द करें',
-
-      detectionIndicators: 'हम क्या पहचानते हैं',
-      indicators: {
-        longCall: 'अज्ञात नंबर से लंबी कॉल',
-        bankingApp: 'कॉल के दौरान बैंकिंग ऐप',
-        ignoredCalls: 'परिचित कॉल अनदेखी',
-        screenShare: 'स्क्रीन शेयरिंग',
-        suspiciousKeywords: 'संदिग्ध शब्द',
-        locationChange: 'स्थान परिवर्तन',
-      },
-
-      alertSystem: 'ऑटो अलर्ट कैसे काम करता है',
-      alertSteps: [
-        'AI गतिविधि पर नजर रखता है',
-        'घोटाले के संकेत पहचानता है',
-        '70% जोखिम पर अलर्ट भेजता है',
-        'SMS/WhatsApp से सूचना भेजता है',
-        'तुरंत कार्रवाई की सलाह देता है',
-      ],
-
-      alertMessage: 'अलर्ट पूर्वावलोकन',
-      alertPreview:
-        '🚨 आपातकालीन अलर्ट\nसंभावित डिजिटल अरेस्ट घोटाला\nतुरंत संपर्क करें\nपुलिस: 100\nसायबर: 1930',
-
-      nationalHelplines: 'राष्ट्रीय हेल्पलाइन',
-      callNow: 'कॉल करें',
-
-      helplines: {
-        cybercrime: {
-          name: 'राष्ट्रीय साइबर अपराध हेल्पलाइन',
-          number: '1930',
-          description: 'साइबर अपराध रिपोर्ट करें',
-          available: '24/7',
-        },
-        police: {
-          name: 'पुलिस आपातकाल',
-          number: '100',
-          description: 'तत्काल सहायता',
-          available: '24/7',
-        },
-      },
-
-      locationError: 'स्थान प्राप्त नहीं हो सका।',
-      permissionDenied: 'स्थान अनुमति अस्वीकृत।',
-    },
-  };
-
-  const t = content[lang];
-
-  /* ================= LOGIC ================= */
+  const t = CONTENT[lang];
 
   useEffect(() => {
     const saved = localStorage.getItem('quantumshield_trusted_contacts');
-    if (saved) setTrustedContacts(JSON.parse(saved));
-  }, []);
-
-  const startMonitoring = () => {
-    setMonitoringEnabled(true);
-    monitoringIntervalRef.current = setInterval(simulateScamDetection, 5000);
-  };
-
-  const stopMonitoring = () => {
-    setMonitoringEnabled(false);
-    if (monitoringIntervalRef.current) clearInterval(monitoringIntervalRef.current);
-    setRiskScore(0);
-    setCurrentIndicators([]);
-  };
-
-  const simulateScamDetection = () => {
-    let score = 0;
-    const indicators: string[] = [];
-
-    const r = Math.random();
-    if (r > 0.7) { score += 40; indicators.push('longCall'); }
-    if (r > 0.6) { score += 30; indicators.push('bankingApp'); }
-    if (r > 0.5) { score += 20; indicators.push('ignoredCalls'); }
-
-    setRiskScore(score);
-    setCurrentIndicators(indicators);
-
-    if (score >= 70 && trustedContacts.length > 0) {
-      setAlertHistory(prev => [
-        {
-          timestamp: new Date().toLocaleString(),
-          riskScore: score,
-          indicators,
-          location: userLocation || undefined,
-          alertSent: true,
-        },
-        ...prev,
-      ]);
+    if (saved) {
+      try { setTrustedContacts(JSON.parse(saved)); } catch { /* corrupt entry — start fresh */ }
     }
-  };
+  }, []);
 
   const addTrustedContact = () => {
     if (trustedContacts.length >= 3) {
       alert(t.maxContacts);
       return;
     }
-
     if (!newContact.name || !newContact.phone || !newContact.relation) return;
 
     const updated = [...trustedContacts, newContact];
@@ -292,17 +159,7 @@ export default function EmergencyContact({ lang = 'en' }: { lang?: 'en' | 'hi' }
     localStorage.setItem('quantumshield_trusted_contacts', JSON.stringify(updated));
   };
 
-  const getRiskLevel = (score: number) => {
-    if (score >= 70) return { label: t.riskLevels.critical, color: 'text-red-500', bg: 'bg-red-600/20 border-red-500' };
-    if (score >= 50) return { label: t.riskLevels.high, color: 'text-orange-500', bg: 'bg-orange-600/20 border-orange-500' };
-    if (score >= 30) return { label: t.riskLevels.medium, color: 'text-yellow-500', bg: 'bg-yellow-600/20 border-yellow-500' };
-    if (score > 0) return { label: t.riskLevels.low, color: 'text-blue-500', bg: 'bg-blue-600/20 border-blue-500' };
-    return { label: t.riskLevels.safe, color: 'text-green-500', bg: 'bg-green-600/20 border-green-500' };
-  };
-
-  const risk = getRiskLevel(riskScore);
-
-  /* ================= UI ================= */
+  const encodedAlert = encodeURIComponent(t.alertMessage);
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -311,43 +168,57 @@ export default function EmergencyContact({ lang = 'en' }: { lang?: 'en' | 'hi' }
         <p>{t.subtitle}</p>
       </div>
 
-      {/* AI Protection */}
+      {/* Quick Family Alert — real one-tap messages, user-initiated */}
       <div className="bg-black/40 border border-purple-500/40 rounded-xl p-6 mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Activity className="w-6 h-6 text-purple-400" />
-            {t.aiProtection}
-          </h2>
+        <h2 className="text-xl font-bold flex items-center gap-2 mb-2">
+          <MessageCircle className="w-6 h-6 text-purple-400" />
+          {t.quickAlert}
+        </h2>
+        <p className="text-sm text-gray-300 mb-4">{t.quickAlertDesc}</p>
 
-          <button
-            onClick={monitoringEnabled ? stopMonitoring : startMonitoring}
-            className={`px-4 py-2 rounded-lg font-semibold ${
-              monitoringEnabled ? 'bg-red-600' : 'bg-green-600'
-            }`}
-          >
-            {monitoringEnabled ? t.disableMonitoring : t.enableMonitoring}
-          </button>
-        </div>
-
-        {monitoringEnabled && (
-          <div className={`border rounded-lg p-4 ${risk.bg}`}>
-            <div className="flex justify-between mb-2">
-              <span>{t.currentRisk}</span>
-              <span className={`font-bold ${risk.color}`}>{risk.label}</span>
-            </div>
-            <div className="w-full h-3 bg-gray-700 rounded">
-              <div
-                className="h-full bg-red-500 transition-all"
-                style={{ width: `${riskScore}%` }}
-              />
-            </div>
+        {trustedContacts.length === 0 ? (
+          <p className="text-sm text-gray-500">{t.noContactsYet}</p>
+        ) : (
+          <div className="space-y-2">
+            {trustedContacts.map((c, i) => (
+              <div key={i} className="flex flex-wrap items-center justify-between gap-2 bg-black/30 p-3 rounded-lg">
+                <div>
+                  <div className="font-semibold">{c.name}</div>
+                  <div className="text-sm text-gray-400">{c.relation} • {c.phone}</div>
+                </div>
+                <div className="flex gap-2">
+                  <a
+                    href={`https://wa.me/${waNumber(c.phone)}?text=${encodedAlert}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 bg-green-600 hover:bg-green-500 px-3 py-2 rounded-lg text-sm font-bold transition"
+                  >
+                    <MessageCircle className="w-4 h-4" /> WhatsApp
+                  </a>
+                  <a
+                    href={`sms:${c.phone}?body=${encodedAlert}`}
+                    className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded-lg text-sm font-bold transition"
+                  >
+                    <MessageSquare className="w-4 h-4" /> SMS
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
         )}
+
+        <div className="mt-4 flex items-start gap-2 text-xs text-gray-500 leading-snug">
+          <Info className="w-4 h-4 shrink-0 mt-0.5" />
+          <p>{t.honestyNote}</p>
+        </div>
       </div>
 
       {/* Trusted Contacts */}
       <div className="bg-white/5 rounded-xl p-6 mb-6">
-        <h3 className="font-bold text-lg mb-2">{t.trustedContacts}</h3>
+        <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+          <Users className="w-5 h-5 text-blue-400" />
+          {t.trustedContacts}
+        </h3>
         <p className="text-sm text-gray-400 mb-3">{t.trustedContactsDesc}</p>
 
         {trustedContacts.map((c, i) => (
@@ -357,7 +228,7 @@ export default function EmergencyContact({ lang = 'en' }: { lang?: 'en' | 'hi' }
               <div className="text-sm text-gray-400">{c.relation} • {c.phone}</div>
             </div>
             <button onClick={() => removeTrustedContact(i)} className="text-red-400">
-              Remove
+              {t.remove}
             </button>
           </div>
         ))}
@@ -410,7 +281,10 @@ export default function EmergencyContact({ lang = 'en' }: { lang?: 'en' | 'hi' }
 
       {/* Helplines */}
       <div className="bg-white/5 rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">{t.nationalHelplines}</h2>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <Phone className="w-5 h-5 text-red-400" />
+          {t.nationalHelplines}
+        </h2>
         <div className="grid md:grid-cols-2 gap-4">
           {Object.values(t.helplines).map((h, i) => (
             <div key={i} className="bg-red-600/20 border border-red-500/40 rounded-lg p-4">

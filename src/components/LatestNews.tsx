@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import {
   Newspaper, AlertTriangle, ExternalLink, TrendingUp, Shield,
-  RefreshCw, Globe, Clock, ChevronDown, Search, Filter,
-  Rss, MapPin, DollarSign, Users, Zap, Eye
+  Globe, Clock, ChevronDown, Search,
+  Rss, MapPin, DollarSign, Users, Zap
 } from 'lucide-react';
+import { useLanguage } from '@/lib/useLanguage';
 
 interface Props {
   lang?: 'en' | 'hi';
@@ -193,13 +194,12 @@ const THREAT_COLORS: Record<ThreatLevel, { bg: string; border: string; text: str
   low: { bg: 'bg-blue-600/10', border: 'border-blue-500/30', text: 'text-blue-400', badge: 'bg-blue-500' },
 };
 
-export default function LatestNews({ lang = 'en' }: Props) {
-  const [news, setNews] = useState<NewsItem[]>(NEWS_DATABASE);
+export default function LatestNews(_props?: Props) {
+  const { lang } = useLanguage();
+  const news = NEWS_DATABASE;
   const [selectedRegion, setSelectedRegion] = useState<NewsRegion>('all');
   const [selectedScamType, setSelectedScamType] = useState<ScamType>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(new Date());
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(8);
 
@@ -212,20 +212,6 @@ export default function LatestNews({ lang = 'en' }: Props) {
       item.titleHi.includes(searchQuery);
     return matchesRegion && matchesType && matchesSearch;
   });
-
-  const refreshNews = useCallback(() => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      setLastUpdated(new Date());
-      setIsRefreshing(false);
-    }, 1500);
-  }, []);
-
-  // Auto-refresh every 5 minutes
-  useEffect(() => {
-    const interval = setInterval(refreshNews, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [refreshNews]);
 
   const breakingNews = filteredNews.filter(n => n.isBreaking);
   const trendingNews = filteredNews.filter(n => n.isTrending);
@@ -245,8 +231,8 @@ export default function LatestNews({ lang = 'en' }: Props) {
         <div className="inline-block p-4 bg-red-500/20 rounded-2xl mb-4">
           <Newspaper className="w-12 h-12 text-red-400" />
         </div>
-        <h2 className="text-4xl font-bold mb-2">{isEn ? 'Global Scam Intelligence Feed' : 'वैश्विक घोटाला इंटेलिजेंस फ़ीड'}</h2>
-        <p className="text-gray-400 text-lg">{isEn ? 'Real-time scam alerts from around the world' : 'दुनिया भर से रियल-टाइम घोटाला अलर्ट'}</p>
+        <h2 className="text-4xl font-bold mb-2">{isEn ? 'Major Scam Case Archive' : 'प्रमुख घोटाला केस आर्काइव'}</h2>
+        <p className="text-gray-400 text-lg">{isEn ? 'Documented cases from official advisories (Dec 2024 – Feb 2025) — a curated archive, not a live feed' : 'आधिकारिक सलाह से दस्तावेज़ित मामले (दिस 2024 – फ़र 2025) — क्यूरेटेड आर्काइव, लाइव फ़ीड नहीं'}</p>
       </div>
 
       {/* Live Stats Bar */}
@@ -264,12 +250,12 @@ export default function LatestNews({ lang = 'en' }: Props) {
         <div className="bg-cyan-600/10 border border-cyan-500/30 rounded-xl p-4 text-center">
           <Globe className="w-6 h-6 text-cyan-400 mx-auto mb-1" />
           <p className="text-2xl font-black text-cyan-400">{news.length}</p>
-          <p className="text-xs text-gray-400">{isEn ? 'Active Alerts' : 'सक्रिय अलर्ट'}</p>
+          <p className="text-xs text-gray-400">{isEn ? 'Documented Cases' : 'दस्तावेज़ित मामले'}</p>
         </div>
         <div className="bg-green-600/10 border border-green-500/30 rounded-xl p-4 text-center">
           <Shield className="w-6 h-6 text-green-400 mx-auto mb-1" />
-          <p className="text-2xl font-black text-green-400">24/7</p>
-          <p className="text-xs text-gray-400">{isEn ? 'Monitoring' : 'निगरानी'}</p>
+          <p className="text-2xl font-black text-green-400">10+</p>
+          <p className="text-xs text-gray-400">{isEn ? 'Official Sources' : 'आधिकारिक स्रोत'}</p>
         </div>
       </div>
 
@@ -277,8 +263,8 @@ export default function LatestNews({ lang = 'en' }: Props) {
       {breakingNews.length > 0 && (
         <div className="bg-red-600/20 border border-red-500/50 rounded-xl p-4 mb-6 overflow-hidden">
           <div className="flex items-center gap-3">
-            <span className="shrink-0 px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse flex items-center gap-1">
-              <Zap className="w-3 h-3" /> BREAKING
+            <span className="shrink-0 px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
+              <Zap className="w-3 h-3" /> {isEn ? 'MAJOR CASES' : 'बड़े मामले'}
             </span>
             <div className="overflow-hidden">
               <div className="animate-marquee whitespace-nowrap">
@@ -325,25 +311,17 @@ export default function LatestNews({ lang = 'en' }: Props) {
             <option key={t.id} value={t.id} className="bg-gray-900">{isEn ? t.label : t.labelHi}</option>
           ))}
         </select>
-        <button
-          onClick={refreshNews}
-          disabled={isRefreshing}
-          className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 px-4 py-3 rounded-xl font-bold transition shrink-0"
-        >
-          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          {isRefreshing ? (isEn ? 'Updating...' : 'अपडेट हो रहा है...') : (isEn ? 'Refresh' : 'रिफ्रेश')}
-        </button>
       </div>
 
-      {/* Last Updated */}
+      {/* Coverage note */}
       <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
         <span className="flex items-center gap-1">
           <Rss className="w-4 h-4" />
-          {isEn ? 'Showing' : 'दिखा रहे'} {filteredNews.length} {isEn ? 'alerts' : 'अलर्ट'}
+          {isEn ? 'Showing' : 'दिखा रहे'} {filteredNews.length} {isEn ? 'documented cases' : 'दस्तावेज़ित मामले'}
         </span>
         <span className="flex items-center gap-1">
           <Clock className="w-4 h-4" />
-          {isEn ? 'Updated' : 'अपडेट'}: {lastUpdated.toLocaleTimeString()}
+          {isEn ? 'Coverage: Dec 2024 – Feb 2025' : 'कवरेज: दिस 2024 – फ़र 2025'}
         </span>
       </div>
 
@@ -367,13 +345,13 @@ export default function LatestNews({ lang = 'en' }: Props) {
                     {item.threatLevel}
                   </span>
                   {item.isBreaking && (
-                    <span className="px-2.5 py-1 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse flex items-center gap-1">
-                      <Zap className="w-3 h-3" /> BREAKING
+                    <span className="px-2.5 py-1 bg-red-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> {isEn ? 'MAJOR CASE' : 'बड़ा मामला'}
                     </span>
                   )}
                   {item.isTrending && (
                     <span className="px-2.5 py-1 bg-purple-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" /> TRENDING
+                      <TrendingUp className="w-3 h-3" /> {isEn ? 'WIDESPREAD' : 'व्यापक'}
                     </span>
                   )}
                   <span className="px-2.5 py-1 bg-white/10 text-gray-300 text-xs rounded-full flex items-center gap-1">

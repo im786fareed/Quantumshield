@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { ShieldCheck, ShieldAlert, ShieldX, Cpu, Lock, Activity, Wifi, Terminal, Globe, Info } from 'lucide-react';
 import BackToHome from './BackToHome';
 import { runRealChecks, SCAN_PHASES, delay, type ScanResult } from '@/lib/security/deviceChecks';
+import { useLanguage } from '@/lib/useLanguage';
 
-export default function DeviceSecurityScanner({ lang = 'en', embedded = false }: { lang?: 'en' | 'hi'; embedded?: boolean }) {
-  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>(lang);
+export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en' | 'hi'; embedded?: boolean }) {
+  const { lang: currentLang, setLang: setCurrentLang } = useLanguage();
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState('');
@@ -81,7 +82,7 @@ export default function DeviceSecurityScanner({ lang = 'en', embedded = false }:
                 {L === 'en' ? 'QUANTUM SCANNER v5.0' : 'क्वांटम स्कैनर v5.0'}
               </h1>
               <button
-                onClick={() => setCurrentLang(p => p === 'en' ? 'hi' : 'en')}
+                onClick={() => setCurrentLang(currentLang === 'en' ? 'hi' : 'en')}
                 className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300 flex items-center gap-1 transition"
               >
                 <Globe className="w-3.5 h-3.5 text-cyan-400" />

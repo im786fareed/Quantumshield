@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Text too short" }, { status: 400 });
     }
 
-    // Primary engine: Claude. Falls back to the rule engine when
+    // Primary engine: Gemini. Falls back to the rule engine when
     // unavailable (no API key, network failure, rate limit).
     const llm = await analyzeWithLlm(trimmed);
     if (llm) {

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import {
   Shield, Phone, FileText, Mic,
@@ -409,7 +410,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
           variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10"
         >
-          <a href="/aianalyzer"
+          <Link href="/aianalyzer"
             className="qs-card relative overflow-hidden bg-gradient-to-br from-red-600/25 via-orange-600/15 to-transparent border-2 border-red-500/50 rounded-2xl p-7 hover:border-red-400 hover:from-red-600/35 hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-red-500/25 flex items-center justify-center">
@@ -424,9 +425,9 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
             <span className="inline-flex items-center gap-2 font-bold text-red-300 group-hover:gap-3 transition-all">
               {t.heroCallCta} <ArrowRight className="w-4 h-4" />
             </span>
-          </a>
+          </Link>
 
-          <a href="/circuit-breaker"
+          <Link href="/circuit-breaker"
             className="qs-card relative overflow-hidden bg-gradient-to-br from-amber-500/25 via-yellow-600/10 to-transparent border-2 border-amber-500/50 rounded-2xl p-7 hover:border-amber-400 hover:from-amber-500/35 hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-amber-500/25 flex items-center justify-center">
@@ -441,7 +442,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
             <span className="inline-flex items-center gap-2 font-bold text-amber-300 group-hover:gap-3 transition-all">
               {t.heroCbCta} <ArrowRight className="w-4 h-4" />
             </span>
-          </a>
+          </Link>
         </motion.div>
 
         {/* ── My Legal Rights — second home / legal intelligence engine ── */}
@@ -476,27 +477,27 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
         >
           <h2 className="text-lg font-black mb-3 text-gray-200">{t.quickTitle}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <a href="/spam" className="qs-card flex items-center gap-4 bg-purple-600/15 border border-purple-500/40 rounded-xl p-4 hover:border-purple-400 hover:bg-purple-600/25 transition-all group">
+            <Link href="/spam" className="qs-card flex items-center gap-4 bg-purple-600/15 border border-purple-500/40 rounded-xl p-4 hover:border-purple-400 hover:bg-purple-600/25 transition-all group">
               <MessageSquare className="w-6 h-6 text-purple-400 shrink-0 group-hover:scale-110 transition-transform" />
               <div>
                 <div className="font-bold text-sm">{t.quickMsg}</div>
                 <div className="text-[11px] text-gray-500">{t.quickMsgDesc}</div>
               </div>
-            </a>
-            <a href="/scanner" className="qs-card flex items-center gap-4 bg-blue-600/15 border border-blue-500/40 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-600/25 transition-all group">
+            </Link>
+            <Link href="/scanner" className="qs-card flex items-center gap-4 bg-blue-600/15 border border-blue-500/40 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-600/25 transition-all group">
               <Link2 className="w-6 h-6 text-blue-400 shrink-0 group-hover:scale-110 transition-transform" />
               <div>
                 <div className="font-bold text-sm">{t.quickUrl}</div>
                 <div className="text-[11px] text-gray-500">{t.quickUrlDesc}</div>
               </div>
-            </a>
-            <a href="/phoneguard" className="qs-card flex items-center gap-4 bg-teal-600/15 border border-teal-500/40 rounded-xl p-4 hover:border-teal-400 hover:bg-teal-600/25 transition-all group">
+            </Link>
+            <Link href="/phoneguard" className="qs-card flex items-center gap-4 bg-teal-600/15 border border-teal-500/40 rounded-xl p-4 hover:border-teal-400 hover:bg-teal-600/25 transition-all group">
               <PhoneCall className="w-6 h-6 text-teal-400 shrink-0 group-hover:scale-110 transition-transform" />
               <div>
                 <div className="font-bold text-sm">{t.quickNum}</div>
                 <div className="text-[11px] text-gray-500">{t.quickNumDesc}</div>
               </div>
-            </a>
+            </Link>
           </div>
         </motion.section>
 

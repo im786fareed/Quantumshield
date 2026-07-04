@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 /* =========================================================
    QuantumShield Sentinel — Privacy & Surveillance Inspection
    Honest, on-device privacy sweep. Every functional module uses
@@ -227,9 +229,9 @@ function RoomInspector({ lang }: { lang: Lang }) {
             <button onClick={reset} className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 font-bold text-sm transition">
               {L(lang, 'Inspect another', 'दूसरी जांच')}
             </button>
-            <a href="/evidence" className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 font-bold text-sm text-center transition flex items-center justify-center gap-1.5">
+            <Link href="/evidence" className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 font-bold text-sm text-center transition flex items-center justify-center gap-1.5">
               <FileText className="w-4 h-4" /> {L(lang, 'Save evidence', 'सबूत सेव करें')}
-            </a>
+            </Link>
           </div>
         </div>
       )}
@@ -651,9 +653,9 @@ function SweepWizard({ lang, onExit }: { lang: Lang; onExit: () => void }) {
               'उसे खोलें नहीं। जहाँ है वहीं फ़ोटो लें, Evidence Vault में छेड़छाड़-प्रमाण सबूत सेव करें, कमरा छोड़ें, और 112 (पुलिस) तथा 1930 (साइबर क्राइम) पर कॉल करें।')}</p>
           </div>
           <div className="flex gap-2">
-            <a href="/evidence" className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl py-2.5 font-bold text-sm text-center transition flex items-center justify-center gap-1.5">
+            <Link href="/evidence" className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl py-2.5 font-bold text-sm text-center transition flex items-center justify-center gap-1.5">
               <FileText className="w-4 h-4" /> {L(lang, 'Save evidence', 'सबूत सेव करें')}
-            </a>
+            </Link>
             <button onClick={onExit} className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 font-bold text-sm transition">
               {L(lang, 'Done', 'पूरा हुआ')}
             </button>
@@ -786,14 +788,14 @@ export default function SentinelHub() {
                 </button>
               );
             })}
-            <a href="/evidence" className="text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:-translate-y-0.5 transition p-4 group">
+            <Link href="/evidence" className="text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:-translate-y-0.5 transition p-4 group">
               <div className="flex items-center justify-between mb-2">
                 <FileText className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
                 <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-cyan-500/30 text-cyan-300/80">{L(lang, 'Forensic', 'फ़ॉरेंसिक')}</span>
               </div>
               <h3 className="font-bold text-sm">{L(lang, 'Evidence Vault', 'एविडेंस वॉल्ट')}</h3>
               <p className="text-[12px] text-gray-500 mt-0.5 leading-snug">{L(lang, 'Capture tamper-evident proof (SHA-256)', 'छेड़छाड़-प्रमाण सबूत लें (SHA-256)')}</p>
-            </a>
+            </Link>
           </div>
 
           <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4 flex gap-3">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useLanguage } from '@/lib/useLanguage';
 import {
   Mic, MicOff, Brain, AlertTriangle, CheckCircle,
   Phone, Shield, Users, CreditCard, Clock,
@@ -384,16 +385,16 @@ const AMOUNT_REGEX = /(?:₹|rs\.?\s*|rupees?\s*|inr\s*)(\d[\d,]*)(?:\s*(?:lakh|
 const LANG_ROTATION = ['en-IN', 'hi-IN', 'en-IN', 'en-IN'];
 
 export default function AICallAnalyzer() {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const { lang, setLang } = useLanguage();
   const [activeTab, setActiveTab] = useState<'voice' | 'scam' | 'face' | 'forensic'>('voice');
   const [micStatus, setMicStatus] = useState<'off' | 'on' | 'error'>('off');
 
   // ─── TAB 1: LIVE VOICE SPECTROGRAM STATE ────────────────────────────────────
   const [voiceAuditing, setVoiceAuditing] = useState(false);
   const [audioStats, setAudioStats] = useState<AudioStats>({
-    naturalness: 98.4,
-    compression: 1.1,
-    confidence: 99.2,
+    naturalness: 100,
+    compression: 1.0,
+    confidence: 0,
     status: 'Natural (Human Voice)',
   });
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -622,9 +623,13 @@ export default function AICallAnalyzer() {
           if (avgZcr < 0.015 && totalPower > 1000) syntheticScore += 15;
 
           const syntheticVoice = syntheticScore >= 40;
-          const naturalness = parseFloat(Math.max(5, 100 - syntheticScore + (Math.random() - 0.5) * 4).toFixed(1));
-          const compression = parseFloat((syntheticVoice ? 1.8 + syntheticScore / 40 : 1.0 + Math.random() * 0.4).toFixed(1));
-          const confidence = parseFloat((syntheticVoice ? Math.min(98, 55 + syntheticScore * 0.5) : 90 + Math.random() * 8).toFixed(1));
+          // All three are deterministic values derived from measured signal —
+          // never invented numbers.
+          const naturalness = Math.max(5, 100 - syntheticScore);
+          // Spectral flatness is the measured proxy for codec/processing artifacts.
+          const compression = parseFloat((1 + avgFlatness * 2).toFixed(1));
+          // How full the ~0.6s analysis window is (measurement coverage).
+          const confidence = Math.round((n / 40) * 100);
           setAudioStats({ naturalness, compression, confidence, status: syntheticVoice ? d.voiceUnsafe : d.voiceSafe });
         }
       };
@@ -946,23 +951,8 @@ export default function AICallAnalyzer() {
         ctx.lineTo(x + size, scanPos);
         ctx.stroke();
 
-        // 3. Draw dynamic anchor tracking points on face features
-        ctx.fillStyle = '#06b6d4';
-        const leftEye = { px: x + 60, py: y + 70 };
-        const rightEye = { px: x + 130, py: y + 70 };
-        const lips = { px: x + 95, py: y + 135 };
-
-        const jitter = () => (Math.random() - 0.5) * 1.5;
-        ctx.beginPath(); ctx.arc(leftEye.px + jitter(), leftEye.py + jitter(), 4, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(rightEye.px + jitter(), rightEye.py + jitter(), 4, 0, Math.PI * 2); ctx.fill();
-
-        ctx.strokeStyle = '#10b981';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(lips.px - 25, lips.py + jitter());
-        ctx.quadraticCurveTo(lips.px, lips.py - 8 + jitter(), lips.px + 25, lips.py + jitter());
-        ctx.quadraticCurveTo(lips.px, lips.py + 8 + jitter(), lips.px - 25, lips.py + jitter());
-        ctx.stroke();
+        // (Face landmarks are drawn only from real MediaPipe detections below —
+        // no decorative fake tracking points.)
 
         // Real pixel analysis from actual video frame
         const vCtx = videoOffscreenRef.current?.getContext('2d');
@@ -1192,10 +1182,12 @@ export default function AICallAnalyzer() {
     await new Promise(r => setTimeout(r, 600));
 
     const isSynthetic = synScore >= 35;
-    const naturalness = decodeSuccess
-      ? Math.max(5, Math.round(100 - synScore + (Math.random() - 0.5) * 6))
-      : (isSynthetic ? 58 : 87);
-    const compression = parseFloat((isSynthetic ? 1.5 + synScore / 35 : 1.0 + Math.random() * 0.4).toFixed(1));
+    // Deterministic, derived from the measured synthesis score — no invented noise.
+    const naturalness = Math.max(5, Math.round(100 - synScore));
+    // Low dynamic range = heavier compression; measurable only when decode succeeded.
+    const compression = decodeSuccess && dynamicRange > 0
+      ? parseFloat(Math.min(4, Math.max(1, 4 / dynamicRange)).toFixed(1))
+      : 1.0;
     const risk = isSynthetic ? Math.min(92, synScore + 5) : Math.max(3, 12 - Math.round(normEnergyVar * 5));
 
     const certType: 'human' | 'synthetic' = isSynthetic ? 'synthetic' : 'human';
@@ -1240,7 +1232,7 @@ export default function AICallAnalyzer() {
 
           {/* Bilingual Switcher button */}
           <button
-            onClick={() => setLang(l => l === 'en' ? 'hi' : 'en')}
+            onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
             className="px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 font-bold text-sm tracking-wide transition-all shadow-md relative z-10 hover:border-white/20 shrink-0"
           >
             {lang === 'en' ? '🌐 English / हिंदी' : '🌐 हिंदी / English'}

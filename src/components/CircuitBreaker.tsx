@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import {
   Shield, AlertTriangle, Phone, Users, Clock, Zap, CheckCircle,
   XCircle, Bell, BellOff, UserPlus, Trash2, MessageSquare,
@@ -455,11 +456,11 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-1 text-white">{t.title}</h1>
           <p className="text-sm text-gray-400">{t.subtitle}</p>
-          <a href="/global-guardian"
+          <Link href="/global-guardian"
             className="mt-3 inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full transition-all">
             <Globe className="w-3 h-3" />
             Global Guardian — {typeof window !== 'undefined' ? (allCountries.find(c => c.code === (localStorage.getItem('qs_shield_country') || 'IN'))?.flag ?? '🇮🇳') : '🇮🇳'} Country Shield active
-          </a>
+          </Link>
         </div>
       </div>
 

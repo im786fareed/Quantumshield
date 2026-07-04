@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import {
   Video, Monitor, Square, Camera, X,
   CheckCircle, Loader2, ShieldAlert, Download, AlertTriangle
@@ -382,7 +383,7 @@ export default function FloatingRecorder() {
       <p className="text-emerald-700 text-xs leading-relaxed">
         Open <span className="text-emerald-400 font-semibold">/evidence</span> to view, download, or attach to your police FIR report.
       </p>
-      <a
+      <Link
         href="/evidence"
         className="
           text-center bg-emerald-600/30 border border-emerald-500/40
@@ -391,7 +392,7 @@ export default function FloatingRecorder() {
         "
       >
         Open Evidence Vault →
-      </a>
+      </Link>
     </div>
   );
 

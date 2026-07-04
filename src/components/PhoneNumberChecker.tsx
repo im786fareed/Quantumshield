@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Phone, AlertTriangle, CheckCircle, XCircle, ShieldAlert, Info, ExternalLink } from 'lucide-react';
+import { useLanguage } from '@/lib/useLanguage';
 import BackToHome from './BackToHome';
 
 /* ── Types ── */
@@ -286,10 +287,10 @@ const STATUS_ICON: Record<string, any> = {
 };
 
 /* ── Component ── */
-export default function PhoneNumberChecker({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
+export default function PhoneNumberChecker(_props?: { lang?: 'en' | 'hi' }) {
   const [input, setInput] = useState('');
   const [result, setResult] = useState<PhoneAnalysis | null>(null);
-  const [language] = useState<'en' | 'hi'>(lang);
+  const { lang: language } = useLanguage();
 
   const en = language === 'en';
 

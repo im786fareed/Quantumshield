@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "text field required" }, { status: 400 });
     }
 
-    // Primary engine: Claude (real language understanding — English,
+    // Primary engine: Gemini (real language understanding — English,
     // Hindi, Hinglish, obfuscated text). Falls back to the deterministic
     // rule engine when the API key is absent or the call fails.
     const llm = await analyzeWithLlm(text);

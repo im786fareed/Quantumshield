@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 /**
  * On-launch Security Check.
  *
@@ -269,9 +271,9 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
                       ))}
                     </ul>
                   )}
-                  <a href="/scanner" className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 mt-2">
+                  <Link href="/scanner" className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 mt-2">
                     {T.openScanner} <ArrowRight className="w-3 h-3" />
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
@@ -284,9 +286,9 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
 
             {/* Actions */}
             <div className="flex gap-2">
-              <a href="/scanner" className="flex-1 text-center bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-slate-200 py-3 rounded-xl transition">
+              <Link href="/scanner" className="flex-1 text-center bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-slate-200 py-3 rounded-xl transition">
                 {T.openScanner}
-              </a>
+              </Link>
               <button onClick={close} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-black py-3 rounded-xl transition">
                 {T.dismiss}
               </button>

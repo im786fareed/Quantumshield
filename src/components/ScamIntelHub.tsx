@@ -5,22 +5,23 @@ import BackToHome from './BackToHome';
 import LatestNews from './LatestNews';
 import ScamAwarenessCenter from './ScamAwarenessCenter';
 import ThreatIntelligence from './ThreatIntelligence';
+import { useLanguage } from '@/lib/useLanguage';
 
 type IntelTab = 'news' | 'alerts' | 'map';
 
 const TABS: { id: IntelTab; label: string; labelHi: string; icon: any }[] = [
-  { id: 'news', label: 'Live News', labelHi: 'ताज़ा समाचार', icon: Newspaper },
+  { id: 'news', label: 'Case Archive', labelHi: 'केस आर्काइव', icon: Newspaper },
   { id: 'alerts', label: 'Scam Alerts', labelHi: 'स्कैम अलर्ट', icon: Bell },
-  { id: 'map', label: 'Threat Map', labelHi: 'खतरा मैप', icon: TrendingUp },
+  { id: 'map', label: 'Threat Patterns', labelHi: 'खतरा पैटर्न', icon: TrendingUp },
 ];
 
 export default function ScamIntelHub({
   defaultTab = 'news',
-  lang = 'en',
 }: {
   defaultTab?: IntelTab;
   lang?: 'en' | 'hi';
 }) {
+  const { lang } = useLanguage();
   const [tab, setTab] = useState<IntelTab>(defaultTab);
 
   return (
@@ -34,8 +35,8 @@ export default function ScamIntelHub({
           </h1>
           <p className="text-sm text-gray-300 mt-1">
             {lang === 'en'
-              ? 'Latest fraud news, live scam alerts and the national threat map — one feed.'
-              : 'ताज़ा धोखाधड़ी समाचार, लाइव स्कैम अलर्ट और राष्ट्रीय खतरा मैप — एक फ़ीड।'}
+              ? 'Documented fraud cases, scam awareness and known threat patterns — one place.'
+              : 'दस्तावेज़ित धोखाधड़ी मामले, स्कैम जागरूकता और ज्ञात खतरा पैटर्न — एक जगह।'}
           </p>
         </div>
 
@@ -63,9 +64,9 @@ export default function ScamIntelHub({
       </div>
 
       <div className="pt-2">
-        {tab === 'news' && <LatestNews lang={lang} />}
+        {tab === 'news' && <LatestNews />}
         {tab === 'alerts' && <ScamAwarenessCenter lang={lang} />}
-        {tab === 'map' && <ThreatIntelligence lang={lang} />}
+        {tab === 'map' && <ThreatIntelligence />}
       </div>
     </div>
   );
