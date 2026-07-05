@@ -6,7 +6,8 @@ import Link from 'next/link';
    QuantumShield Sentinel — Privacy & Surveillance Inspection
    Honest, on-device privacy sweep. Every functional module uses
    a REAL capability of the phone/browser:
-     • AI Room Inspector  → Gemini vision (real photo analysis)
+     • AI Room Inspector  → Gemini vision: ~10 s video sweep
+       (frames sampled on-device) + close-up photo follow-up
      • EMF Scan           → real Magnetometer sensor (µT)
      • Lens Sweep         → real camera as a guided visual aid
      • Playbooks          → real expert inspection guidance
@@ -57,13 +58,114 @@ type Inspection = {
   objects: InspectedObject[]; recommendations: string[];
 };
 
+/* Shared result card — renders one AI inspection (room sweep or
+   close-up). onCloseup, when given, adds a "Check up close" button
+   to flagged objects. */
+function InspectionResultView({ result, lang, onCloseup }: {
+  result: Inspection; lang: Lang; onCloseup?: (o: InspectedObject) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className={`rounded-xl border p-4 ${levelStyle[result.riskLevel] || levelStyle.medium}`}>
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-black uppercase tracking-widest">{L(lang, 'Inspection result', 'जांच परिणाम')}</span>
+          <span className="text-2xl font-black">{result.riskScore}<span className="text-sm font-bold opacity-70">/100</span></span>
+        </div>
+        <p className="text-sm mt-1.5 text-white/90 leading-relaxed">{result.summary}</p>
+        <span className="inline-block mt-2 text-[11px] font-bold uppercase tracking-wider opacity-80">
+          {result.riskLevel} · {L(lang, 'worth-a-look score', 'जांच-योग्य स्कोर')}
+        </span>
+      </div>
+
+      {result.objects.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-xs font-black uppercase tracking-widest text-gray-400">{L(lang, 'What the AI saw', 'AI ने क्या देखा')}</h4>
+          {result.objects.map((o, i) => (
+            <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-bold text-sm">{o.name}</span>
+                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${concernStyle[o.concern] || concernStyle.low}`}>
+                  {o.concern === 'none' ? L(lang, 'looks normal', 'सामान्य लगता है') : `${o.concern} ${L(lang, 'concern', 'चिंता')}`}
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-500 mt-0.5">{o.location}</p>
+              <p className="text-[13px] text-gray-300 mt-1.5 leading-relaxed">{o.reason}</p>
+              <p className="text-[13px] text-blue-300 mt-1.5 flex gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" /> {o.recommendation}
+              </p>
+              {onCloseup && (o.concern === 'medium' || o.concern === 'high') && (
+                <button
+                  onClick={() => onCloseup(o)}
+                  className="mt-2 w-full bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/40 text-blue-200 rounded-lg py-2 text-[12px] font-bold flex items-center justify-center gap-1.5 transition"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  {L(lang, 'Check up close — photo from 15–20 cm', 'नज़दीक से जांचें — 15–20 सेमी से फ़ोटो')}
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {result.recommendations.length > 0 && (
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">{L(lang, 'Next steps', 'अगले कदम')}</h4>
+          <ul className="space-y-1.5">
+            {result.recommendations.map((r, i) => (
+              <li key={i} className="text-[13px] text-gray-300 flex gap-2"><span className="text-blue-400">•</span> {r}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* Video sweep tuning: ~10 s pan, one frame ≈ every 1.15 s,
+   9 frames max. Frames are downscaled JPEGs; the video itself
+   never leaves the phone. */
+const SCAN_MS = 10_000;
+const FRAME_EVERY_MS = 1_150;
+const MAX_SWEEP_FRAMES = 9;
+const FRAME_MAX_PX = 960;
+
 function RoomInspector({ lang }: { lang: Lang }) {
-  const [preview, setPreview] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Inspection | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Video sweep
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const framesRef = useRef<string[]>([]);
+  const [camOn, setCamOn] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [frames, setFrames] = useState<string[]>([]);
+
+  // Single-photo fallback
+  const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Close-up follow-up on a flagged object
+  const closeupFileRef = useRef<HTMLInputElement>(null);
+  const closeupTargetRef = useRef('');
+  const [closeup, setCloseup] = useState<{
+    name: string; loading: boolean; preview: string | null;
+    result: Inspection | null; error: string | null;
+  } | null>(null);
+
+  const stopCamera = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setCamOn(false);
+    setRecording(false);
+  }, []);
+
+  useEffect(() => () => stopCamera(), [stopCamera]);
 
   const fileToJpeg = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -89,10 +191,108 @@ function RoomInspector({ lang }: { lang: Lang }) {
       img.src = url;
     });
 
+  const startCamera = async () => {
+    setError(null); setResult(null); setCloseup(null); setPreview(null);
+    framesRef.current = []; setFrames([]); setProgress(0);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => { /* autoplay guard */ });
+      }
+      setCamOn(true);
+    } catch (e: any) {
+      setError(e?.name === 'NotAllowedError'
+        ? L(lang, 'Camera permission was denied. Allow camera access for this site, or upload a photo instead.', 'कैमरा अनुमति अस्वीकृत है। इस साइट के लिए कैमरा एक्सेस दें, या इसके बजाय फ़ोटो अपलोड करें।')
+        : L(lang, 'Could not open the camera on this device. You can upload a photo instead.', 'इस डिवाइस पर कैमरा नहीं खुल सका। इसके बजाय आप फ़ोटो अपलोड कर सकते हैं।'));
+    }
+  };
+
+  const grabFrame = (): string | null => {
+    const v = videoRef.current;
+    if (!v || !v.videoWidth) return null;
+    const r = Math.min(1, FRAME_MAX_PX / Math.max(v.videoWidth, v.videoHeight));
+    const c = document.createElement('canvas');
+    c.width = Math.round(v.videoWidth * r);
+    c.height = Math.round(v.videoHeight * r);
+    const ctx = c.getContext('2d');
+    if (!ctx) return null;
+    ctx.drawImage(v, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.72);
+  };
+
+  const startScan = () => {
+    framesRef.current = []; setFrames([]);
+    setRecording(true); setProgress(0);
+    const grab = () => {
+      if (framesRef.current.length >= MAX_SWEEP_FRAMES) return;
+      const f = grabFrame();
+      if (f) {
+        framesRef.current.push(f);
+        setFrames([...framesRef.current]);
+      }
+    };
+    grab();
+    const started = Date.now();
+    timerRef.current = setInterval(() => {
+      const elapsed = Date.now() - started;
+      setProgress(Math.min(100, (elapsed / SCAN_MS) * 100));
+      grab();
+      if (elapsed >= SCAN_MS || framesRef.current.length >= MAX_SWEEP_FRAMES) {
+        stopCamera();
+        setProgress(100);
+      }
+    }, FRAME_EVERY_MS);
+  };
+
+  const callInspectApi = async (body: object): Promise<Inspection | { error: string }> => {
+    try {
+      const res = await fetch(apiUrl('/api/inspect-room'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return { error: data.error || L(lang, 'Analysis failed. Please try again.', 'विश्लेषण विफल। कृपया फिर से प्रयास करें।') };
+      }
+      return data as Inspection;
+    } catch {
+      return { error: L(lang, 'Network error. Check your connection and try again.', 'नेटवर्क त्रुटि। कनेक्शन जांचें और फिर प्रयास करें।') };
+    }
+  };
+
+  const analyzeSweep = async () => {
+    const fr = framesRef.current;
+    if (fr.length < 2) {
+      setError(L(lang, 'The sweep was too short. Please pan again for the full 10 seconds.', 'स्वीप बहुत छोटा रहा। कृपया पूरे 10 सेकंड फिर से घुमाएं।'));
+      return;
+    }
+    setLoading(true); setError(null); setResult(null);
+    const r = await callInspectApi({ frames: fr, mimeType: 'image/jpeg', note, mode: 'video' });
+    if ('error' in r) setError(r.error); else setResult(r);
+    setLoading(false);
+  };
+
+  const analyzePhoto = async () => {
+    if (!preview) return;
+    setLoading(true); setError(null); setResult(null);
+    const r = await callInspectApi({ image: preview, mimeType: 'image/jpeg', note, mode: 'wide' });
+    if ('error' in r) setError(r.error); else setResult(r);
+    setLoading(false);
+  };
+
   const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
-    setResult(null); setError(null);
+    stopCamera();
+    framesRef.current = []; setFrames([]);
+    setResult(null); setError(null); setCloseup(null);
     try {
       setPreview(await fileToJpeg(file));
     } catch {
@@ -100,55 +300,139 @@ function RoomInspector({ lang }: { lang: Lang }) {
     }
   };
 
-  const analyze = async () => {
-    if (!preview) return;
-    setLoading(true); setError(null); setResult(null);
-    try {
-      const res = await fetch(apiUrl('/api/inspect-room'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: preview, mimeType: 'image/jpeg', note }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        setError(data.error || L(lang, 'Analysis failed. Please try again.', 'विश्लेषण विफल। कृपया फिर से प्रयास करें।'));
-      } else {
-        setResult(data as Inspection);
-      }
-    } catch {
-      setError(L(lang, 'Network error. Check your connection and try again.', 'नेटवर्क त्रुटि। कनेक्शन जांचें और फिर प्रयास करें।'));
-    } finally {
-      setLoading(false);
-    }
+  const startCloseup = (o: InspectedObject) => {
+    closeupTargetRef.current = `${o.name} — ${o.location}. ${o.reason}`;
+    setCloseup({ name: o.name, loading: false, preview: null, result: null, error: null });
+    closeupFileRef.current?.click();
   };
 
-  const reset = () => { setPreview(null); setResult(null); setError(null); setNote(''); };
+  const onPickCloseup = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    let dataUrl: string;
+    try {
+      dataUrl = await fileToJpeg(file);
+    } catch {
+      setCloseup((c) => c && ({ ...c, error: L(lang, 'Could not read that photo. Try again.', 'यह फ़ोटो पढ़ी नहीं जा सकी। फिर प्रयास करें।') }));
+      return;
+    }
+    setCloseup((c) => c && ({ ...c, preview: dataUrl, loading: true, error: null, result: null }));
+    const r = await callInspectApi({
+      image: dataUrl, mimeType: 'image/jpeg', mode: 'closeup', target: closeupTargetRef.current,
+    });
+    setCloseup((c) => {
+      if (!c) return c;
+      return 'error' in r
+        ? { ...c, loading: false, error: r.error }
+        : { ...c, loading: false, result: r };
+    });
+  };
+
+  const reset = () => {
+    stopCamera();
+    framesRef.current = [];
+    setFrames([]); setPreview(null); setResult(null);
+    setError(null); setNote(''); setCloseup(null); setProgress(0);
+  };
+
+  const sweepReady = !camOn && frames.length >= 2 && !result;
+  const idle = !camOn && frames.length === 0 && !preview && !result;
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-300 leading-relaxed">
         {L(lang,
-          'Take or upload a photo of the room (or a single object like a smoke detector or charger). The AI lists what it sees and flags anything worth a closer manual look — and explains why.',
-          'कमरे की (या किसी एक वस्तु जैसे स्मोक डिटेक्टर या चार्जर की) फ़ोटो लें या अपलोड करें। AI बताएगा कि उसे क्या दिखा और किस चीज़ की हाथ से जांच ज़रूरी है — और क्यों।')}
+          'Slowly pan your phone around the room for about 10 seconds. The app samples still frames from the video and the AI inspects the whole sweep — reflections that blink or move between angles are exactly how hidden lenses give themselves away. It flags what to check by hand, and explains why.',
+          'लगभग 10 सेकंड तक फ़ोन को कमरे में धीरे-धीरे घुमाएं। ऐप वीडियो से कुछ फ़्रेम लेता है और AI पूरे स्वीप की जांच करता है — कोणों के बीच चमकती या हिलती परछाइयाँ ही छुपे लेंस की पहचान होती हैं। यह बताता है कि किन चीज़ों को हाथ से जांचें — और क्यों।')}
       </p>
 
       <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 flex gap-2 text-[12px] text-blue-200/90">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <span>{L(lang,
-          'A photo can never confirm a hidden camera — it only points you to objects to check by hand. Your photo is sent to the AI for this one analysis and is not stored on our servers.',
-          'फ़ोटो से छुपा कैमरा कभी पक्का साबित नहीं होता — यह सिर्फ़ बताता है कि किन चीज़ों को हाथ से जांचें। आपकी फ़ोटो सिर्फ़ इस एक विश्लेषण के लिए AI को भेजी जाती है और हमारे सर्वर पर सेव नहीं होती।')}</span>
+          'The AI can never confirm a hidden camera — it only points you to objects to check by hand. Only a few still frames from your pan are sent for this one analysis; the video itself never leaves your phone, and nothing is stored on our servers.',
+          'AI छुपा कैमरा कभी पक्का साबित नहीं कर सकता — यह सिर्फ़ बताता है कि किन चीज़ों को हाथ से जांचें। आपके स्वीप के सिर्फ़ कुछ फ़्रेम इस एक विश्लेषण के लिए भेजे जाते हैं; वीडियो कभी आपके फ़ोन से बाहर नहीं जाता, और हमारे सर्वर पर कुछ भी सेव नहीं होता।')}</span>
       </div>
 
-      {!preview && (
-        <button onClick={() => fileRef.current?.click()} className="w-full border-2 border-dashed border-white/20 hover:border-blue-400/60 rounded-xl py-10 flex flex-col items-center gap-2 transition">
-          <Camera className="w-9 h-9 text-blue-400" />
-          <span className="font-bold">{L(lang, 'Take or upload a room photo', 'कमरे की फ़ोटो लें या अपलोड करें')}</span>
-          <span className="text-xs text-gray-500">{L(lang, 'Camera opens on phones · JPG/PNG on desktop', 'फ़ोन पर कैमरा खुलेगा · डेस्कटॉप पर JPG/PNG')}</span>
-        </button>
+      {idle && (
+        <div className="space-y-2">
+          <button onClick={startCamera} className="w-full border-2 border-dashed border-white/20 hover:border-blue-400/60 rounded-xl py-10 flex flex-col items-center gap-2 transition">
+            <PlayCircle className="w-9 h-9 text-blue-400" />
+            <span className="font-bold">{L(lang, 'Start video sweep', 'वीडियो स्वीप शुरू करें')}</span>
+            <span className="text-xs text-gray-500">{L(lang, '≈10 seconds · slow pan around the room', '≈10 सेकंड · कमरे में धीमा पैन')}</span>
+          </button>
+          <button onClick={() => fileRef.current?.click()} className="w-full text-[13px] text-gray-400 hover:text-white py-2 transition flex items-center justify-center gap-1.5">
+            <Camera className="w-4 h-4" /> {L(lang, 'No camera here? Upload a single room photo instead', 'कैमरा नहीं? इसके बजाय कमरे की एक फ़ोटो अपलोड करें')}
+          </button>
+        </div>
       )}
       <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onPick} className="hidden" />
+      <input ref={closeupFileRef} type="file" accept="image/*" capture="environment" onChange={onPickCloseup} className="hidden" />
 
-      {preview && (
+      {camOn && (
+        <div className="space-y-3">
+          <div className="relative rounded-xl overflow-hidden border border-white/10 bg-black">
+            <video ref={videoRef} playsInline muted className="w-full max-h-[60vh] object-contain" />
+            {recording && (
+              <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-black/60 rounded-full px-2.5 py-1 text-[11px] font-bold text-red-300">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> {L(lang, 'Scanning…', 'स्कैन जारी…')} {frames.length}/{MAX_SWEEP_FRAMES}
+              </div>
+            )}
+          </div>
+          {recording ? (
+            <div className="space-y-2">
+              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="text-[13px] text-gray-400 text-center">{L(lang,
+                'Pan slowly — cover the ceiling, corners, mirrors, sockets and anything facing the bed.',
+                'धीरे-धीरे घुमाएं — छत, कोने, शीशे, सॉकेट और बेड की ओर लगी चीज़ें कवर करें।')}</p>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={startScan} className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+                <PlayCircle className="w-5 h-5" /> {L(lang, 'Start 10-second scan', '10 सेकंड का स्कैन शुरू करें')}
+              </button>
+              <button onClick={stopCamera} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-3 px-4 font-bold text-sm transition">
+                {L(lang, 'Cancel', 'रद्द करें')}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {sweepReady && (
+        <div className="space-y-3">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+            <div className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
+              {L(lang, 'Sweep captured', 'स्वीप कैप्चर हुआ')} · {frames.length} {L(lang, 'frames', 'फ़्रेम')}
+            </div>
+            <div className="flex gap-1.5 overflow-x-auto pb-1">
+              {frames.map((f, i) => (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img key={i} src={f} alt={`Frame ${i + 1}`} className="h-16 rounded-md border border-white/10 shrink-0" />
+              ))}
+            </div>
+          </div>
+          <input
+            value={note} onChange={(e) => setNote(e.target.value)}
+            placeholder={L(lang, 'Optional note — e.g. "check the smoke detector above the bed"', 'वैकल्पिक नोट — जैसे "बेड के ऊपर वाला स्मोक डिटेक्टर जांचें"')}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm placeholder:text-gray-600 focus:outline-none focus:border-blue-400/60"
+          />
+          <div className="flex gap-2">
+            <button onClick={analyzeSweep} disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+              {loading
+                ? <><Loader2 className="w-5 h-5 animate-spin" /> {L(lang, 'Inspecting sweep…', 'स्वीप की जांच हो रही है…')}</>
+                : <><Eye className="w-5 h-5" /> {L(lang, 'Inspect this sweep', 'इस स्वीप की जांच करें')}</>}
+            </button>
+            <button onClick={startCamera} disabled={loading} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-3 px-4 font-bold text-sm transition">
+              {L(lang, 'Redo', 'दोबारा')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {preview && !result && (
         <div className="space-y-3">
           <div className="relative rounded-xl overflow-hidden border border-white/10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -157,20 +441,16 @@ function RoomInspector({ lang }: { lang: Lang }) {
               <X className="w-4 h-4" />
             </button>
           </div>
-
           <input
             value={note} onChange={(e) => setNote(e.target.value)}
             placeholder={L(lang, 'Optional note — e.g. "check the smoke detector above the bed"', 'वैकल्पिक नोट — जैसे "बेड के ऊपर वाला स्मोक डिटेक्टर जांचें"')}
             className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm placeholder:text-gray-600 focus:outline-none focus:border-blue-400/60"
           />
-
-          {!result && (
-            <button onClick={analyze} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-60 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
-              {loading
-                ? <><Loader2 className="w-5 h-5 animate-spin" /> {L(lang, 'Inspecting…', 'जांच हो रही है…')}</>
-                : <><Eye className="w-5 h-5" /> {L(lang, 'Inspect this scene', 'इस दृश्य की जांच करें')}</>}
-            </button>
-          )}
+          <button onClick={analyzePhoto} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-60 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+            {loading
+              ? <><Loader2 className="w-5 h-5 animate-spin" /> {L(lang, 'Inspecting…', 'जांच हो रही है…')}</>
+              : <><Eye className="w-5 h-5" /> {L(lang, 'Inspect this scene', 'इस दृश्य की जांच करें')}</>}
+          </button>
         </div>
       )}
 
@@ -182,46 +462,48 @@ function RoomInspector({ lang }: { lang: Lang }) {
 
       {result && (
         <div className="space-y-4">
-          <div className={`rounded-xl border p-4 ${levelStyle[result.riskLevel] || levelStyle.medium}`}>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase tracking-widest">{L(lang, 'Inspection result', 'जांच परिणाम')}</span>
-              <span className="text-2xl font-black">{result.riskScore}<span className="text-sm font-bold opacity-70">/100</span></span>
-            </div>
-            <p className="text-sm mt-1.5 text-white/90 leading-relaxed">{result.summary}</p>
-            <span className="inline-block mt-2 text-[11px] font-bold uppercase tracking-wider opacity-80">
-              {result.riskLevel} · {L(lang, 'worth-a-look score', 'जांच-योग्य स्कोर')}
-            </span>
-          </div>
+          <InspectionResultView result={result} lang={lang} onCloseup={startCloseup} />
 
-          {result.objects.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-black uppercase tracking-widest text-gray-400">{L(lang, 'What the AI saw', 'AI ने क्या देखा')}</h4>
-              {result.objects.map((o, i) => (
-                <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-sm">{o.name}</span>
-                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${concernStyle[o.concern] || concernStyle.low}`}>
-                      {o.concern === 'none' ? L(lang, 'looks normal', 'सामान्य लगता है') : `${o.concern} ${L(lang, 'concern', 'चिंता')}`}
-                    </span>
+          {closeup && (
+            <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-3 space-y-3">
+              <h4 className="text-xs font-black uppercase tracking-widest text-cyan-300">
+                {L(lang, 'Close-up check', 'नज़दीकी जांच')}: {closeup.name}
+              </h4>
+              {!closeup.preview && !closeup.loading && (
+                <div className="space-y-2">
+                  <p className="text-[13px] text-gray-300 leading-relaxed">{L(lang,
+                    'Hold your phone 15–20 cm from the object, fill the frame, keep it steady (turn on the torch if it is dark), and take the photo.',
+                    'फ़ोन को वस्तु से 15–20 सेमी दूर रखें, फ्रेम भरें, स्थिर रखें (अंधेरा हो तो टॉर्च जलाएं), और फ़ोटो लें।')}</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => closeupFileRef.current?.click()} className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl py-2.5 font-bold text-sm flex items-center justify-center gap-1.5 transition">
+                      <Camera className="w-4 h-4" /> {L(lang, 'Take close-up photo', 'नज़दीकी फ़ोटो लें')}
+                    </button>
+                    <button onClick={() => setCloseup(null)} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 px-4 font-bold text-sm transition">
+                      {L(lang, 'Cancel', 'रद्द करें')}
+                    </button>
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5">{o.location}</p>
-                  <p className="text-[13px] text-gray-300 mt-1.5 leading-relaxed">{o.reason}</p>
-                  <p className="text-[13px] text-blue-300 mt-1.5 flex gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" /> {o.recommendation}
-                  </p>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {result.recommendations.length > 0 && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">{L(lang, 'Next steps', 'अगले कदम')}</h4>
-              <ul className="space-y-1.5">
-                {result.recommendations.map((r, i) => (
-                  <li key={i} className="text-[13px] text-gray-300 flex gap-2"><span className="text-blue-400">•</span> {r}</li>
-                ))}
-              </ul>
+              )}
+              {closeup.preview && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={closeup.preview} alt="Close-up to inspect" className="w-full max-h-60 object-contain rounded-lg bg-black border border-white/10" />
+              )}
+              {closeup.loading && (
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-300 py-2">
+                  <Loader2 className="w-5 h-5 animate-spin text-cyan-400" /> {L(lang, 'Inspecting close-up…', 'नज़दीकी जांच हो रही है…')}
+                </div>
+              )}
+              {closeup.error && (
+                <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-2.5 text-[13px] text-red-300 flex gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> {closeup.error}
+                </div>
+              )}
+              {closeup.result && <InspectionResultView result={closeup.result} lang={lang} />}
+              {(closeup.result || closeup.error) && (
+                <button onClick={() => closeupFileRef.current?.click()} className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 font-bold text-sm transition">
+                  {L(lang, 'Retake close-up', 'नज़दीकी फ़ोटो दोबारा लें')}
+                </button>
+              )}
             </div>
           )}
 
@@ -708,7 +990,7 @@ function SweepWizard({ lang, onExit }: { lang: Lang; onExit: () => void }) {
    HUB SHELL
    ═══════════════════════════════════════════════════════════ */
 const MODULES: { id: ModuleId; icon: any; label: [string, string]; desc: [string, string]; tag: [string, string] }[] = [
-  { id: 'inspect', icon: Camera, label: ['AI Room Inspector', 'AI रूम इंस्पेक्टर'], desc: ['Photo → AI lists objects & flags what to check', 'फ़ोटो → AI वस्तुएँ बताए और जांच-योग्य चिह्नित करे'], tag: ['Real AI vision', 'असली AI विज़न'] },
+  { id: 'inspect', icon: Camera, label: ['AI Room Inspector', 'AI रूम इंस्पेक्टर'], desc: ['Video sweep → AI flags what to check by hand', 'वीडियो स्वीप → AI जांच-योग्य चीज़ें चिह्नित करे'], tag: ['Real AI vision', 'असली AI विज़न'] },
   { id: 'emf', icon: Radar, label: ['EMF Scan', 'EMF स्कैन'], desc: ['Find hidden electronics with the magnetometer', 'मैग्नेटोमीटर से छुपे इलेक्ट्रॉनिक्स खोजें'], tag: ['Real sensor', 'असली सेंसर'] },
   { id: 'lens', icon: Flashlight, label: ['Lens Sweep', 'लेंस स्वीप'], desc: ['Camera aid to spot lens reflections', 'लेंस की चमक पकड़ने की कैमरा सहायता'], tag: ['Real camera', 'असली कैमरा'] },
   { id: 'playbooks', icon: BookOpen, label: ['Inspection Playbooks', 'जांच प्लेबुक्स'], desc: ['Checklists for hotels, rentals, vehicles…', 'होटल, किराये, वाहन… की चेकलिस्ट'], tag: ['Expert guide', 'विशेषज्ञ गाइड'] },
@@ -769,7 +1051,7 @@ export default function SentinelHub() {
             <PlayCircle className="w-9 h-9 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
             <div className="flex-1">
               <h3 className="font-black">{L(lang, 'Start Full Sweep', 'पूरा स्वीप शुरू करें')}</h3>
-              <p className="text-[12px] text-gray-400">{L(lang, 'Guided: dim lights → lens → AI photo → EMF → what to do', 'गाइडेड: रोशनी कम → लेंस → AI फ़ोटो → EMF → आगे क्या करें')}</p>
+              <p className="text-[12px] text-gray-400">{L(lang, 'Guided: dim lights → lens → AI video sweep → EMF → what to do', 'गाइडेड: रोशनी कम → लेंस → AI वीडियो स्वीप → EMF → आगे क्या करें')}</p>
             </div>
             <ArrowRight className="w-5 h-5 text-cyan-400 shrink-0" />
           </button>
