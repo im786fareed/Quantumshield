@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Shield, Mail, Phone, Loader2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Shield, Mail, Phone, Loader2, AlertTriangle, ArrowRight, KeyRound, Smartphone } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import type { ConfirmationResult } from 'firebase/auth';
+import type { ConfirmationResult, MultiFactorInfo } from 'firebase/auth';
 
 /** Turns Firebase's cryptic error codes into plain, friendly messages. */
-function friendlyError(e: any): string {
+export function friendlyError(e: any): string {
   const code = e?.code || '';
   if (code.includes('popup-closed')) return 'Sign-in window was closed before finishing.';
   if (code.includes('invalid-email')) return 'That email address doesn’t look right.';
@@ -15,10 +15,120 @@ function friendlyError(e: any): string {
   if (code.includes('wrong-password') || code.includes('invalid-credential')) return 'Wrong email or password.';
   if (code.includes('user-not-found')) return 'No account found with this email — try creating one.';
   if (code.includes('too-many-requests')) return 'Too many attempts. Please wait a moment and try again.';
-  if (code.includes('operation-not-allowed')) return 'This sign-in method isn’t enabled yet in Firebase.';
+  if (code.includes('unverified-email')) return 'Please verify your email first — check your inbox for the verification link, then try again.';
+  if (code.includes('second-factor-already-in-use')) return 'That second step is already set up on this account.';
+  if (code.includes('maximum-second-factor-count-exceeded')) return 'You’ve reached the maximum number of second steps for this account.';
+  if (code.includes('multi-factor-info-not-found')) return 'That second step was removed. Sign in again to continue.';
+  if (code.includes('invalid-multi-factor-session')) return 'This session expired. Please sign in again.';
+  if (code.includes('operation-not-allowed')) return 'This method isn’t enabled yet in Firebase (see the setup guide).';
   if (code.includes('invalid-phone-number')) return 'Please enter a valid phone number with country code (e.g. +91…).';
-  if (code.includes('invalid-verification-code')) return 'That code is incorrect. Please re-check the SMS.';
+  if (code.includes('invalid-verification-code')) return 'That code is incorrect. Please re-check and try again.';
   return e?.message || 'Something went wrong. Please try again.';
+}
+
+/* ── Second step (2-step verification) challenge shown when the
+      first sign-in step succeeded but the account has MFA on. ── */
+function MfaChallenge() {
+  const auth = useAuth();
+  const hints = auth.mfaResolver?.hints ?? [];
+  const [selected, setSelected] = useState<MultiFactorInfo | null>(hints.length === 1 ? hints[0] : null);
+  const [code, setCode] = useState('');
+  const [smsVerificationId, setSmsVerificationId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const isTotp = selected?.factorId === 'totp';
+  const isPhone = selected?.factorId === 'phone';
+
+  const run = async (fn: () => Promise<void>) => {
+    setError(''); setBusy(true);
+    try { await fn(); }
+    catch (e) { setError(friendlyError(e)); }
+    finally { setBusy(false); }
+  };
+
+  const sendSms = () =>
+    run(async () => {
+      if (!selected) return;
+      setSmsVerificationId(await auth.sendMfaSms(selected, 'mfa-recaptcha-container'));
+    });
+
+  const verify = () =>
+    run(async () => {
+      if (!selected) return;
+      if (isTotp) await auth.resolveTotpSignIn(selected.uid, code);
+      else if (smsVerificationId) await auth.resolveSmsSignIn(smsVerificationId, code);
+    });
+
+  const btn = 'w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold text-sm transition disabled:opacity-60';
+  const input = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-600';
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 text-indigo-300">
+        <KeyRound className="w-5 h-5" />
+        <h2 className="font-bold text-sm">Two-step verification</h2>
+      </div>
+      <p className="text-xs text-slate-400 leading-relaxed">
+        Your password was correct. This account is protected with a second step — confirm it’s really you.
+      </p>
+
+      {!selected && (
+        <div className="space-y-2">
+          {hints.map((h) => (
+            <button key={h.uid} onClick={() => { setSelected(h); setError(''); }}
+              className={`${btn} bg-slate-800 border border-slate-700 hover:bg-slate-700 justify-start`}>
+              {h.factorId === 'totp' ? <KeyRound className="w-4 h-4 text-indigo-300" /> : <Smartphone className="w-4 h-4 text-indigo-300" />}
+              {h.displayName || (h.factorId === 'totp' ? 'Authenticator app' : 'SMS code')}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {isTotp && (
+        <div className="space-y-3">
+          <p className="text-xs text-slate-400">Enter the 6-digit code from your authenticator app.</p>
+          <input className={input} inputMode="numeric" autoComplete="one-time-code" placeholder="6-digit code"
+            value={code} onChange={e => setCode(e.target.value)} />
+          <button onClick={verify} disabled={busy || code.trim().length < 6} className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />} Verify &amp; sign in
+          </button>
+        </div>
+      )}
+
+      {isPhone && (
+        <div className="space-y-3">
+          {!smsVerificationId ? (
+            <button onClick={sendSms} disabled={busy} className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
+              Send code to {selected?.displayName || 'your phone'}
+            </button>
+          ) : (
+            <>
+              <p className="text-xs text-slate-400">Enter the 6-digit code we sent by SMS.</p>
+              <input className={input} inputMode="numeric" autoComplete="one-time-code" placeholder="6-digit code"
+                value={code} onChange={e => setCode(e.target.value)} />
+              <button onClick={verify} disabled={busy || code.trim().length < 6} className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+                {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />} Verify &amp; sign in
+              </button>
+            </>
+          )}
+          <div id="mfa-recaptcha-container" />
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/40 rounded-xl px-3 py-2.5">
+          <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-red-200">{error}</p>
+        </div>
+      )}
+
+      <button onClick={auth.cancelMfa} className="w-full text-xs text-slate-500 hover:text-slate-300 py-1 transition">
+        ← Back to sign-in
+      </button>
+    </div>
+  );
 }
 
 export default function LoginScreen() {
@@ -80,6 +190,11 @@ export default function LoginScreen() {
           <p className="text-sm text-gray-500 mt-2">Sign in to continue</p>
         </div>
 
+        {auth.mfaResolver ? (
+          <div className="bg-slate-900/70 border border-slate-700/50 rounded-2xl p-6">
+            <MfaChallenge />
+          </div>
+        ) : (
         <div className="bg-slate-900/70 border border-slate-700/50 rounded-2xl p-6 space-y-4">
           {/* Social sign-in */}
           <button
@@ -170,6 +285,7 @@ export default function LoginScreen() {
             </div>
           )}
         </div>
+        )}
 
         <p className="text-center text-[11px] text-slate-600 mt-5 leading-relaxed">
           By continuing you agree to our{' '}

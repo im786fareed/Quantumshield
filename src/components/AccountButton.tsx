@@ -1,9 +1,11 @@
 'use client';
-/* Header account control: shows the signed-in user + Sign out.
+/* Header account control: shows the signed-in user, a link to
+   Account & Security (2-step verification) and Sign out.
    Renders nothing when auth isn't configured or nobody is signed in. */
 
 import { useState } from 'react';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import Link from 'next/link';
+import { LogOut, ShieldCheck, User as UserIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AccountButton() {
@@ -30,6 +32,13 @@ export default function AccountButton() {
       {open && (
         <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-white/10 rounded-xl shadow-xl p-2 z-50">
           <div className="px-3 py-2 text-xs text-gray-400 truncate border-b border-white/10 mb-1">{label}</div>
+          <Link
+            href="/account"
+            onClick={() => setOpen(false)}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-white/10 text-gray-200"
+          >
+            <ShieldCheck className="w-4 h-4" /> Account &amp; security
+          </Link>
           <button
             onClick={() => { setOpen(false); signOut(); }}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-white/10 text-red-300"
