@@ -43,6 +43,7 @@ const LABELS: Record<TabId, string> = {
   phoneguard: 'Phone Number Guard',
   'legal-rights': 'My Legal Rights',
   sentinel: 'Sentinel: Privacy Sweep',
+  'trust-search': 'Trust Search',
 };
 
 export default function CommandPalette() {

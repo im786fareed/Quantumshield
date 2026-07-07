@@ -8,7 +8,7 @@ import {
   Brain, BookOpen, Newspaper, ChevronDown, ChevronUp,
   CreditCard, Scale, MessageSquare, Database,
   ExternalLink, PhoneCall, Users, Link2, ArrowRight,
-  Cpu, ServerOff, Languages, BadgeCheck, ShieldCheck, Radar
+  Cpu, ServerOff, Languages, BadgeCheck, ShieldCheck, Radar, SearchCheck
 } from 'lucide-react';
 import { useLanguage } from '@/lib/useLanguage';
 
@@ -233,6 +233,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
     { id: 'emergency',  name: 'Emergency: 1930',      nameHi: 'आपातकाल: 1930',       description: 'One-tap national cybercrime helpline',           descriptionHi: 'एक टैप में राष्ट्रीय हेल्पलाइन',                       icon: Phone,      path: '/emergency',      category: 'core' },
     { id: 'legalaid',   name: 'Cyber Legal First Aid',nameHi: 'साइबर कानूनी सहायता', description: 'Digital Arrest guide · FIR · your rights',       descriptionHi: 'डिजिटल अरेस्ट गाइड · FIR · आपके अधिकार',              icon: Shield,     path: '/legal-aid',      category: 'core' },
     { id: 'sentinel',   name: 'Sentinel · Privacy Sweep', nameHi: 'सेंटिनल · प्राइवेसी स्वीप', description: 'Find hidden cameras, mics & trackers with AI', descriptionHi: 'AI से छुपे कैमरे, माइक और ट्रैकर खोजें',         icon: Radar,      path: '/sentinel',       category: 'core' },
+    { id: 'trustsearch',name: 'Trust Search',         nameHi: 'ट्रस्ट सर्च',          description: 'Verify any number, site or support line first', descriptionHi: 'कोई भी नंबर, साइट या हेल्पलाइन पहले जांचें',        icon: SearchCheck, path: '/trust-search',  category: 'core' },
   ];
 
   /* ── Everything else — available under "All tools".
@@ -444,6 +445,31 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
             </span>
           </Link>
         </motion.div>
+
+        {/* ── Trust Search — flagship: verify before you trust ── */}
+        <motion.a
+          variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
+          href="/trust-search"
+          className="qs-card relative overflow-hidden flex items-center gap-5 bg-gradient-to-r from-cyan-600/25 via-teal-600/15 to-transparent border-2 border-cyan-500/50 rounded-2xl p-6 mb-10 hover:border-cyan-400 hover:from-cyan-600/35 transition-all group">
+          <SearchCheck className="absolute right-5 bottom-3 w-24 h-24 opacity-10" />
+          <div className="w-12 h-12 rounded-xl bg-cyan-500/25 flex items-center justify-center shrink-0">
+            <SearchCheck className="w-6 h-6 text-cyan-300" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-xl font-black">{language === 'en' ? 'Trust Search' : 'ट्रस्ट सर्च'}</h2>
+              <span className="text-[10px] font-black uppercase tracking-widest text-cyan-300 bg-cyan-500/15 border border-cyan-500/40 rounded-full px-2.5 py-0.5">
+                {language === 'en' ? 'New' : 'नया'}
+              </span>
+            </div>
+            <p className="text-sm text-gray-300 leading-snug">
+              {language === 'en'
+                ? 'Verify before you trust. Check any phone number, website, email, UPI ID or customer-care line against real official sources — before you call, click or pay.'
+                : 'भरोसा करने से पहले जांचें। कोई भी फोन नंबर, वेबसाइट, ईमेल, UPI ID या कस्टमर-केयर लाइन — कॉल, क्लिक या भुगतान से पहले असली आधिकारिक स्रोतों से जांचें।'}
+            </p>
+          </div>
+          <ArrowRight className="w-5 h-5 text-cyan-300 shrink-0 group-hover:translate-x-1 transition-transform" />
+        </motion.a>
 
         {/* ── My Legal Rights — second home / legal intelligence engine ── */}
         <motion.a

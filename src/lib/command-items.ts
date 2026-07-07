@@ -33,4 +33,5 @@ export const COMMAND_ITEMS: CommandItem[] = [
   { id: 'aboutai', label: 'About AI', keywords: 'about' },
   { id: 'legal-rights', label: 'My Legal Rights', keywords: 'legal rights complaint law fir authority report incident lawyer' },
   { id: 'sentinel', label: 'Sentinel: Privacy Sweep', keywords: 'hidden camera microphone tracker spy surveillance emf magnetometer lens privacy sweep room inspect' },
+  { id: 'trust-search', label: 'Trust Search', keywords: 'verify trust official customer care support number website email upi scam check authentic' },
 ];

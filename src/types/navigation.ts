@@ -29,6 +29,7 @@ export const TAB_IDS = [
   'phoneguard',
   'legal-rights',
   'sentinel',
+  'trust-search',
 ] as const;
 
 export type TabId = (typeof TAB_IDS)[number];
