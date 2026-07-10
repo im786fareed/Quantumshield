@@ -33,6 +33,8 @@ type TrustStatus = 'verified_official' | 'unverified' | 'suspicious' | 'confirme
 
 interface TrustVerification {
   inputType: string;
+  queryIntent: 'verify' | 'find';
+  directAnswer: string | null;
   subjectName: string;
   status: TrustStatus;
   trustScore: number;
@@ -96,13 +98,15 @@ export default function TrustSearch() {
     en: {
       title: 'Trust Search',
       subtitle: 'Verify before you trust.',
-      intro: 'Check a phone number, website, email, UPI ID, app or organization against real, authoritative sources — before you call, click, pay or reply.',
-      placeholder: 'e.g. SBI customer care · +91 1800… · canon-support.xyz · name@upi',
+      intro: 'Search like you would anywhere — "Canon support number", a link you received, a UPI ID — and get only details confirmed against real, official sources. Most fraud starts with a wrong number from an ordinary search; this one only returns verified answers.',
+      placeholder: 'Ask anything — "SBI customer care number" · +91 1800… · canon-support.xyz',
       verify: 'Verify',
       verifying: 'Checking real sources…',
       verifyingSub: 'Searching official websites, registries and scam intelligence. This takes a few seconds.',
       examplesTitle: 'Try verifying:',
-      examples: ['SBI customer care number', 'irctc.co.in', 'Amazon India support', 'Income Tax Department helpline'],
+      examples: ['SBI customer care number', 'How do I contact Amazon about a refund?', 'irctc.co.in', 'Income Tax Department helpline'],
+      answer: 'Verified answer',
+      answerNote: 'Confirmed against the official sources listed below — not from ads or random listings.',
       hint: { phone: 'Phone number', email: 'Email address', upi: 'UPI / payment ID', website: 'Website', org: 'Organization / search' },
       status: {
         verified_official: 'Verified Official',
@@ -153,13 +157,15 @@ export default function TrustSearch() {
     hi: {
       title: 'ट्रस्ट सर्च',
       subtitle: 'भरोसा करने से पहले जांचें।',
-      intro: 'कॉल, क्लिक, भुगतान या जवाब देने से पहले — फोन नंबर, वेबसाइट, ईमेल, UPI ID, ऐप या संस्था को असली आधिकारिक स्रोतों से जांचें।',
-      placeholder: 'जैसे SBI कस्टमर केयर · +91 1800… · canon-support.xyz · name@upi',
+      intro: 'जैसे कहीं भी सर्च करते हैं वैसे ही पूछें — "Canon सपोर्ट नंबर", कोई लिंक, कोई UPI ID — और सिर्फ़ असली आधिकारिक स्रोतों से पुष्ट जानकारी पाएं। ज़्यादातर धोखाधड़ी आम सर्च से मिले गलत नंबर से शुरू होती है; यह सर्च सिर्फ़ सत्यापित जवाब देता है।',
+      placeholder: 'कुछ भी पूछें — "SBI कस्टमर केयर नंबर" · +91 1800… · canon-support.xyz',
       verify: 'जांचें',
       verifying: 'असली स्रोत जांचे जा रहे हैं…',
       verifyingSub: 'आधिकारिक वेबसाइट, रजिस्ट्री और स्कैम डेटा खोजे जा रहे हैं। कुछ सेकंड लगेंगे।',
       examplesTitle: 'इन्हें जांच कर देखें:',
-      examples: ['SBI कस्टमर केयर नंबर', 'irctc.co.in', 'Amazon India support', 'इनकम टैक्स हेल्पलाइन'],
+      examples: ['SBI कस्टमर केयर नंबर', 'Amazon रिफंड के लिए संपर्क कैसे करूं?', 'irctc.co.in', 'इनकम टैक्स हेल्पलाइन'],
+      answer: 'सत्यापित उत्तर',
+      answerNote: 'नीचे दिए आधिकारिक स्रोतों से पुष्टि की गई — विज्ञापनों या अनजान लिस्टिंग से नहीं।',
       hint: { phone: 'फोन नंबर', email: 'ईमेल पता', upi: 'UPI / पेमेंट ID', website: 'वेबसाइट', org: 'संस्था / खोज' },
       status: {
         verified_official: 'सत्यापित आधिकारिक',
@@ -425,6 +431,17 @@ export default function TrustSearch() {
 
           {/* ═══ LEFT: structured verified information ═══ */}
           <div className="lg:col-span-3 space-y-4">
+
+            {/* direct verified answer (find-intent queries) */}
+            {v.directAnswer && (
+              <div className="bg-green-500/10 border-2 border-green-500/40 rounded-2xl p-5">
+                <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-green-300 mb-2">
+                  <BadgeCheck className="w-4 h-4" /> {t.answer}
+                </h3>
+                <p className="text-base font-bold text-gray-100 leading-relaxed">{v.directAnswer}</p>
+                <p className="text-[11px] text-gray-500 mt-2">{t.answerNote}</p>
+              </div>
+            )}
 
             {/* status banner */}
             <div className={`border-2 rounded-2xl p-5 ${style.wrap}`}>

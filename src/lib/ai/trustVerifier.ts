@@ -32,6 +32,10 @@ export interface TrustEvidenceSource {
 
 export interface TrustVerification {
   inputType: string;
+  /** "find" = the user asked a question (search-engine style); "verify" = they pasted something to check. */
+  queryIntent: "verify" | "find";
+  /** Evidence-backed direct answer to a find-intent question; null unless verified. */
+  directAnswer: string | null;
   subjectName: string;
   status: TrustStatus;
   trustScore: number;
@@ -65,6 +69,11 @@ You have Google Search available. ALWAYS search before answering. Use authoritat
 
 THE INPUT can be anything: an organization name ("Canon support", "SBI customer care"), a phone number, a URL/domain, an email address, a UPI/payment ID, an app name, or a social profile. First decide what it is (inputType), then verify it.
 
+QUERY INTENT — decide which of two intents the query has (field "queryIntent"):
+- "verify": the user pasted something they received or found (a phone number, link, email, UPI ID, app) and wants to know whether it is safe to trust.
+- "find": the user is ASKING for information, like they would in a search engine ("Canon customer care number", "SBI official website", "how do I contact Amazon about a refund", "Income Tax helpline"). For find-intent queries: identify the organization being asked about, search its OFFICIAL sources, and return the verified details the user asked for. The whole result then describes the organization's official channels, and "directAnswer" must directly answer the user's question using ONLY evidence-backed details.
+Find-intent queries are the heart of this product: most cyber fraud starts with someone googling a helpline and calling a scammer's number from an ad or fake listing. Your job is to be the search engine that only returns the official answer.
+
 ABSOLUTE HONESTY RULES — these override everything:
 1. NEVER invent or guess official contact details. Every phone number, email, website, app, address or social handle you output MUST appear in your search evidence. If you cannot confirm a detail, omit it — an empty list is the correct answer.
 2. Status "verified_official" is ONLY allowed when authoritative sources confirm the subject's official identity/details.
@@ -82,6 +91,8 @@ TRUST SCORE (0-100, your evidence-based confidence that the subject is safe to t
 
 FIELD RULES:
 - "inputType": one of phone_number, website, email, upi_or_payment_id, app, organization, social_profile, qr_or_link, other.
+- "queryIntent": "verify" or "find" (see QUERY INTENT above).
+- "directAnswer": ONLY for find-intent queries — 1-3 plain sentences that directly answer the user's question with the verified detail(s), naming the official source (e.g. "Canon India's official toll-free support number is 1800-208-3366, as published on canon.co.in."). Every number/URL/email in it MUST also appear in the corresponding official* field. If nothing could be verified, or the intent is "verify", use null — NEVER put an unverified detail here.
 - "subjectName": the official name of the organization/entity if identified, otherwise the input as given.
 - "summary": 2-3 plain sentences a non-technical user instantly understands. State the verdict first.
 - "officialPhones"/"officialEmails": label each one (e.g. "Customer care (India)", "Fraud reporting"). Only evidence-backed entries.
@@ -96,7 +107,7 @@ FIELD RULES:
 - If the user's language is Hindi, write all user-facing text fields in simple Hindi (keep names/URLs/numbers as-is).
 
 OUTPUT: Return ONLY one JSON object with EXACTLY these keys:
-{"inputType": string, "subjectName": string, "status": "verified_official"|"unverified"|"suspicious"|"confirmed_scam", "trustScore": number, "summary": string, "officialWebsite": string|null, "officialPhones": [{"number": string, "label": string}], "officialEmails": [{"email": string, "label": string}], "officialApps": [{"name": string, "store": string}], "verifiedSocial": [{"platform": string, "handle": string}], "locations": [{"name": string, "address": string}], "supportChannels": [string], "knownScams": [string], "riskIndicators": [string], "howVerified": [string], "recommendation": string, "saferAlternative": string|null, "assistantIntro": string}
+{"inputType": string, "queryIntent": "verify"|"find", "directAnswer": string|null, "subjectName": string, "status": "verified_official"|"unverified"|"suspicious"|"confirmed_scam", "trustScore": number, "summary": string, "officialWebsite": string|null, "officialPhones": [{"number": string, "label": string}], "officialEmails": [{"email": string, "label": string}], "officialApps": [{"name": string, "store": string}], "verifiedSocial": [{"platform": string, "handle": string}], "locations": [{"name": string, "address": string}], "supportChannels": [string], "knownScams": [string], "riskIndicators": [string], "howVerified": [string], "recommendation": string, "saferAlternative": string|null, "assistantIntro": string}
 No markdown, no code fences, no commentary — JSON only.`;
 
 export function isTrustEngineAvailable(): boolean {
@@ -165,7 +176,7 @@ export async function verifyTrust(
     technicalSignals.length
       ? `Real technical signals already computed by QuantumShield (treat as evidence):\n- ${technicalSignals.join("\n- ")}`
       : "",
-    `Verify this and tell the user whether they can trust it:\n\n${query.slice(0, 500)}`,
+    `The user's query (either something to verify, or a question to answer with verified details only):\n\n${query.slice(0, 500)}`,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -208,6 +219,10 @@ export async function verifyTrust(
     // Sanitize + clamp so the UI never receives garbage.
     const v: TrustVerification = {
       inputType: String(parsed.inputType || "other"),
+      queryIntent: parsed.queryIntent === "find" ? "find" : "verify",
+      directAnswer: parsed.directAnswer
+        ? String(parsed.directAnswer).slice(0, 600)
+        : null,
       subjectName: String(parsed.subjectName || query).slice(0, 200),
       status: (
         ["verified_official", "unverified", "suspicious", "confirmed_scam"] as const
@@ -238,6 +253,9 @@ export async function verifyTrust(
     if (v.status === "verified_official" && sources.length === 0) {
       v.status = "unverified";
       v.trustScore = Math.min(v.trustScore, 60);
+      // A direct answer must be evidence-backed too — without sources it
+      // cannot be shown as "verified".
+      v.directAnswer = null;
       v.howVerified = [
         ...v.howVerified,
         lang === "hi"
