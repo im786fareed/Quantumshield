@@ -107,6 +107,17 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await verifyTrust(trimmed, lang, technicalSignals);
+    if (result === "quota") {
+      return NextResponse.json(
+        {
+          error:
+            lang === "hi"
+              ? "आज की मुफ़्त खोज सीमा पूरी हो गई है। कृपया कुछ घंटों बाद फिर प्रयास करें।"
+              : "Today's free search limit has been reached. Please try again in a few hours.",
+        },
+        { status: 503 }
+      );
+    }
     if (!result) {
       return NextResponse.json(
         {

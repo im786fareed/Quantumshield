@@ -17,12 +17,13 @@
      the user sees an honest error, never simulated results.
    ========================================================= */
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   Search, ShieldCheck, ShieldAlert, ShieldQuestion, ShieldX,
   Phone, Globe, Mail, MapPin, Smartphone, AtSign, Copy, Check,
   ExternalLink, Share2, MessageCircle, Send, Loader2, AlertTriangle,
   BadgeCheck, LifeBuoy, Network, ListChecks, Link2, Clock, Sparkles,
+  Mic, Volume2, Square,
 } from 'lucide-react';
 import { useLanguage } from '@/lib/useLanguage';
 import { apiUrl } from '@/lib/apiBase';
@@ -33,7 +34,8 @@ type TrustStatus = 'verified_official' | 'unverified' | 'suspicious' | 'confirme
 
 interface TrustVerification {
   inputType: string;
-  queryIntent: 'verify' | 'find';
+  queryIntent: 'verify' | 'find' | 'learn';
+  correctedQuery: string | null;
   directAnswer: string | null;
   subjectName: string;
   status: TrustStatus;
@@ -94,6 +96,68 @@ export default function TrustSearch() {
   const [chatError, setChatError] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Voice: dictation in (Web Speech API) + read-aloud out (speech synthesis).
+  // Feature-detected in an effect so server and first client render match.
+  const [micSupported, setMicSupported] = useState(false);
+  const [ttsSupported, setTtsSupported] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const recRef = useRef<any>(null);
+
+  useEffect(() => {
+    setMicSupported(Boolean((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition));
+    setTtsSupported('speechSynthesis' in window);
+    return () => {
+      try { recRef.current?.stop(); } catch { /* noop */ }
+      try { window.speechSynthesis?.cancel(); } catch { /* noop */ }
+    };
+  }, []);
+
+  const toggleDictation = () => {
+    if (listening) {
+      try { recRef.current?.stop(); } catch { /* noop */ }
+      return;
+    }
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
+    // Browser picks up whatever language the user speaks best when set to
+    // their system language — part of the "no language barrier" goal.
+    rec.lang = navigator.language || 'en-IN';
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e: any) => {
+      const text = Array.from(e.results as ArrayLike<any>).map((r: any) => r[0].transcript).join('');
+      setQuery(text);
+      if (e.results[e.results.length - 1].isFinal) {
+        try { rec.stop(); } catch { /* noop */ }
+        runSearch(text);
+      }
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    try {
+      rec.start();
+      recRef.current = rec;
+      setListening(true);
+    } catch { /* mic busy */ }
+  };
+
+  const toggleSpeak = (text: string) => {
+    if (!('speechSynthesis' in window)) return;
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(text);
+    u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+    setSpeaking(true);
+  };
+
   const t = {
     en: {
       title: 'Trust Search',
@@ -104,9 +168,16 @@ export default function TrustSearch() {
       verifying: 'Checking real sources…',
       verifyingSub: 'Searching official websites, registries and scam intelligence. This takes a few seconds.',
       examplesTitle: 'Try verifying:',
-      examples: ['SBI customer care number', 'How do I contact Amazon about a refund?', 'irctc.co.in', 'Income Tax Department helpline'],
+      examples: ['SBI customer care number', 'Life cycle of a butterfly', 'How do I contact Amazon about a refund?', 'irctc.co.in'],
       answer: 'Verified answer',
       answerNote: 'Confirmed against the official sources listed below — not from ads or random listings.',
+      showingFor: 'Showing results for:',
+      learnVerified: 'Verified Information',
+      learnVerifiedSub: 'From authoritative sources',
+      listen: 'Listen',
+      stopListen: 'Stop',
+      micStart: 'Search by voice',
+      micStop: 'Stop listening',
       hint: { phone: 'Phone number', email: 'Email address', upi: 'UPI / payment ID', website: 'Website', org: 'Organization / search' },
       status: {
         verified_official: 'Verified Official',
@@ -163,9 +234,16 @@ export default function TrustSearch() {
       verifying: 'असली स्रोत जांचे जा रहे हैं…',
       verifyingSub: 'आधिकारिक वेबसाइट, रजिस्ट्री और स्कैम डेटा खोजे जा रहे हैं। कुछ सेकंड लगेंगे।',
       examplesTitle: 'इन्हें जांच कर देखें:',
-      examples: ['SBI कस्टमर केयर नंबर', 'Amazon रिफंड के लिए संपर्क कैसे करूं?', 'irctc.co.in', 'इनकम टैक्स हेल्पलाइन'],
+      examples: ['SBI कस्टमर केयर नंबर', 'तितली का जीवन चक्र', 'Amazon रिफंड के लिए संपर्क कैसे करूं?', 'irctc.co.in'],
       answer: 'सत्यापित उत्तर',
       answerNote: 'नीचे दिए आधिकारिक स्रोतों से पुष्टि की गई — विज्ञापनों या अनजान लिस्टिंग से नहीं।',
+      showingFor: 'इसके परिणाम दिखाए जा रहे हैं:',
+      learnVerified: 'सत्यापित जानकारी',
+      learnVerifiedSub: 'आधिकारिक स्रोतों से',
+      listen: 'सुनें',
+      stopListen: 'रोकें',
+      micStart: 'बोलकर खोजें',
+      micStop: 'सुनना बंद करें',
       hint: { phone: 'फोन नंबर', email: 'ईमेल पता', upi: 'UPI / पेमेंट ID', website: 'वेबसाइट', org: 'संस्था / खोज' },
       status: {
         verified_official: 'सत्यापित आधिकारिक',
@@ -375,12 +453,31 @@ export default function TrustSearch() {
               placeholder={t.placeholder}
               className="w-full bg-white/5 border border-white/15 rounded-xl pl-12 pr-24 py-4 text-sm outline-none focus:border-blue-400 placeholder-gray-600 transition"
             />
-            {hint && (
+            {hint && !listening && (
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-500/15 border border-blue-500/30 rounded-full px-2.5 py-1">
                 {t.hint[hint as keyof typeof t.hint]}
               </span>
             )}
+            {listening && (
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-red-300 bg-red-500/15 border border-red-500/40 rounded-full px-2.5 py-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" /> {t.micStop}
+              </span>
+            )}
           </div>
+          {micSupported && (
+            <button
+              onClick={toggleDictation}
+              aria-label={listening ? t.micStop : t.micStart}
+              title={listening ? t.micStop : t.micStart}
+              className={`px-4 rounded-xl border transition flex items-center ${
+                listening
+                  ? 'bg-red-600/80 hover:bg-red-500 border-red-400 animate-pulse'
+                  : 'bg-white/5 hover:bg-white/15 border-white/15'
+              }`}
+            >
+              <Mic className="w-5 h-5" />
+            </button>
+          )}
           <button
             onClick={() => runSearch()}
             disabled={loading || !query.trim()}
@@ -425,6 +522,13 @@ export default function TrustSearch() {
         </div>
       )}
 
+      {/* ── "Showing results for" (typo correction, Google-style) ── */}
+      {v && !loading && v.correctedQuery && (
+        <p className="max-w-6xl mx-auto mt-5 text-sm text-gray-400">
+          {t.showingFor} <span className="font-bold text-blue-300">{v.correctedQuery}</span>
+        </p>
+      )}
+
       {/* ── Result: two synchronized panels ── */}
       {v && style && !loading && (
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-6">
@@ -432,12 +536,24 @@ export default function TrustSearch() {
           {/* ═══ LEFT: structured verified information ═══ */}
           <div className="lg:col-span-3 space-y-4">
 
-            {/* direct verified answer (find-intent queries) */}
+            {/* direct verified answer (find & learn queries) */}
             {v.directAnswer && (
               <div className="bg-green-500/10 border-2 border-green-500/40 rounded-2xl p-5">
-                <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-green-300 mb-2">
-                  <BadgeCheck className="w-4 h-4" /> {t.answer}
-                </h3>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-green-300">
+                    <BadgeCheck className="w-4 h-4" /> {t.answer}
+                  </h3>
+                  {ttsSupported && (
+                    <button
+                      onClick={() => toggleSpeak(v.directAnswer!)}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 transition"
+                      aria-label={speaking ? t.stopListen : t.listen}
+                    >
+                      {speaking ? <Square className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                      {speaking ? t.stopListen : t.listen}
+                    </button>
+                  )}
+                </div>
                 <p className="text-base font-bold text-gray-100 leading-relaxed">{v.directAnswer}</p>
                 <p className="text-[11px] text-gray-500 mt-2">{t.answerNote}</p>
               </div>
@@ -449,9 +565,11 @@ export default function TrustSearch() {
                 <StatusIcon className={`w-10 h-10 shrink-0 ${style.text}`} />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className={`font-black text-lg ${style.text}`}>{t.status[v.status]}</span>
+                    <span className={`font-black text-lg ${style.text}`}>
+                      {v.queryIntent === 'learn' && v.status === 'verified_official' ? t.learnVerified : t.status[v.status]}
+                    </span>
                     <span className="text-[10px] font-mono uppercase tracking-wider text-gray-400 bg-black/30 rounded-full px-2 py-0.5">
-                      {t.statusSub[v.status]}
+                      {v.queryIntent === 'learn' && v.status === 'verified_official' ? t.learnVerifiedSub : t.statusSub[v.status]}
                     </span>
                   </div>
                   <h2 className="text-xl font-black break-words">{v.subjectName}</h2>
@@ -473,6 +591,11 @@ export default function TrustSearch() {
 
               <div className="flex flex-wrap items-center gap-2 mt-4">
                 <ActionBtn onClick={doShare}><Share2 className="w-3 h-3" /> {copied === 'share' ? t.copiedLbl : t.share}</ActionBtn>
+                {ttsSupported && !v.directAnswer && (
+                  <ActionBtn onClick={() => toggleSpeak(`${v.summary} ${v.recommendation}`)}>
+                    {speaking ? <Square className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />} {speaking ? t.stopListen : t.listen}
+                  </ActionBtn>
+                )}
                 {(v.status === 'suspicious' || v.status === 'confirmed_scam') && (
                   <ActionBtn href="https://cybercrime.gov.in"><ExternalLink className="w-3 h-3" /> {t.report}</ActionBtn>
                 )}

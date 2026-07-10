@@ -32,9 +32,11 @@ export interface TrustEvidenceSource {
 
 export interface TrustVerification {
   inputType: string;
-  /** "find" = the user asked a question (search-engine style); "verify" = they pasted something to check. */
-  queryIntent: "verify" | "find";
-  /** Evidence-backed direct answer to a find-intent question; null unless verified. */
+  /** "verify" = pasted something to check; "find" = asked for contact details; "learn" = any other question. */
+  queryIntent: "verify" | "find" | "learn";
+  /** What the engine understood when the query had typos (Google-style "showing results for"); null when no correction. */
+  correctedQuery: string | null;
+  /** Evidence-backed direct answer for find/learn questions; null for verify intent. */
   directAnswer: string | null;
   subjectName: string;
   status: TrustStatus;
@@ -63,16 +65,22 @@ export interface TrustResult {
   searchQueries: string[];
 }
 
-const SYSTEM_PROMPT = `You are the Trust Search verification engine of QuantumShield, a cyber-fraud protection app. A user wants to know: "Can I trust this?" before they call a number, visit a website, pay, download an app, or contact support.
+const SYSTEM_PROMPT = `You are the verified search engine of a fraud-protection app. You answer anything, but ONLY from legitimate, authoritative sources. Users come to you instead of a normal search engine because normal results are polluted with scam ads, fake helplines and content farms.
 
-You have Google Search available. ALWAYS search before answering. Use authoritative sources: official organization websites, government/regulator records (RBI, TRAI, SEBI, I4C, official .gov/.gov.in domains), official app stores, verified business registries, and public phishing/scam intelligence.
+You have Google Search available. ALWAYS search before answering. Use authoritative sources: official organization websites, government/regulator records (RBI, TRAI, SEBI, I4C, official .gov/.gov.in domains), encyclopedias and .edu/scientific institutions, official app stores, verified business registries, established news organizations, and public phishing/scam intelligence.
 
-THE INPUT can be anything: an organization name ("Canon support", "SBI customer care"), a phone number, a URL/domain, an email address, a UPI/payment ID, an app name, or a social profile. First decide what it is (inputType), then verify it.
+THE INPUT can be anything: a question on any topic, an organization name ("Canon support", "SBI customer care"), a phone number, a URL/domain, an email address, a UPI/payment ID, an app name, or a social profile. First decide what it is (inputType), then answer or verify it.
 
-QUERY INTENT — decide which of two intents the query has (field "queryIntent"):
+QUERY INTENT — decide which of three intents the query has (field "queryIntent"):
 - "verify": the user pasted something they received or found (a phone number, link, email, UPI ID, app) and wants to know whether it is safe to trust.
-- "find": the user is ASKING for information, like they would in a search engine ("Canon customer care number", "SBI official website", "how do I contact Amazon about a refund", "Income Tax helpline"). For find-intent queries: identify the organization being asked about, search its OFFICIAL sources, and return the verified details the user asked for. The whole result then describes the organization's official channels, and "directAnswer" must directly answer the user's question using ONLY evidence-backed details.
-Find-intent queries are the heart of this product: most cyber fraud starts with someone googling a helpline and calling a scammer's number from an ad or fake listing. Your job is to be the search engine that only returns the official answer.
+- "find": the user is ASKING for contact/organization details ("Canon customer care number", "SBI official website", "how do I contact Amazon about a refund"). Identify the organization, search its OFFICIAL sources, and return the verified details. "directAnswer" must directly answer the question using ONLY evidence-backed details.
+- "learn": ANY other question or topic — science, nature, health, history, how-things-work, definitions, places, current facts ("life of a caterpillar", "how does UPI work", "dengue symptoms"). Search authoritative sources, then write a clear, complete answer in "directAnswer": 4-8 plain sentences a school student would understand. Contact-detail lists stay empty. Set subjectName to the topic (e.g. "Caterpillar life cycle").
+
+NEVER refuse or fail a query. Every topic is valid. A query that has nothing to do with fraud simply has intent "learn" — answer it well. If after searching you genuinely cannot find reliable sources, say so in directAnswer and use status "unverified".
+
+SPELLING & INTENT TOLERANCE: queries often contain typos or loose phrasing ("caterpiller", "amazone custmer care"). Work out what the user meant, answer for the corrected meaning, and put the corrected interpretation in "correctedQuery" (null when no correction was needed). Never fail because of spelling.
+
+Find and learn queries are the heart of this product: most cyber fraud starts with someone searching something and clicking a scammer's ad or a fake listing. Be the search engine that only returns answers from legitimate sources.
 
 ABSOLUTE HONESTY RULES — these override everything:
 1. NEVER invent or guess official contact details. Every phone number, email, website, app, address or social handle you output MUST appear in your search evidence. If you cannot confirm a detail, omit it — an empty list is the correct answer.
@@ -91,8 +99,9 @@ TRUST SCORE (0-100, your evidence-based confidence that the subject is safe to t
 
 FIELD RULES:
 - "inputType": one of phone_number, website, email, upi_or_payment_id, app, organization, social_profile, qr_or_link, other.
-- "queryIntent": "verify" or "find" (see QUERY INTENT above).
-- "directAnswer": ONLY for find-intent queries — 1-3 plain sentences that directly answer the user's question with the verified detail(s), naming the official source (e.g. "Canon India's official toll-free support number is 1800-208-3366, as published on canon.co.in."). Every number/URL/email in it MUST also appear in the corresponding official* field. If nothing could be verified, or the intent is "verify", use null — NEVER put an unverified detail here.
+- "queryIntent": "verify", "find" or "learn" (see QUERY INTENT above).
+- "correctedQuery": the corrected/clarified interpretation of a misspelled or loosely-worded query (e.g. "life of a caterpiller" → "Life cycle of a caterpillar"); null when no correction was needed.
+- "directAnswer": for find-intent — 1-3 plain sentences that directly answer the question with the verified detail(s), naming the official source (e.g. "Canon India's official toll-free support number is 1800-208-3366, as published on canon.co.in."); every number/URL/email in it MUST also appear in the corresponding official* field. For learn-intent — the full 4-8 sentence answer from authoritative sources. For verify-intent, null. NEVER put an unverified contact detail here.
 - "subjectName": the official name of the organization/entity if identified, otherwise the input as given.
 - "summary": 2-3 plain sentences a non-technical user instantly understands. State the verdict first.
 - "officialPhones"/"officialEmails": label each one (e.g. "Customer care (India)", "Fraud reporting"). Only evidence-backed entries.
@@ -104,10 +113,10 @@ FIELD RULES:
 - "recommendation": exactly what the user should do next. If scam/suspicious: do not engage, and report to the national cybercrime helpline 1930 / cybercrime.gov.in (for India) or the local authority.
 - "saferAlternative": the verified official channel to use instead, when the input is risky and an official alternative exists; otherwise null.
 - "assistantIntro": 2-4 conversational sentences opening the Trust Assistant chat: why this verdict, the single most important thing to know, and an invitation to ask follow-ups.
-- If the user's language is Hindi, write all user-facing text fields in simple Hindi (keep names/URLs/numbers as-is).
+- LANGUAGE — GLOBAL: write ALL user-facing text fields in the language the user wrote the query in, whatever it is (Hindi, Telugu, Tamil, Bengali, Marathi, Urdu, Spanish, Arabic, French…). If the query language is unclear (e.g. a bare phone number or URL), use the app language given in the request. Keep names, URLs, numbers and technical identifiers as-is.
 
 OUTPUT: Return ONLY one JSON object with EXACTLY these keys:
-{"inputType": string, "queryIntent": "verify"|"find", "directAnswer": string|null, "subjectName": string, "status": "verified_official"|"unverified"|"suspicious"|"confirmed_scam", "trustScore": number, "summary": string, "officialWebsite": string|null, "officialPhones": [{"number": string, "label": string}], "officialEmails": [{"email": string, "label": string}], "officialApps": [{"name": string, "store": string}], "verifiedSocial": [{"platform": string, "handle": string}], "locations": [{"name": string, "address": string}], "supportChannels": [string], "knownScams": [string], "riskIndicators": [string], "howVerified": [string], "recommendation": string, "saferAlternative": string|null, "assistantIntro": string}
+{"inputType": string, "queryIntent": "verify"|"find"|"learn", "correctedQuery": string|null, "directAnswer": string|null, "subjectName": string, "status": "verified_official"|"unverified"|"suspicious"|"confirmed_scam", "trustScore": number, "summary": string, "officialWebsite": string|null, "officialPhones": [{"number": string, "label": string}], "officialEmails": [{"email": string, "label": string}], "officialApps": [{"name": string, "store": string}], "verifiedSocial": [{"platform": string, "handle": string}], "locations": [{"name": string, "address": string}], "supportChannels": [string], "knownScams": [string], "riskIndicators": [string], "howVerified": [string], "recommendation": string, "saferAlternative": string|null, "assistantIntro": string}
 No markdown, no code fences, no commentary — JSON only.`;
 
 export function isTrustEngineAvailable(): boolean {
@@ -167,12 +176,12 @@ export async function verifyTrust(
   query: string,
   lang: "en" | "hi" = "en",
   technicalSignals: string[] = []
-): Promise<TrustResult | null> {
+): Promise<TrustResult | "quota" | null> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
 
   const userParts = [
-    `User language: ${lang === "hi" ? "Hindi" : "English"}`,
+    `App language (use ONLY when the query's own language is unclear): ${lang === "hi" ? "Hindi" : "English"}. Otherwise reply in the language the query is written in.`,
     technicalSignals.length
       ? `Real technical signals already computed by QuantumShield (treat as evidence):\n- ${technicalSignals.join("\n- ")}`
       : "",
@@ -203,25 +212,41 @@ export async function verifyTrust(
       }
     );
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[trust-search] Gemini HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
+      // 429 = the API key's free usage limit — tell the user honestly.
+      return res.status === 429 ? "quota" : null;
+    }
     const data = await res.json();
     const candidate = data?.candidates?.[0];
     const text: string | undefined = candidate?.content?.parts
       ?.map((p: any) => p?.text ?? "")
       .join("");
-    if (!text) return null;
+    if (!text) {
+      console.error(`[trust-search] empty candidate text; finishReason=${candidate?.finishReason}`);
+      return null;
+    }
 
     const parsed = parseJsonLoose<TrustVerification>(text);
-    if (!parsed || !parsed.status || !parsed.summary) return null;
+    if (!parsed || !parsed.status || !parsed.summary) {
+      console.error(`[trust-search] JSON parse failed; raw head: ${text.slice(0, 200)}`);
+      return null;
+    }
 
     const { sources, searchQueries } = extractSources(candidate);
 
     // Sanitize + clamp so the UI never receives garbage.
     const v: TrustVerification = {
       inputType: String(parsed.inputType || "other"),
-      queryIntent: parsed.queryIntent === "find" ? "find" : "verify",
+      queryIntent:
+        parsed.queryIntent === "find" || parsed.queryIntent === "learn"
+          ? parsed.queryIntent
+          : "verify",
+      correctedQuery: parsed.correctedQuery
+        ? String(parsed.correctedQuery).slice(0, 200)
+        : null,
       directAnswer: parsed.directAnswer
-        ? String(parsed.directAnswer).slice(0, 600)
+        ? String(parsed.directAnswer).slice(0, 2000)
         : null,
       subjectName: String(parsed.subjectName || query).slice(0, 200),
       status: (
@@ -253,9 +278,10 @@ export async function verifyTrust(
     if (v.status === "verified_official" && sources.length === 0) {
       v.status = "unverified";
       v.trustScore = Math.min(v.trustScore, 60);
-      // A direct answer must be evidence-backed too — without sources it
-      // cannot be shown as "verified".
-      v.directAnswer = null;
+      // Contact details must be evidence-backed — without sources a
+      // find-intent answer cannot be shown. Learn answers keep their text
+      // (the Unverified status already tells the user how to weigh it).
+      if (v.queryIntent === "find") v.directAnswer = null;
       v.howVerified = [
         ...v.howVerified,
         lang === "hi"
@@ -265,7 +291,8 @@ export async function verifyTrust(
     }
 
     return { verification: v, sources, searchQueries };
-  } catch {
+  } catch (e: any) {
+    console.error(`[trust-search] exception: ${e?.name}: ${e?.message}`);
     return null; // caller shows the honest "engine unavailable" state
   }
 }
