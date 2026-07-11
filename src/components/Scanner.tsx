@@ -37,6 +37,55 @@ export type ScanTab = 'link' | 'file' | 'apk' | 'message';
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024; // 100 MB — hashed on-device
 
+// Friendly names for intel providers reported by the server.
+const INTEL_LABELS: Record<string, string> = {
+  'google-safe-browsing': 'Google Safe Browsing (Chrome threat database)',
+  urlhaus: 'URLhaus malicious-URL database (abuse.ch)',
+  malwarebazaar: 'MalwareBazaar known-malware database (abuse.ch)',
+};
+
+/**
+ * Ask the server whether this SHA-256 is a known malware sample.
+ * Only the hash leaves the device — never the file. Returns honestly
+ * distinguishable outcomes: hit / checked-clean / not-checked.
+ */
+async function lookupHashIntel(sha256: string): Promise<{
+  signal?: SecuritySignal;
+  checks: string[];
+  note?: 'unconfigured' | 'unreachable';
+}> {
+  try {
+    const res = await fetch(apiUrl('/api/intel'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ indicator: sha256, type: 'fileHash' }),
+    });
+    if (!res.ok) return { checks: [], note: 'unreachable' };
+    const data = await res.json();
+    const queried: string[] = data.providersQueried ?? [];
+    const checks = queried.map((p) => INTEL_LABELS[p] ?? p);
+    const hit = (data.results ?? []).find((r: { classification: string }) => r.classification === 'malicious');
+    if (hit) {
+      return {
+        checks,
+        signal: {
+          id: 'intel.knownMalware',
+          severity: 98,
+          confidence: 95,
+          title: `Known malware — this exact file is listed in ${hit.providerLabel}: ${hit.detail}`,
+          titleHi: `ज्ञात मैलवेयर — यही फ़ाइल ${hit.providerLabel} में दर्ज है: ${hit.detail}`,
+          evidence: `SHA-256 ${sha256}`,
+          source: 'THIRD_PARTY_INTEL',
+        },
+      };
+    }
+    if (queried.length === 0) return { checks: [], note: 'unconfigured' };
+    return { checks };
+  } catch {
+    return { checks: [], note: 'unreachable' };
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Copy
 // ─────────────────────────────────────────────────────────────────────────
@@ -83,6 +132,9 @@ const T = {
     engineRules: 'Analysed by the deterministic rule engine (AI engine not configured/reachable)',
     linkInMsg: 'A link inside the message was also checked',
     offline: 'Server unreachable — result is from on-device checks only, so confidence is reduced.',
+    intelUnconfigured: 'Global malware-database lookup was not performed — no intelligence provider is configured on the server yet.',
+    intelUnreachable: 'Global malware-database lookup could not reach the server — result is from on-device checks only.',
+    intelStage: 'Checking global malware database…',
     sources: { ON_DEVICE: 'on your device', QS_SERVER: 'QuantumShield server', THIRD_PARTY_INTEL: 'threat intelligence', AI_ANALYSIS: 'AI analysis' } as Record<SignalSource, string>,
     errGeneric: 'Analysis failed. Please try again.',
     errTooBig: 'File is larger than 100 MB. Please analyse a smaller file.',
@@ -132,6 +184,9 @@ const T = {
     engineRules: 'नियम-इंजन से विश्लेषित (AI इंजन उपलब्ध नहीं)',
     linkInMsg: 'संदेश के अंदर मिले लिंक की भी जाँच की गई',
     offline: 'सर्वर उपलब्ध नहीं — नतीजा केवल डिवाइस-जाँचों से है, इसलिए विश्वसनीयता कम है।',
+    intelUnconfigured: 'वैश्विक मैलवेयर-डेटाबेस जाँच नहीं हुई — सर्वर पर अभी कोई इंटेलिजेंस प्रदाता कॉन्फ़िगर नहीं है।',
+    intelUnreachable: 'वैश्विक मैलवेयर-डेटाबेस जाँच सर्वर तक नहीं पहुँच सकी — नतीजा केवल डिवाइस-जाँचों से है।',
+    intelStage: 'वैश्विक मैलवेयर डेटाबेस जाँच…',
     sources: { ON_DEVICE: 'आपके डिवाइस पर', QS_SERVER: 'QuantumShield सर्वर', THIRD_PARTY_INTEL: 'थ्रेट इंटेलिजेंस', AI_ANALYSIS: 'AI विश्लेषण' } as Record<SignalSource, string>,
     errGeneric: 'विश्लेषण विफल। कृपया पुनः प्रयास करें।',
     errTooBig: 'फ़ाइल 100 MB से बड़ी है। कृपया छोटी फ़ाइल जांचें।',
@@ -253,10 +308,11 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
           const data = await res.json();
           serverOk = true;
           serverScore = data.score ?? 0;
-          verified = data.verifiedBy === 'google-safe-browsing';
-          if (verified) checksRun.push('Google Safe Browsing (Chrome threat database)');
+          const providers: string[] = data.providers ?? (data.verifiedBy ? ['google-safe-browsing'] : []);
+          verified = providers.length > 0;
+          providers.forEach((p) => checksRun.push(INTEL_LABELS[p] ?? p));
           for (const flag of (data.flags ?? []) as string[]) {
-            const isIntel = flag.includes('Safe Browsing');
+            const isIntel = flag.startsWith('⛔') || flag.includes('Safe Browsing') || flag.includes('URLhaus');
             outcomeSignals.push({
               id: `url.flag.${outcomeSignals.length}`,
               severity: isIntel ? 95 : Math.min(65, Math.max(25, serverScore)),
@@ -317,6 +373,10 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
       if (isApk || tab === 'apk') {
         if (!isApk) { setError(t.errNotApk); setBusy(false); setStage(''); return; }
         const a: ApkAnalysis = await analyzeApk(file);
+        setStage(t.intelStage);
+        const intel = await lookupHashIntel(a.sha256);
+        if (intel.signal) a.signals.push(intel.signal);
+        a.checksRun.push(...intel.checks);
         const verdict = computeVerdict(a.signals, a.checksRun);
         const facts = [
           { label: t.hash, value: a.sha256, mono: true },
@@ -327,10 +387,15 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
         ];
         if (a.embeddedUrls.length) facts.push({ label: 'Embedded URLs', value: a.embeddedUrls.join('  ·  '), mono: true });
         const notes = [t.apkPrivacy];
+        if (intel.note) notes.push(intel.note === 'unconfigured' ? t.intelUnconfigured : t.intelUnreachable);
         if (tab === 'file') notes.unshift(t.apkHint);
         finish({ verdict, facts, notes, recommendations: recsFor(verdict.riskLevel, 'apk', hi) });
       } else {
         const a = await analyzeFileStatic(file);
+        setStage(t.intelStage);
+        const intel = await lookupHashIntel(a.sha256);
+        if (intel.signal) a.signals.push(intel.signal);
+        a.checksRun.push(...intel.checks);
         const verdict = computeVerdict(a.signals, a.checksRun);
         const facts = [
           { label: t.detectedType, value: a.detectedType },
@@ -338,7 +403,9 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
           { label: t.hash, value: a.sha256, mono: true },
         ];
         if (a.embeddedUrls.length) facts.push({ label: 'Embedded URLs', value: a.embeddedUrls.join('  ·  '), mono: true });
-        finish({ verdict, facts, notes: [t.filePrivacy], recommendations: recsFor(verdict.riskLevel, 'file', hi) });
+        const notes = [t.filePrivacy];
+        if (intel.note) notes.push(intel.note === 'unconfigured' ? t.intelUnconfigured : t.intelUnreachable);
+        finish({ verdict, facts, notes, recommendations: recsFor(verdict.riskLevel, 'file', hi) });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : t.errGeneric);

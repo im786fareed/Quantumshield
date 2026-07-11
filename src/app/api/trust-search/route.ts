@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 import { analyzeUrl, extractDomain } from "@/lib/security/urlHeuristics";
 import { isTrustEngineAvailable, verifyTrust } from "@/lib/ai/trustVerifier";
+import { safeBrowsingThreats } from "@/lib/security/intel/safeBrowsing";
 
 export const dynamic = "force-dynamic";
 
@@ -13,42 +14,13 @@ function looksLikeUrl(q: string): boolean {
   return !t.includes(" ") && /^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}(\/\S*)?$/i.test(t);
 }
 
-// Google Safe Browsing v4 — same threat database Chrome uses.
-// Active when GOOGLE_SAFE_BROWSING_KEY is set.
+// Google Safe Browsing lives in the shared intel adapter now — one copy
+// serves both this route and /api/check-url. Null = not checked.
 async function checkSafeBrowsing(url: string): Promise<string[] | null> {
-  const key = process.env.GOOGLE_SAFE_BROWSING_KEY;
-  if (!key) return null;
-
   try {
-    const withProto = url.startsWith("http") ? url : `https://${url}`;
-    const res = await fetch(
-      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: AbortSignal.timeout(8_000),
-        body: JSON.stringify({
-          client: { clientId: "quantumshield", clientVersion: "1.0" },
-          threatInfo: {
-            threatTypes: [
-              "MALWARE",
-              "SOCIAL_ENGINEERING",
-              "UNWANTED_SOFTWARE",
-              "POTENTIALLY_HARMFUL_APPLICATION",
-            ],
-            platformTypes: ["ANY_PLATFORM"],
-            threatEntryTypes: ["URL"],
-            threatEntries: [{ url: withProto }],
-          },
-        }),
-      }
-    );
-    if (!res.ok) return null;
-    const data = await res.json();
-    const matches: Array<{ threatType: string }> = data?.matches ?? [];
-    return matches.map((m) => m.threatType);
+    return await safeBrowsingThreats(url);
   } catch {
-    return null;
+    return null; // transport error — treat as "not checked"
   }
 }
 

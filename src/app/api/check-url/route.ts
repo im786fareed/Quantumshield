@@ -1,46 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 import { analyzeUrl } from "@/lib/security/urlHeuristics";
+import { queryIntel } from "@/lib/security/intel/router";
 
-// Google Safe Browsing v4 — the same threat database Chrome uses.
-// Active when GOOGLE_SAFE_BROWSING_KEY is set; otherwise heuristics only.
-async function checkSafeBrowsing(url: string): Promise<string[] | null> {
-  const key = process.env.GOOGLE_SAFE_BROWSING_KEY;
-  if (!key) return null;
-
-  try {
-    const withProto = url.startsWith("http") ? url : `https://${url}`;
-    const res = await fetch(
-      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: AbortSignal.timeout(8_000),
-        body: JSON.stringify({
-          client: { clientId: "quantumshield", clientVersion: "1.0" },
-          threatInfo: {
-            threatTypes: [
-              "MALWARE",
-              "SOCIAL_ENGINEERING",
-              "UNWANTED_SOFTWARE",
-              "POTENTIALLY_HARMFUL_APPLICATION",
-            ],
-            platformTypes: ["ANY_PLATFORM"],
-            threatEntryTypes: ["URL"],
-            threatEntries: [{ url: withProto }],
-          },
-        }),
-      }
-    );
-    if (!res.ok) return null;
-    const data = await res.json();
-    const matches: Array<{ threatType: string }> = data?.matches ?? [];
-    return matches.map((m) => m.threatType);
-  } catch {
-    return null; // service unreachable — heuristics still apply
-  }
-}
-
+/**
+ * URL check = transparent on-server heuristics + the threat-intelligence
+ * router (Google Safe Browsing and URLhaus when configured). An intel hit
+ * is authoritative — it overrides heuristics including the whitelist,
+ * because a "safe" domain can be compromised.
+ */
 export async function POST(req: NextRequest) {
   const limited = rateLimit(req, { limit: 30, windowMs: 60_000 });
   if (limited) return limited;
@@ -54,17 +22,10 @@ export async function POST(req: NextRequest) {
     }
 
     const result = analyzeUrl(url);
+    const intel = await queryIntel(url.trim(), "url");
+    const malicious = intel.results.filter((r) => r.classification === "malicious");
 
-    // A Safe Browsing hit is authoritative — overrides heuristics,
-    // including the whitelist (a safe domain could be compromised).
-    const threats = await checkSafeBrowsing(url.trim());
-    if (threats && threats.length > 0) {
-      const labels: Record<string, string> = {
-        MALWARE: "Distributes malware",
-        SOCIAL_ENGINEERING: "Phishing / social engineering site",
-        UNWANTED_SOFTWARE: "Hosts unwanted software",
-        POTENTIALLY_HARMFUL_APPLICATION: "Potentially harmful application",
-      };
+    if (malicious.length > 0) {
       return NextResponse.json({
         success: true,
         ...result,
@@ -72,19 +33,26 @@ export async function POST(req: NextRequest) {
         score: 100,
         level: "critical",
         flags: [
-          ...threats.map((t) => `⛔ Google Safe Browsing: ${labels[t] ?? t}`),
+          ...malicious.map((m) => `⛔ ${m.providerLabel}: ${m.detail}`),
           ...result.flags,
         ],
         details:
-          "This URL is flagged in Google's Safe Browsing threat database. Do NOT visit it.",
-        verifiedBy: "google-safe-browsing",
+          "This URL is listed in a live threat-intelligence database. Do NOT visit it.",
+        // kept for backward compatibility with existing clients
+        verifiedBy: intel.providersQueried.includes("google-safe-browsing")
+          ? "google-safe-browsing"
+          : undefined,
+        providers: intel.providersQueried,
       });
     }
 
     return NextResponse.json({
       success: true,
       ...result,
-      ...(threats !== null ? { verifiedBy: "google-safe-browsing" } : {}),
+      ...(intel.providersQueried.includes("google-safe-browsing")
+        ? { verifiedBy: "google-safe-browsing" }
+        : {}),
+      providers: intel.providersQueried,
     });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });

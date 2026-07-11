@@ -57,6 +57,8 @@ Add these 7 secrets:
 | `GOOGLE_SERVICES_JSON` | Full content of `google-services.json` | Step 2 |
 | `GEMINI_API_KEY` | Your Gemini API key | Google AI Studio |
 | `NEWS_API_KEY` | Your News API key | newsapi.org |
+| `GOOGLE_SAFE_BROWSING_KEY` | Safe Browsing v4 API key (URL threat checks) | Google Cloud Console |
+| `ABUSECH_AUTH_KEY` | abuse.ch Auth-Key — enables URLhaus (malicious URLs) + MalwareBazaar (known-malware file hashes) in the Scanner | Free at auth.abuse.ch |
 
 ---
 
