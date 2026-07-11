@@ -6,7 +6,7 @@ import PageWrapper from '../_shared/PageWrapper';
 export default function UniversalScannerPage() {
   return (
     <PageWrapper>
-      <Scanner lang="en" />
+      <Scanner />
     </PageWrapper>
   );
 }

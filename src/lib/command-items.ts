@@ -8,16 +8,9 @@ export type CommandItem = {
 
 export const COMMAND_ITEMS: CommandItem[] = [
   { id: 'home', label: 'Home', keywords: 'dashboard main' },
-  { id: 'scanner', label: 'AI Scanner', keywords: 'scan detect' },
-  { id: 'apk', label: 'APK Guardian', keywords: 'apk malware' },
-  { id: 'sms', label: 'SMS Guardian', keywords: 'sms fraud' },
-  { id: 'downloads', label: 'Download Scanner', keywords: 'file scan' },
-  { id: 'url', label: 'URL Checker', keywords: 'link phishing' },
-  { id: 'spam', label: 'Spam Detection', keywords: 'spam ai' },
-  { id: 'file', label: 'File Scanner', keywords: 'virus' },
+  { id: 'scanner', label: 'Scanner (Link · File · APK · Message)', keywords: 'scan detect url link phishing file virus apk malware sms spam message fraud ransomware download check' },
   { id: 'encryption', label: 'File Encryption', keywords: 'encrypt security' },
-  { id: 'breach', label: 'Breach Checker', keywords: 'leak password' },
-  { id: 'ransomware', label: 'Ransomware Detector', keywords: 'ransomware' },
+  { id: 'breach', label: 'Breach Checker', keywords: 'leak password email breach' },
   { id: 'device', label: 'Device Checkup', keywords: 'phone security health battery storage scan tuneup' },
   { id: 'phoneguard', label: 'Phone Number Guard', keywords: 'call spam trai voip spoof' },
   { id: 'scamdb', label: 'Scam Number Lookup', keywords: 'scam list number database' },
