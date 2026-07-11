@@ -17,7 +17,7 @@ const ALLOWED_TYPES: IndicatorType[] = ["url", "fileHash", "domain"];
 const SHA256_RE = /^[a-f0-9]{64}$/i;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  const limited = await rateLimit(req, { limit: 20, windowMs: 60_000 });
   if (limited) return limited;
 
   try {

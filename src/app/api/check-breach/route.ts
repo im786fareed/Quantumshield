@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { limit: 10, windowMs: 60_000 });
+  const limited = await rateLimit(req, { limit: 10, windowMs: 60_000 });
   if (limited) return limited;
 
   try {

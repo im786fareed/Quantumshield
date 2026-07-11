@@ -27,7 +27,7 @@ async function checkSafeBrowsing(url: string): Promise<string[] | null> {
 export async function POST(req: NextRequest) {
   // Grounded verification is the heaviest AI call in the app — keep the
   // per-IP limit tight so the free Gemini tier survives abuse.
-  const limited = rateLimit(req, { limit: 8, windowMs: 60_000 });
+  const limited = await rateLimit(req, { limit: 8, windowMs: 60_000 });
   if (limited) return limited;
 
   try {

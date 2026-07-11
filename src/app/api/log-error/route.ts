@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, {
+  const limited = await rateLimit(req, {
     limit: 60,
     windowMs: 60_000,
   });

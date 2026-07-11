@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   // Legal analysis is a heavier AI call than scam scoring — keep the
   // limit tight so the free Gemini tier is not exhausted by abuse.
-  const limited = rateLimit(req, { limit: 10, windowMs: 60_000 });
+  const limited = await rateLimit(req, { limit: 10, windowMs: 60_000 });
   if (limited) return limited;
 
   try {
