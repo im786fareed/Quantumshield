@@ -186,23 +186,17 @@ export async function analyzeApk(file: File): Promise<ApkAnalysis> {
     });
   }
 
-  // ── Signature presence (existence only — not cryptographic validation) ─
-  checksRun.push('Signing-certificate presence');
+  // ── Signature presence (informational only) ────────────────────────────
+  // We can detect a v1 (JAR) signature block (META-INF/*.RSA|DSA|EC), but v2/v3
+  // signatures live in the APK Signing Block — a region between the ZIP entries
+  // and the central directory that JSZip cannot see. So the ABSENCE of v1 files
+  // does NOT prove an APK is unsigned (it may be v2/v3-only, which is normal for
+  // modern apps). Emitting an "unsigned = risky" signal here would be a false
+  // claim, so we surface signing info as a fact but raise no risk signal.
+  checksRun.push('Signing-certificate presence (v1)');
   const signatureFiles = Object.keys(zip.files).filter((f) =>
     /^META-INF\/.+\.(RSA|DSA|EC)$/i.test(f)
   );
-  const hasV2Marker = Object.keys(zip.files).some((f) => f.startsWith('META-INF/'));
-  if (signatureFiles.length === 0 && !hasV2Marker) {
-    signals.push({
-      id: 'apk.noSignature',
-      severity: 45,
-      confidence: 55,
-      title: 'No signing metadata found — legitimate store apps are always signed',
-      titleHi: 'कोई signing metadata नहीं मिला — असली स्टोर ऐप्स हमेशा signed होते हैं',
-      evidence: 'META-INF contains no .RSA/.DSA/.EC signature blocks (v2/v3 schemes cannot be fully verified in the browser)',
-      source: 'ON_DEVICE',
-    });
-  }
 
   // ── Structure counts + estimated package (honestly labelled) ───────────
   const dexFileCount = Object.keys(zip.files).filter((f) => f.endsWith('.dex')).length;

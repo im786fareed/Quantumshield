@@ -45,10 +45,15 @@ const WHITELIST = new Set([
 ]);
 
 // High-risk TLDs frequently abused in phishing
-const RISKY_TLDS = new Set([
+// Canonical high-risk TLD list — shared with fileAnalysis's embedded-URL check
+// so a domain flagged risky on its own is treated the same when found inside a
+// file. Exported as an array; used here as a Set for host-suffix matching.
+export const RISKY_TLDS_LIST = [
   ".xyz", ".tk", ".ml", ".ga", ".cf", ".gq", ".top", ".click",
   ".loan", ".win", ".racing", ".work", ".stream", ".science",
-]);
+  ".ru", ".cn",
+];
+const RISKY_TLDS = new Set(RISKY_TLDS_LIST);
 
 // Suspicious keywords in URLs
 const SUSPICIOUS_KW = [

@@ -10,6 +10,7 @@
  */
 
 import { sha256Hex } from './hash';
+import { RISKY_TLDS_LIST } from './urlHeuristics';
 import type { SecuritySignal } from './verdict';
 
 export interface FileAnalysis {
@@ -67,7 +68,6 @@ const SUSPICIOUS_COMMANDS = [
 
 const URL_RE = /https?:\/\/[a-z0-9][a-z0-9\-._~:/?#[\]@!$&'()*+,;=%]{5,120}/gi;
 const IP_RE = /\b(?:\d{1,3}\.){3}\d{1,3}(?::\d{2,5})?\b/g;
-const RISKY_EMBEDDED_TLDS = ['.xyz', '.tk', '.ml', '.ga', '.cf', '.gq', '.top', '.click', '.ru', '.cn'];
 
 /** Shannon entropy (bits/byte, 0–8) of a byte sample. */
 export function shannonEntropy(bytes: Uint8Array): number {
@@ -242,7 +242,7 @@ export async function analyzeFileStatic(file: File): Promise<FileAnalysis> {
     .filter((ip) => ip.split('.').every((o) => +o.split(':')[0] <= 255))
     .slice(0, 5);
 
-  const riskyUrls = embeddedUrls.filter((u) => RISKY_EMBEDDED_TLDS.some((t) => u.includes(t)));
+  const riskyUrls = embeddedUrls.filter((u) => RISKY_TLDS_LIST.some((t) => u.includes(t)));
   if (riskyUrls.length > 0) {
     signals.push({
       id: 'file.riskyEmbeddedUrl',
