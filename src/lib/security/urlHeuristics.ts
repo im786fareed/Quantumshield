@@ -8,6 +8,8 @@
  * in both environments. No data leaves the device when used client-side.
  */
 
+import { detectBrandImpersonation, isOfficialDomain } from "./brands";
+
 export interface UrlAnalysis {
   url: string;
   safe: boolean;
@@ -15,6 +17,23 @@ export interface UrlAnalysis {
   level: "safe" | "low" | "medium" | "high" | "critical";
   flags: string[];
   details: string;
+}
+
+// Confusable characters: non-ASCII letters that visually mimic ASCII ones
+// (Cyrillic а/е/о/р/с, Greek ο/ν, etc.). Presence of ANY of these in a host
+// label alongside ASCII letters is a homoglyph spoofing indicator.
+const CONFUSABLE_RE = /[Ͱ-ϿЀ-ӿԀ-ԯ＀-￯]/;
+
+/** Decode a punycode (xn--) label to its Unicode form for display, best-effort. */
+function decodePunycodeHost(host: string): string {
+  if (!host.includes("xn--")) return host;
+  try {
+    // The URL/URI machinery already has IDN support via the URL constructor
+    // in most runtimes; fall back to the raw host if not.
+    return new URL(`https://${host}`).hostname;
+  } catch {
+    return host;
+  }
 }
 
 // Known safe domains — never flag these
@@ -82,6 +101,39 @@ export function analyzeUrl(rawUrl: string): UrlAnalysis {
   for (const safe of WHITELIST) {
     if (domain === safe || domain.endsWith(`.${safe}`)) {
       return { url, safe: true, score: 0, level: "safe", flags: [], details: `Verified safe domain: ${domain}` };
+    }
+  }
+  // A brand's own official domain is likewise trusted outright.
+  if (isOfficialDomain(domain)) {
+    return { url, safe: true, score: 0, level: "safe", flags: [], details: `Verified official domain: ${domain}` };
+  }
+
+  // 1b. IDN / punycode host
+  if (domain.includes("xn--")) {
+    score += 35;
+    const decoded = decodePunycodeHost(domain);
+    flags.push(
+      decoded !== domain
+        ? `Internationalised (punycode) domain that displays as "${decoded}" — a classic look-alike technique`
+        : "Internationalised (punycode) domain — often used to imitate trusted brands"
+    );
+  }
+
+  // 1c. Unicode homoglyph / mixed-script host
+  if (CONFUSABLE_RE.test(url) && /[a-z]/i.test(domain)) {
+    score += 45;
+    flags.push("Mixed-script look-alike characters in the address (e.g. Cyrillic letters imitating Latin ones) — strong spoofing indicator");
+  }
+
+  // 1d. Brand impersonation (works on brand-new domains no blocklist has seen)
+  const brandHit = detectBrandImpersonation(domain);
+  if (brandHit) {
+    if (brandHit.kind === "abuse") {
+      score += 45;
+      flags.push(`Uses the "${brandHit.brand.label}" name in a domain that is NOT its official website — likely impersonation`);
+    } else {
+      score += 40;
+      flags.push(`Domain looks like a misspelling of "${brandHit.brand.label}" ("${brandHit.matchedLabel}") — likely a look-alike scam site`);
     }
   }
 
