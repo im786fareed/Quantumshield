@@ -26,6 +26,7 @@ import { useLanguage } from '@/lib/useLanguage';
 import { logCheck } from '@/lib/activity';
 import { apiUrl } from '@/lib/apiBase';
 import { analyzeUrl, findUrlInText } from '@/lib/security/urlHeuristics';
+import { findBrandsInText } from '@/lib/security/brands';
 import { analyzeFileStatic } from '@/lib/security/fileAnalysis';
 import { analyzeApk, type ApkAnalysis } from '@/lib/security/apkAnalysis';
 import {
@@ -478,6 +479,30 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
             }
           }
         } catch { /* link check optional */ }
+      }
+
+      // Brand-impersonation LANGUAGE: a brand name is not suspicious on its
+      // own (real bank SMS exist), so only surface it as supporting evidence
+      // when the message already shows scam signals.
+      if (risk >= 40) {
+        checksRun.push('Brand-impersonation language check');
+        const brands = findBrandsInText(text);
+        if (brands.length > 0) {
+          const names = brands.map((b) => (hi ? b.labelHi : b.label)).slice(0, 3).join(', ');
+          signals.push({
+            id: 'msg.brandImpersonation',
+            severity: 45,
+            confidence: 65,
+            title: hi
+              ? `संदेश "${names}" के नाम का उपयोग करता है और साथ में धोखाधड़ी के संकेत हैं — प्रतिरूपण की संभावना`
+              : `Message invokes "${names}" while showing scam signals — likely impersonation`,
+            titleHi: `संदेश "${names}" के नाम का उपयोग करता है और साथ में धोखाधड़ी के संकेत हैं — प्रतिरूपण की संभावना`,
+            evidence: hi
+              ? `${names} का नाम + धोखाधड़ी भाषा (असली ${brands[0].label} इस तरह संपर्क नहीं करता)`
+              : `${names} name + fraud language (the real ${brands[0].label} does not contact you this way)`,
+            source: aiEngine ? 'AI_ANALYSIS' : 'QS_SERVER',
+          });
+        }
       }
 
       const confidence = signals.length ? (aiEngine ? 80 : 62) : (aiEngine ? 72 : 55);

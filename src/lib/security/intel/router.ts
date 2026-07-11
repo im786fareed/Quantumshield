@@ -16,11 +16,13 @@ import type { IndicatorType, IntelResult, ThreatIntelProvider } from './provider
 import { safeBrowsingProvider } from './safeBrowsing';
 import { urlhausProvider } from './urlhaus';
 import { malwareBazaarProvider } from './malwareBazaar';
+import { xposedOrNotProvider } from './xposedOrNot';
 
 const PROVIDERS: ThreatIntelProvider[] = [
   safeBrowsingProvider,
   urlhausProvider,
   malwareBazaarProvider,
+  xposedOrNotProvider,
 ];
 
 export interface IntelOutcome {

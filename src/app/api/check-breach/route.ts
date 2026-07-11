@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
+import { queryIntel } from "@/lib/security/intel/router";
 
-// Real breach lookup via XposedOrNot (free public API, no key required).
-// The email is sent to XposedOrNot for the lookup and is not stored by us.
+// Breach lookup via the shared threat-intelligence router (XposedOrNot
+// adapter), which adds caching and a circuit breaker. The email is sent to
+// XposedOrNot for the lookup and is not stored by us.
 export const dynamic = "force-dynamic";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -17,38 +19,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });
     }
 
-    const target = email.trim().toLowerCase();
-    const res = await fetch(
-      `https://api.xposedornot.com/v1/check-email/${encodeURIComponent(target)}`,
-      {
-        headers: { "User-Agent": "QuantumShield-BreachCheck" },
-        signal: AbortSignal.timeout(15_000),
-        cache: "no-store",
-      }
-    );
+    const outcome = await queryIntel(email.trim().toLowerCase(), "email");
 
-    // XposedOrNot returns 404 when the email appears in no known breach.
-    if (res.status === 404) {
-      return NextResponse.json({ breached: false, breaches: [], count: 0 });
-    }
-
-    if (!res.ok) {
+    // No provider answered (all skipped/errored) — say so honestly rather
+    // than implying the address is clean.
+    if (outcome.providersQueried.length === 0) {
       return NextResponse.json(
         { error: "Breach service unavailable. Please try again later." },
         { status: 502 }
       );
     }
 
-    const data = await res.json();
-    // Response shape: { "breaches": [["SiteA", "SiteB", ...]] }
-    const breaches: string[] = Array.isArray(data?.breaches?.[0])
-      ? data.breaches[0]
+    const hit = outcome.results.find((r) => r.classification === "malicious");
+    const breaches: string[] = Array.isArray(hit?.meta?.breaches)
+      ? (hit!.meta!.breaches as string[])
       : [];
 
     return NextResponse.json({
       breached: breaches.length > 0,
       breaches,
       count: breaches.length,
+      cached: outcome.cached,
     });
   } catch {
     return NextResponse.json(

@@ -119,6 +119,25 @@ export interface BrandMatch {
 }
 
 /**
+ * Find brands mentioned by name in free text (SMS / message body).
+ *
+ * A brand mention alone is NOT suspicious — legitimate bank SMS exist — so
+ * callers should only treat this as impersonation evidence when the message
+ * ALSO shows independent scam signals. Word-boundary matched to avoid noise
+ * ("jio" inside "region", "ed" inside "expected").
+ */
+export function findBrandsInText(text: string): Brand[] {
+  const lower = ` ${text.toLowerCase().replace(/[^a-z0-9]+/g, ' ')} `;
+  const found: Brand[] = [];
+  for (const brand of BRANDS) {
+    // Only match tokens distinctive enough to be meaningful as whole words.
+    const hit = brand.tokens.some((tok) => tok.length >= 3 && lower.includes(` ${tok} `));
+    if (hit) found.push(brand);
+  }
+  return found;
+}
+
+/**
  * Detect brand impersonation in a host that is NOT an official domain.
  * Splits the registrable part and subdomains into labels and compares each
  * against every brand token (exact abuse + near-miss lookalike).

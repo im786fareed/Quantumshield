@@ -28,6 +28,8 @@ export interface IntelResult {
   detail: string;
   /** ISO date the provider last saw this indicator, when reported. */
   lastSeen?: string;
+  /** Optional structured payload (e.g. the list of breach site names). */
+  meta?: Record<string, unknown>;
 }
 
 export interface ThreatIntelProvider {
