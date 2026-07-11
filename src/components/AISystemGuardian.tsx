@@ -16,7 +16,7 @@ import { sha256Hex } from '@/lib/security/hash';
 const T = {
   en: {
     title: "AI SYSTEM GUARDIAN",
-    subtitle: "Real-time system diagnostics, RAM optimization & file fingerprinting",
+    subtitle: "Real-time browser & device diagnostics, memory cleanup & file fingerprinting",
     systemMetrics: "System Performance Metrics",
     systemMetricsDesc: "Scan your device heap allocations, hardware threads, secure battery status, and execution contexts.",
     liveRamMonitor: "Live RAM Monitor",
@@ -46,10 +46,10 @@ const T = {
     ramUsage: "RAM Usage",
     storage: "Storage",
     battery: "Battery",
-    ramOptimizer: "RAM Optimizer",
-    ramOptimizerDesc: "Free up memory and improve responsiveness",
-    optimizeBtn: "Optimize RAM",
-    optimizingBtn: "Optimizing...",
+    ramOptimizer: "Page Memory Cleanup",
+    ramOptimizerDesc: "Releases memory held by this page and clears its performance buffers. This affects only the current browser tab — a web app cannot manage your device's system RAM (only a native app can).",
+    optimizeBtn: "Clean Up Page Memory",
+    optimizingBtn: "Cleaning up...",
     detailedScan: "Detailed Scan Results",
     passedCount: (passed: number, total: number) => `${passed}/${total} passed`,
     rescan: "Re-scan System",
@@ -62,16 +62,16 @@ const T = {
       critical: "CRITICAL"
     },
     optimizationSteps: [
-      { action: 'Clear Performance Entries', freed: 'Cleared timing data' },
-      { action: 'Release Image Cache References', freed: 'Scanned blob references' },
-      { action: 'Garbage Collection Hint', freed: 'GC cycle triggered' },
-      { action: 'Clear Resource Timing Buffer', freed: 'Resource timings cleared' },
-      { action: 'Compact DOM References', freed: 'DOM compacted' }
+      { action: 'Clear performance marks & measures', freed: 'Cleared timing data' },
+      { action: 'Count image blob references held by this page', freed: 'Scanned blob references' },
+      { action: 'Hint the browser to run garbage collection', freed: 'GC hint sent' },
+      { action: 'Clear resource-timing buffer', freed: 'Resource timings cleared' },
+      { action: 'Finalize cleanup', freed: 'Done' }
     ]
   },
   hi: {
     title: "AI सिस्टम गार्जियन",
-    subtitle: "रीयल-टाइम सिस्टम डायग्नोस्टिक्स, RAM ऑप्टिमाइजेशन और फ़ाइल फ़िंगरप्रिंटिंग",
+    subtitle: "रीयल-टाइम ब्राउज़र और डिवाइस डायग्नोस्टिक्स, मेमोरी सफ़ाई और फ़ाइल फ़िंगरप्रिंटिंग",
     systemMetrics: "सिस्टम प्रदर्शन मेट्रिक्स",
     systemMetricsDesc: "अपने डिवाइस हीप आवंटन, हार्डवेयर थ्रेड्स, सुरक्षित बैटरी स्थिति और निष्पादन संदर्भों को स्कैन करें।",
     liveRamMonitor: "लाइव RAM मॉनिटर",
@@ -101,10 +101,10 @@ const T = {
     ramUsage: "RAM उपयोग",
     storage: "स्टोरेज",
     battery: "बैटरी",
-    ramOptimizer: "RAM ऑप्टिमाइज़र",
-    ramOptimizerDesc: "मेमोरी खाली करें और रिस्पॉन्सिवनेस बढ़ाएं",
-    optimizeBtn: "RAM ऑप्टिमाइज़ करें",
-    optimizingBtn: "ऑप्टिमाइज़ किया जा रहा है...",
+    ramOptimizer: "पेज मेमोरी सफ़ाई",
+    ramOptimizerDesc: "इस पेज द्वारा रोकी गई मेमोरी जारी करता है और इसके परफ़ॉर्मेंस बफ़र साफ़ करता है। यह केवल इसी ब्राउज़र टैब पर असर करता है — कोई भी वेब ऐप आपके डिवाइस की सिस्टम RAM प्रबंधित नहीं कर सकता (केवल नेटिव ऐप कर सकता है)।",
+    optimizeBtn: "पेज मेमोरी साफ़ करें",
+    optimizingBtn: "साफ़ किया जा रहा है...",
     detailedScan: "विस्तृत स्कैन परिणाम",
     passedCount: (passed: number, total: number) => `${passed}/${total} पास`,
     rescan: "सिस्टम पुनः स्कैन करें",
@@ -117,11 +117,11 @@ const T = {
       critical: "गंभीर"
     },
     optimizationSteps: [
-      { action: 'प्रदर्शन प्रविष्टियां साफ़ करें', freed: 'समय डेटा साफ़ किया गया' },
-      { action: 'इमेज कैश संदर्भ जारी करें', freed: 'ब्लॉब संदर्भों को स्कैन किया गया' },
-      { action: 'कचरा संग्रहण संकेत', freed: 'GC चक्र ट्रिगर किया गया' },
-      { action: 'संसाधन समय बफ़र साफ़ करें', freed: 'संसाधन समय साफ़ किया गया' },
-      { action: 'DOM संदर्भों को संक्षिप्त करें', freed: 'DOM को संक्षिप्त किया गया' }
+      { action: 'परफ़ॉर्मेंस मार्क और माप साफ़ करें', freed: 'समय डेटा साफ़ किया गया' },
+      { action: 'इस पेज की इमेज ब्लॉब संदर्भ गिनें', freed: 'ब्लॉब संदर्भ स्कैन किए गए' },
+      { action: 'ब्राउज़र को गार्बेज कलेक्शन का संकेत दें', freed: 'GC संकेत भेजा गया' },
+      { action: 'रिसोर्स-टाइमिंग बफ़र साफ़ करें', freed: 'रिसोर्स टाइमिंग साफ़ की गई' },
+      { action: 'सफ़ाई पूर्ण करें', freed: 'पूर्ण' }
     ]
   }
 };
@@ -349,7 +349,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
         status: m.memoryPressure === 'critical' ? 'FAIL' : m.memoryPressure === 'high' ? 'WARN' : 'PASS',
         detail: `${m.memoryUsagePercent}% ${currentLang === 'en' ? 'of heap allocated' : 'मेमोरी आवंटित'} (${formatBytes(m.usedJSHeapSize)} / ${formatBytes(m.jsHeapSizeLimit)})`,
         recommendation: m.memoryPressure === 'critical'
-          ? (currentLang === 'en' ? 'Optimize RAM below and close unused tabs' : 'नीचे RAM को अनुकूलित करें और अप्रयुक्त टैब बंद करें')
+          ? (currentLang === 'en' ? 'Clean up page memory below and close unused browser tabs' : 'नीचे पेज मेमोरी साफ़ करें और अप्रयुक्त ब्राउज़र टैब बंद करें')
           : undefined
       });
     }
@@ -500,8 +500,10 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
     const freedBytes = Math.max(before - after, 0);
 
     setOptimizations(prev => [...prev, {
-      action: currentLang === 'en' ? 'Optimized Performance Complete' : 'ऑप्टिमाइज़ेशन प्रक्रिया पूर्ण',
-      freed: freedBytes > 0 ? formatBytes(freedBytes) : 'Completed',
+      action: currentLang === 'en'
+        ? (freedBytes > 0 ? 'Page memory released' : 'Cleanup complete — browser held no reclaimable memory')
+        : (freedBytes > 0 ? 'पेज मेमोरी जारी की गई' : 'सफ़ाई पूर्ण — कोई पुनः प्राप्त करने योग्य मेमोरी नहीं थी'),
+      freed: freedBytes > 0 ? formatBytes(freedBytes) : '0 B',
       status: 'done' as const
     }]);
 
