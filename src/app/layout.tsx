@@ -14,6 +14,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import AuthGate from "@/components/AuthGate";
 import AccountButton from "@/components/AccountButton";
 import LanguageToggle from "@/components/LanguageToggle";
+import ProtectionNavLink from "@/components/ProtectionNavLink";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -63,12 +64,7 @@ export default function RootLayout({
                 Education
               </Link>
               {/* Always visible (incl. mobile) — the main entry to the command center */}
-              <Link
-                href="/protection"
-                className="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-[10px] font-black uppercase tracking-wide shadow-lg shadow-cyan-600/20 whitespace-nowrap"
-              >
-                🛡️ Protection
-              </Link>
+              <ProtectionNavLink />
               <a
                 href="tel:1930"
                 className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-[10px] font-black uppercase shadow-lg shadow-red-600/20 whitespace-nowrap"
