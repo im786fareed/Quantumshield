@@ -30,7 +30,7 @@ import { findBrandsInText } from '@/lib/security/brands';
 import { analyzeFileStatic } from '@/lib/security/fileAnalysis';
 import { analyzeApk, type ApkAnalysis } from '@/lib/security/apkAnalysis';
 import {
-  computeVerdict, riskLevelOf, confidenceLabelOf,
+  computeVerdict,
   type Verdict, type SecuritySignal, type RiskLevel, type SignalSource,
 } from '@/lib/security/verdict';
 
@@ -344,17 +344,9 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
         }
       }
 
-      const risk = Math.max(serverScore, outcomeSignals.some(s => s.id === 'url.apkDownload') ? 90 : 0);
-      const confidence = verified ? 88 : serverOk ? 62 : 45;
-      const verdict: Verdict = {
-        threatRisk: risk,
-        riskLevel: riskLevelOf(risk),
-        evidenceConfidence: outcomeSignals.length ? confidence : Math.min(confidence, 60),
-        confidenceLabel: confidenceLabelOf(outcomeSignals.length ? confidence : Math.min(confidence, 60)),
-        insufficientEvidence: false,
-        signals: outcomeSignals.sort((a, b) => b.severity - a.severity),
-        checksRun,
-      };
+      const baselineRisk = Math.max(serverScore, outcomeSignals.some(s => s.id === 'url.apkDownload') ? 90 : 0);
+      const baselineConfidence = verified ? 88 : serverOk ? 62 : 45;
+      const verdict = computeVerdict(outcomeSignals, checksRun, { baselineRisk, baselineConfidence });
       finish({ verdict, notes, recommendations: recsFor(verdict.riskLevel, 'link', hi) });
     } catch {
       setError(t.errGeneric);
@@ -506,16 +498,8 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
         }
       }
 
-      const confidence = signals.length ? (aiEngine ? 80 : 62) : (aiEngine ? 72 : 55);
-      const verdict: Verdict = {
-        threatRisk: Math.min(100, Math.round(risk)),
-        riskLevel: riskLevelOf(risk),
-        evidenceConfidence: confidence,
-        confidenceLabel: confidenceLabelOf(confidence),
-        insufficientEvidence: false,
-        signals: signals.sort((a, b) => b.severity - a.severity),
-        checksRun,
-      };
+      const baselineConfidence = signals.length ? (aiEngine ? 80 : 62) : (aiEngine ? 72 : 55);
+      const verdict = computeVerdict(signals, checksRun, { baselineRisk: risk, baselineConfidence });
       finish({ verdict, notes, recommendations: recsFor(verdict.riskLevel, 'message', hi) });
     } catch (e) {
       setError(e instanceof Error ? e.message : t.errGeneric);

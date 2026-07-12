@@ -73,9 +73,21 @@ export function confidenceLabelOf(score: number): ConfidenceLabel {
  * findings still escalate. Two independent severity≥50 signals add a small
  * correlation boost — matching how real analysts weigh converging evidence.
  */
+export interface VerdictOptions {
+  /**
+   * A holistic risk already computed elsewhere (e.g. the server URL engine or
+   * the AI message analysis) that on-device signal aggregation must not LOWER.
+   * The final threatRisk is max(aggregated signals, baselineRisk).
+   */
+  baselineRisk?: number;
+  /** Same idea for confidence — a floor from an authoritative source. */
+  baselineConfidence?: number;
+}
+
 export function computeVerdict(
   rawSignals: SecuritySignal[],
-  checksRun: string[]
+  checksRun: string[],
+  opts?: VerdictOptions
 ): Verdict {
   // ── 1. Deduplicate correlated evidence ────────────────────────────────
   const absorbed = new Map<string, string>(); // signalId -> absorbing signalId
@@ -105,6 +117,10 @@ export function computeVerdict(
   const independentStrong = scored.filter((s) => s.severity >= 50).length;
   if (independentStrong >= 2) risk += 10;
   risk = Math.min(100, Math.round(risk));
+  // Respect an authoritative baseline (server/AI holistic score) as a floor.
+  if (opts?.baselineRisk != null) {
+    risk = Math.max(risk, Math.min(100, Math.round(opts.baselineRisk)));
+  }
 
   // ── 3. Evidence confidence ────────────────────────────────────────────
   let confidence: number;
@@ -121,8 +137,13 @@ export function computeVerdict(
     // On-device static analysis alone can never exceed "limited/strong".
     confidence = Math.min(70, checksRun.length * 11);
   }
+  if (opts?.baselineConfidence != null) {
+    confidence = Math.max(confidence, Math.min(100, Math.round(opts.baselineConfidence)));
+  }
 
-  const insufficientEvidence = scored.length === 0 && checksRun.length < 3;
+  // An authoritative source answered → never "insufficient evidence".
+  const insufficientEvidence =
+    scored.length === 0 && checksRun.length < 3 && opts?.baselineRisk == null;
 
   return {
     threatRisk: risk,
