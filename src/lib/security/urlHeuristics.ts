@@ -55,6 +55,12 @@ export const RISKY_TLDS_LIST = [
 ];
 const RISKY_TLDS = new Set(RISKY_TLDS_LIST);
 
+// Shared http(s) URL extractor for pulling embedded links out of file/APK
+// byte-strings. Global flag; used only with String.match (which ignores
+// lastIndex), so it is safe to share across modules. Single source of truth
+// so the extractor tuning never diverges between fileAnalysis and apkAnalysis.
+export const EMBEDDED_URL_RE = /https?:\/\/[a-z0-9][a-z0-9\-._~:/?#[\]@!$&'()*+,;=%]{5,120}/gi;
+
 // Suspicious keywords in URLs
 const SUSPICIOUS_KW = [
   "login", "signin", "verify", "secure", "update", "confirm",

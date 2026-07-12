@@ -10,7 +10,7 @@
  */
 
 import { sha256Hex } from './hash';
-import { RISKY_TLDS_LIST } from './urlHeuristics';
+import { RISKY_TLDS_LIST, EMBEDDED_URL_RE as URL_RE } from './urlHeuristics';
 import type { SecuritySignal } from './verdict';
 
 export interface FileAnalysis {
@@ -66,7 +66,6 @@ const SUSPICIOUS_COMMANDS = [
   'frombase64string', 'autoopen', 'document_open',
 ];
 
-const URL_RE = /https?:\/\/[a-z0-9][a-z0-9\-._~:/?#[\]@!$&'()*+,;=%]{5,120}/gi;
 const IP_RE = /\b(?:\d{1,3}\.){3}\d{1,3}(?::\d{2,5})?\b/g;
 
 /** Shannon entropy (bits/byte, 0–8) of a byte sample. */

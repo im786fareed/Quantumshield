@@ -43,6 +43,7 @@ const INTEL_LABELS: Record<string, string> = {
   'google-safe-browsing': 'Google Safe Browsing (Chrome threat database)',
   urlhaus: 'URLhaus malicious-URL database (abuse.ch)',
   malwarebazaar: 'MalwareBazaar known-malware database (abuse.ch)',
+  xposedornot: 'XposedOrNot breach database',
 };
 
 /**

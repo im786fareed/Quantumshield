@@ -12,6 +12,7 @@
 
 import JSZip from 'jszip';
 import { sha256Hex } from './hash';
+import { EMBEDDED_URL_RE as URL_RE } from './urlHeuristics';
 import type { SecuritySignal } from './verdict';
 
 export interface ApkAnalysis {
@@ -29,8 +30,6 @@ export interface ApkAnalysis {
   checksRun: string[];
   embeddedUrls: string[];
 }
-
-const URL_RE = /https?:\/\/[a-z0-9][a-z0-9\-._~:/?#[\]@!$&'()*+,;=%]{5,120}/gi;
 
 // Dangerous permissions with standalone weights (kept deliberately moderate —
 // combinations, not single permissions, drive the verdict).
