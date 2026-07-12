@@ -14,6 +14,7 @@ type CommandItem = {
 
 const LABELS: Record<TabId, string> = {
   home: 'Home',
+  protection: 'Protection Center',
   scanner: 'AI Scanner',
   threats: 'Threat Intelligence',
   apk: 'APK Guardian',

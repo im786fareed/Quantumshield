@@ -390,16 +390,27 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
               })}
             </motion.div>
 
-            {/* Run the on-device Security Check anytime */}
-            <motion.button
+            {/* Primary entry points: Protection Center + on-device Security Check */}
+            <motion.div
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
-              onClick={openSecurityCheck}
-              className="qs-card mx-auto mt-7 flex items-center gap-2.5 px-6 py-3 rounded-xl bg-blue-600/15 border border-blue-500/40 text-sm font-bold text-blue-200 hover:bg-blue-600/25 hover:border-blue-400 hover:-translate-y-0.5 transition-all"
+              className="mt-7 flex flex-wrap items-center justify-center gap-3"
             >
-              <ShieldCheck className="w-4 h-4 text-blue-400" />
-              {t.runCheck}
-            </motion.button>
+              <Link
+                href="/protection"
+                className="qs-card flex items-center gap-2.5 px-6 py-3 rounded-xl bg-cyan-600/20 border border-cyan-500/50 text-sm font-bold text-cyan-100 hover:bg-cyan-600/30 hover:border-cyan-400 hover:-translate-y-0.5 transition-all"
+              >
+                <Shield className="w-4 h-4 text-cyan-300" />
+                {lang === 'en' ? 'Open Protection Center' : 'सुरक्षा केंद्र खोलें'}
+              </Link>
+              <button
+                onClick={openSecurityCheck}
+                className="qs-card flex items-center gap-2.5 px-6 py-3 rounded-xl bg-blue-600/15 border border-blue-500/40 text-sm font-bold text-blue-200 hover:bg-blue-600/25 hover:border-blue-400 hover:-translate-y-0.5 transition-all"
+              >
+                <ShieldCheck className="w-4 h-4 text-blue-400" />
+                {t.runCheck}
+              </button>
+            </motion.div>
           </div>
         </div>
       </section>

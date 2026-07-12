@@ -8,6 +8,7 @@ export type CommandItem = {
 
 export const COMMAND_ITEMS: CommandItem[] = [
   { id: 'home', label: 'Home', keywords: 'dashboard main' },
+  { id: 'protection', label: 'Protection Center', keywords: 'dashboard command center security posture status overview shield' },
   { id: 'scanner', label: 'Scanner (Link · File · APK · Message)', keywords: 'scan detect url link phishing file virus apk malware sms spam message fraud ransomware download check' },
   { id: 'encryption', label: 'File Encryption', keywords: 'encrypt security' },
   { id: 'breach', label: 'Breach Checker', keywords: 'leak password email breach' },

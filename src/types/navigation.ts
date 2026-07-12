@@ -1,5 +1,6 @@
 export const TAB_IDS = [
   'home',
+  'protection',
   'scanner',
   'threats',
   'apk',
