@@ -9,6 +9,7 @@
  * URL / IP / script-command extraction.
  */
 
+import JSZip from 'jszip';
 import { sha256Hex } from './hash';
 import { RISKY_TLDS_LIST, EMBEDDED_URL_RE as URL_RE } from './urlHeuristics';
 import type { SecuritySignal } from './verdict';
@@ -67,6 +68,21 @@ const SUSPICIOUS_COMMANDS = [
 ];
 
 const IP_RE = /\b(?:\d{1,3}\.){3}\d{1,3}(?::\d{2,5})?\b/g;
+
+// Extensions that are dangerous when found INSIDE an archive (a document
+// that unzips to an executable is a classic delivery trick).
+const DANGEROUS_INSIDE_ARCHIVE = ['exe', 'scr', 'bat', 'cmd', 'vbs', 'js', 'jse', 'wsf', 'ps1', 'hta', 'jar', 'msi', 'lnk', 'com', 'pif'];
+const NESTED_ARCHIVE_RE = /\.(zip|rar|7z|gz|tar|bz2|xz|iso|cab|jar)$/i;
+
+// PDF active-content tokens — legitimate PDFs rarely need these; malware uses
+// them to auto-run scripts or launch programs when the file is opened.
+const PDF_ACTIVE_TOKENS: Array<{ token: string; label: string; labelHi: string; severity: number }> = [
+  { token: '/JavaScript', label: 'embedded JavaScript', labelHi: 'एम्बेडेड JavaScript', severity: 60 },
+  { token: '/OpenAction', label: 'auto-run action on open', labelHi: 'खुलते ही स्वतः चलने वाला एक्शन', severity: 65 },
+  { token: '/AA', label: 'automatic action trigger', labelHi: 'स्वचालित एक्शन ट्रिगर', severity: 50 },
+  { token: '/Launch', label: 'launches an external program', labelHi: 'बाहरी प्रोग्राम चलाता है', severity: 75 },
+  { token: '/EmbeddedFile', label: 'embedded file payload', labelHi: 'एम्बेडेड फ़ाइल payload', severity: 55 },
+];
 
 /** Shannon entropy (bits/byte, 0–8) of a byte sample. */
 export function shannonEntropy(bytes: Uint8Array): number {
@@ -282,6 +298,98 @@ export async function analyzeFileStatic(file: File): Promise<FileAnalysis> {
       evidence: cmdHits.slice(0, 4).join(', '),
       source: 'ON_DEVICE',
     });
+  }
+
+  // ── 8. PDF active content ───────────────────────────────────────────────
+  if (detectedType === 'PDF document') {
+    checksRun.push('PDF active-content inspection');
+    // PDF keywords are ASCII; scan a bounded latin1 view (head + tail, where
+    // the catalog / xref usually live) so large PDFs stay fast.
+    const head = new TextDecoder('latin1').decode(bytes.subarray(0, 4_000_000));
+    const tail = bytes.length > 5_000_000
+      ? new TextDecoder('latin1').decode(bytes.subarray(bytes.length - 1_000_000))
+      : '';
+    const pdfText = head + tail;
+    const hits = PDF_ACTIVE_TOKENS.filter((t) => pdfText.includes(t.token));
+    if (hits.length > 0) {
+      const top = hits.reduce((a, b) => (b.severity > a.severity ? b : a));
+      signals.push({
+        id: 'file.pdfActiveContent',
+        severity: top.severity,
+        confidence: 75,
+        title: `PDF contains active content (${hits.map((h) => h.label).join(', ')}) — most everyday PDFs do not, and this is how malicious PDFs run code`,
+        titleHi: `PDF में सक्रिय सामग्री है (${hits.map((h) => h.labelHi).join(', ')}) — सामान्य PDF में ऐसा नहीं होता`,
+        evidence: hits.map((h) => h.token).join(' '),
+        source: 'ON_DEVICE',
+      });
+    }
+  }
+
+  // ── 9. Archive & Office-document contents ───────────────────────────────
+  // Real ZIP by magic bytes (covers .zip and Office .docx/.xlsx/.pptx, which
+  // are ZIP containers). APKs are handled by the dedicated APK analyzer.
+  if (header.startsWith('50 4B 03 04') && ext !== 'apk') {
+    checksRun.push('Archive contents inspection');
+    try {
+      const zip = await JSZip.loadAsync(buffer);
+      const entries = Object.values(zip.files).filter((f) => !f.dir);
+      const names = entries.map((f) => f.name);
+
+      // Office VBA macro — the primary way malicious documents execute code.
+      if (names.some((n) => /(^|\/)vbaProject\.bin$/i.test(n))) {
+        signals.push({
+          id: 'file.officeMacro',
+          severity: 72,
+          confidence: 85,
+          title: 'Document contains an embedded VBA macro — the main way malicious Office files run code. Do not enable macros unless you fully trust the source',
+          titleHi: 'दस्तावेज़ में एम्बेडेड VBA मैक्रो है — दुर्भावनापूर्ण Office फ़ाइलें इसी से कोड चलाती हैं। स्रोत पर पूर्ण भरोसा न हो तो मैक्रो सक्षम न करें',
+          evidence: names.find((n) => /vbaProject\.bin$/i.test(n)) ?? 'vbaProject.bin',
+          source: 'ON_DEVICE',
+        });
+      }
+
+      // Executable / script hidden inside the archive.
+      const dangerousInside = names.filter((n) => {
+        const inExt = n.toLowerCase().split('.').pop() ?? '';
+        return DANGEROUS_INSIDE_ARCHIVE.includes(inExt);
+      });
+      if (dangerousInside.length > 0) {
+        signals.push({
+          id: 'file.executableInArchive',
+          severity: 78,
+          confidence: 85,
+          title: `Archive hides ${dangerousInside.length} executable/script file(s) inside — a common way to smuggle malware past a quick look`,
+          titleHi: `संग्रह के अंदर ${dangerousInside.length} executable/स्क्रिप्ट फ़ाइल(एं) छिपी हैं — मैलवेयर छिपाने की सामान्य तकनीक`,
+          evidence: dangerousInside.slice(0, 4).join(', '),
+          source: 'ON_DEVICE',
+        });
+      }
+
+      // Nested archive — layered zips are used to evade scanners.
+      const nested = names.filter((n) => NESTED_ARCHIVE_RE.test(n));
+      if (nested.length > 0 && ext !== 'docx' && ext !== 'xlsx' && ext !== 'pptx') {
+        signals.push({
+          id: 'file.nestedArchive',
+          severity: 40,
+          confidence: 70,
+          title: `Archive contains ${nested.length} more archive(s) inside — layered packing is often used to hide contents from scanners`,
+          titleHi: `संग्रह के अंदर ${nested.length} और संग्रह हैं — स्कैनर से सामग्री छिपाने की तकनीक`,
+          evidence: nested.slice(0, 4).join(', '),
+          source: 'ON_DEVICE',
+        });
+      }
+    } catch {
+      // Corrupt or encrypted central directory — report honestly, don't guess.
+      signals.push({
+        id: 'file.archiveUnreadable',
+        severity: 35,
+        confidence: 55,
+        title: 'Archive could not be opened for inspection — it may be corrupt or password-protected, so its contents were not checked',
+        titleHi: 'संग्रह निरीक्षण के लिए नहीं खोला जा सका — यह करप्ट या पासवर्ड-सुरक्षित हो सकता है, सामग्री जांची नहीं गई',
+        evidence: 'JSZip could not read the archive structure',
+        source: 'ON_DEVICE',
+      });
+    }
   }
 
   return {
