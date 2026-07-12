@@ -52,7 +52,7 @@ export default function RootLayout({
               </div>
             </Link>
 
-            <div className="flex gap-6 items-center">
+            <div className="flex gap-4 md:gap-6 items-center">
               <Link href="/" className="hidden md:block text-xs font-bold hover:text-blue-400 transition uppercase tracking-widest">
                 Home
               </Link>
@@ -62,11 +62,18 @@ export default function RootLayout({
               <Link href="/education" className="hidden md:block text-xs font-bold hover:text-blue-400 transition uppercase tracking-widest">
                 Education
               </Link>
+              {/* Always visible (incl. mobile) — the main entry to the command center */}
+              <Link
+                href="/protection"
+                className="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-[10px] font-black uppercase tracking-wide shadow-lg shadow-cyan-600/20 whitespace-nowrap"
+              >
+                🛡️ Protection
+              </Link>
               <a
                 href="tel:1930"
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-[10px] font-black uppercase shadow-lg shadow-red-600/20"
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-[10px] font-black uppercase shadow-lg shadow-red-600/20 whitespace-nowrap"
               >
-                🚨 Emergency 1930
+                🚨 <span className="hidden sm:inline">Emergency </span>1930
               </a>
               <LanguageToggle />
               <AccountButton />
