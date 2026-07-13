@@ -4,4 +4,11 @@
     <string name="title_activity_main">QuantumShield</string>
     <string name="package_name">in.quantumshield.app</string>
     <string name="custom_url_scheme">in.quantumshield.app</string>
+    <!--
+      Circuit Breaker distress relay (functions/main.py). Leave EMPTY until the
+      Firebase project is deployed — an empty value makes DistressRelay report
+      "not configured" instead of pretending an alert was sent. Once deployed:
+      https://asia-south1-YOUR_PROJECT_ID.cloudfunctions.net/relayDistressSignal
+    -->
+    <string name="qs_relay_url" translatable="false"></string>
 </resources>

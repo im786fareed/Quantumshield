@@ -161,8 +161,10 @@ class CircuitBreakerService : NotificationListenerService() {
         val callerLabel = LocalTracker.getCallerLabel(this)
         val contacts    = EmergencyVault.getContacts(this)
 
-        // Primary: FCM via Firebase Cloud Function (free tier, ~$0/month)
-        sendFcmDistress(callerLabel)
+        // Primary: FCM via Firebase Cloud Function (free tier, ~$0/month).
+        // The result drives the confirmation wording — never claim delivery
+        // unless the relay actually delivered.
+        val relayResult = DistressRelay.send(this, callerLabel)
 
         // Fallback: WhatsApp deep-link (fires even if Firebase is unreachable)
         contacts.filter { it.whatsapp }.forEach { c ->
@@ -181,42 +183,38 @@ class CircuitBreakerService : NotificationListenerService() {
             startActivity(intent)
         }
 
-        // Show high-urgency notification on the victim's own device
-        showDistressConfirmation()
+        // Show high-urgency notification on the victim's own device with an
+        // honest account of what actually happened.
+        showDistressConfirmation(relayResult)
     }
 
-    private fun showDistressConfirmation() {
+    private fun showDistressConfirmation(relay: DistressRelay.Result) {
         val channelId = "QS_DISTRESS_SENT"
         val nm = getSystemService(NotificationManager::class.java)
         val channel = NotificationChannel(channelId, "Distress Sent", NotificationManager.IMPORTANCE_DEFAULT)
         nm.createNotificationChannel(channel)
+
+        val (title, text) = when (relay) {
+            is DistressRelay.Result.Sent ->
+                "🚨 Distress Alert Delivered" to
+                "Automatic alert reached ${relay.delivered} Safety Circle device(s). " +
+                "For backup, also send the prepared WhatsApp message."
+            is DistressRelay.Result.NotSent ->
+                "🚨 Circuit Breaker Activated" to
+                "Automatic alert was NOT delivered (${relay.reason}). " +
+                "Open WhatsApp and send the prepared alert to your Safety Circle."
+        }
+
         nm.notify(
             6001,
             NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(android.R.drawable.stat_sys_warning)
-                .setContentTitle("🚨 Circuit Breaker Activated")
-                .setContentText("Open WhatsApp and send the prepared alert to your Safety Circle.")
+                .setContentTitle(title)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+                .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .build()
         )
-    }
-
-    /* ─────────────────────────────────────────────────────────────
-       FCM relay call — calls the Firebase Cloud Function
-    ───────────────────────────────────────────────────────────── */
-    private fun sendFcmDistress(callerLabel: String) {
-        // Implemented via okhttp3 POST to your Firebase Cloud Function URL.
-        // The Cloud Function uses the Admin SDK to push high-priority FCM
-        // to the kin's device token. See functions/main.py for server side.
-        //
-        // val json = """{"caller":"$callerLabel","tokens":${EmergencyVault.getFcmTokens(this)}}"""
-        // OkHttpClient().newCall(Request.Builder()
-        //     .url("https://YOUR_REGION-YOUR_PROJECT.cloudfunctions.net/relayDistressSignal")
-        //     .post(json.toRequestBody("application/json".toMediaType()))
-        //     .build()
-        // ).execute()
-        //
-        // Uncomment and configure when Firebase project is ready.
     }
 
     /* ─────────────────────────────────────────────────────────────
