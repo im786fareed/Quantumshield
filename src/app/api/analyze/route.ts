@@ -17,6 +17,9 @@ export async function POST(req: NextRequest) {
     if (!text || typeof text !== "string") {
       return NextResponse.json({ error: "text field required" }, { status: 400 });
     }
+    if (text.length > 20_000) {
+      return NextResponse.json({ error: "Text is too long" }, { status: 413 });
+    }
 
     // Primary engine: Gemini (real language understanding — English,
     // Hindi, Hinglish, obfuscated text). Falls back to the deterministic

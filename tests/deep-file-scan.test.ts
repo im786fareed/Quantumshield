@@ -29,6 +29,9 @@ async function run() {
   const macro = await analyzeFileStatic(await zipFile('report.docx', { '[Content_Types].xml': '<xml/>', 'word/vbaProject.bin': new Uint8Array([1, 2, 3]) }));
   has('Office VBA macro', macro.signals.map(s => s.id), 'file.officeMacro');
 
+  const macroEnabled = await analyzeFileStatic(await zipFile('report.docm', { '[Content_Types].xml': '<xml/>' }));
+  none('macro-enabled Office document is not a type mismatch', macroEnabled.signals.filter(s => s.id === 'file.typeMismatch').length);
+
   const pdfActive = await analyzeFileStatic(fileOf('statement.pdf', new TextEncoder().encode('%PDF-1.7\n<</OpenAction<</S/JavaScript/JS(x)>>>>\n%%EOF')));
   has('PDF active content', pdfActive.signals.map(s => s.id), 'file.pdfActiveContent');
 

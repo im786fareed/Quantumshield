@@ -29,7 +29,7 @@ import logging
 import os
 
 import firebase_admin
-from firebase_admin import messaging
+from firebase_admin import auth, messaging
 from firebase_functions import https_fn, options
 
 # ── Initialise Firebase Admin SDK once (cold-start singleton) ──────────────
@@ -37,6 +37,9 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app()
 
 logger = logging.getLogger(__name__)
+MAX_TOKENS = 20
+MAX_TOKEN_LENGTH = 4096
+MAX_LABEL_LENGTH = 100
 
 # ── CORS — restrict to your domain in production ──────────────────────────
 ALLOWED_ORIGINS = {
@@ -61,6 +64,14 @@ def relayDistressSignal(req: https_fn.Request) -> https_fn.Response:
     if req.method != "POST":
         return https_fn.Response("Method not allowed", status=405)
 
+    authorization = req.headers.get("Authorization", "")
+    if not authorization.startswith("Bearer "):
+        return https_fn.Response("Authentication required", status=401)
+    try:
+        auth.verify_id_token(authorization.removeprefix("Bearer "))
+    except Exception:
+        return https_fn.Response("Invalid authentication token", status=401)
+
     try:
         data: dict = req.get_json(force=True, silent=True) or {}
     except Exception:
@@ -72,12 +83,33 @@ def relayDistressSignal(req: https_fn.Request) -> https_fn.Response:
     lat         = data.get("lat")
     lng         = data.get("lng")
 
-    if not tokens or not isinstance(tokens, list):
+    if (
+        not tokens
+        or not isinstance(tokens, list)
+        or len(tokens) > MAX_TOKENS
+        or any(not isinstance(token, str) or not token or len(token) > MAX_TOKEN_LENGTH for token in tokens)
+    ):
         return https_fn.Response(
-            json.dumps({"error": "No FCM tokens provided"}),
+            json.dumps({"error": "Provide 1-20 valid FCM tokens"}),
             status=400,
             content_type="application/json",
         )
+    if (
+        not isinstance(victim_name, str)
+        or not isinstance(caller, str)
+        or len(victim_name) > MAX_LABEL_LENGTH
+        or len(caller) > MAX_LABEL_LENGTH
+    ):
+        return https_fn.Response("Invalid alert labels", status=400)
+    if (lat is None) != (lng is None):
+        return https_fn.Response("Both latitude and longitude are required", status=400)
+    if lat is not None and (
+        not isinstance(lat, (int, float))
+        or not isinstance(lng, (int, float))
+        or not -90 <= lat <= 90
+        or not -180 <= lng <= 180
+    ):
+        return https_fn.Response("Invalid location", status=400)
 
     # ── Build location string ───────────────────────────────────────────────
     maps_link = (
@@ -132,7 +164,6 @@ def relayDistressSignal(req: https_fn.Request) -> https_fn.Response:
     # ── Send to all tokens (batch, max 500 per call) ────────────────────────
     sent_count   = 0
     failed_count = 0
-    failed_tokens: list[str] = []
 
     for i in range(0, len(tokens), 500):
         batch = tokens[i : i + 500]
@@ -151,8 +182,7 @@ def relayDistressSignal(req: https_fn.Request) -> https_fn.Response:
         failed_count += response.failure_count
         for idx, r in enumerate(response.responses):
             if not r.success:
-                failed_tokens.append(batch[idx])
-                logger.warning("FCM send failed for token: %s — %s", batch[idx], r.exception)
+                logger.warning("FCM send failed for a recipient token: %s", r.exception)
 
     logger.info(
         "Circuit Breaker distress relayed. victim=%s sent=%d failed=%d",
@@ -164,7 +194,6 @@ def relayDistressSignal(req: https_fn.Request) -> https_fn.Response:
             "status":        "dispatched",
             "sent":          sent_count,
             "failed":        failed_count,
-            "failed_tokens": failed_tokens,
         }),
         status=200,
         content_type="application/json",

@@ -109,6 +109,14 @@ const COMBOS: Array<{
   },
 ];
 
+const MAX_MANIFEST_BYTES = 2_000_000;
+const MAX_DEX_SAMPLE_BYTES = 8_000_000;
+
+function uncompressedSize(entry: unknown): number | null {
+  const size = (entry as { _data?: { uncompressedSize?: unknown } })._data?.uncompressedSize;
+  return typeof size === 'number' && Number.isFinite(size) ? size : null;
+}
+
 export async function analyzeApk(file: File): Promise<ApkAnalysis> {
   const signals: SecuritySignal[] = [];
   const checksRun: string[] = [];
@@ -123,6 +131,10 @@ export async function analyzeApk(file: File): Promise<ApkAnalysis> {
   const manifestFile = zip.file('AndroidManifest.xml');
   if (!manifestFile) {
     throw new Error('Not a valid APK: AndroidManifest.xml is missing from the package.');
+  }
+  const manifestSize = uncompressedSize(manifestFile);
+  if (manifestSize === null || manifestSize > MAX_MANIFEST_BYTES) {
+    throw new Error('APK manifest is too large to inspect safely.');
   }
 
   // Binary AXML — string pool still exposes permission constants and
@@ -161,6 +173,9 @@ export async function analyzeApk(file: File): Promise<ApkAnalysis> {
       titleHi: combo.hi,
       evidence: combo.evidence(permissions),
       source: 'ON_DEVICE',
+      correlatedWith: permissions
+        .filter((permission) => combo.needs.flat().includes(permission) && PERMISSION_INFO[permission])
+        .map((permission) => `apk.perm.${permission}`),
     });
     combo.needs.flat().forEach((p) => firedComboPerms.add(p));
   }
@@ -178,10 +193,6 @@ export async function analyzeApk(file: File): Promise<ApkAnalysis> {
       titleHi: info.hi,
       evidence: `android.permission.${perm}`,
       source: 'ON_DEVICE',
-      // A permission that already fired inside a combo is the same evidence.
-      correlatedWith: partOfCombo
-        ? COMBOS.filter((c) => c.needs.flat().includes(perm)).map((c) => c.id)
-        : undefined,
     });
   }
 
@@ -214,9 +225,11 @@ export async function analyzeApk(file: File): Promise<ApkAnalysis> {
   checksRun.push('Embedded URL extraction');
   let stringsSource = manifestText;
   const firstDex = zip.file('classes.dex');
-  if (firstDex) {
+  if (firstDex && (uncompressedSize(firstDex) ?? Infinity) <= MAX_DEX_SAMPLE_BYTES) {
     const dexBytes = await firstDex.async('uint8array');
     stringsSource += new TextDecoder('utf-8', { fatal: false }).decode(dexBytes.slice(0, 3_000_000));
+  } else if (firstDex) {
+    checksRun.push('DEX string extraction skipped: entry too large');
   }
   const embeddedUrls = Array.from(new Set(stringsSource.match(URL_RE) ?? []))
     .filter((u) => !/schemas\.android\.com|www\.w3\.org|apache\.org/.test(u))

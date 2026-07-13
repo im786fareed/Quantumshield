@@ -39,7 +39,7 @@ const MAGIC: Array<{
   { hex: 'FF D8 FF', type: 'JPEG image', okExts: ['jpg', 'jpeg'], mismatchSeverity: 60, kind: 'image' },
   { hex: '47 49 46 38', type: 'GIF image', okExts: ['gif'], mismatchSeverity: 55, kind: 'image' },
   { hex: '25 50 44 46', type: 'PDF document', okExts: ['pdf'], mismatchSeverity: 65, kind: 'document' },
-  { hex: '50 4B 03 04', type: 'ZIP-based archive', okExts: ['zip', 'apk', 'docx', 'xlsx', 'pptx', 'jar', 'epub', 'aar', 'kmz', 'xpi'], mismatchSeverity: 70, kind: 'archive' },
+  { hex: '50 4B 03 04', type: 'ZIP-based archive', okExts: ['zip', 'apk', 'docx', 'docm', 'xlsx', 'xlsm', 'pptx', 'pptm', 'jar', 'epub', 'aar', 'kmz', 'xpi'], mismatchSeverity: 70, kind: 'archive' },
   { hex: '52 61 72 21', type: 'RAR archive', okExts: ['rar'], mismatchSeverity: 60, kind: 'archive' },
   { hex: '37 7A BC AF', type: '7-Zip archive', okExts: ['7z'], mismatchSeverity: 60, kind: 'archive' },
   { hex: '1F 8B', type: 'GZIP archive', okExts: ['gz', 'tgz'], mismatchSeverity: 55, kind: 'archive' },

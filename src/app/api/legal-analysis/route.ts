@@ -20,6 +20,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (report.length > 30_000) {
+      return NextResponse.json({ error: "Report is too long" }, { status: 413 });
+    }
 
     if (!isLegalEngineAvailable()) {
       return NextResponse.json(

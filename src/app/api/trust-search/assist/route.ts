@@ -32,6 +32,14 @@ export async function POST(req: NextRequest) {
     if (!question || typeof question !== "string" || question.trim().length < 2) {
       return NextResponse.json({ error: "Please ask a question." }, { status: 400 });
     }
+    if (
+      question.length > 4_000 ||
+      context.length > 10_000 ||
+      history.some((turn) => turn.text.length > 4_000) ||
+      history.reduce((total, turn) => total + turn.text.length, 0) > 20_000
+    ) {
+      return NextResponse.json({ error: "Conversation is too long" }, { status: 413 });
+    }
 
     if (!isTrustEngineAvailable()) {
       return NextResponse.json(

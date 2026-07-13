@@ -43,5 +43,14 @@ const dedup = computeVerdict(
 );
 eq('dedup absorbs weaker under baseline', dedup.signals.find(s => s.id === 'dup')?.absorbedBy, 'main');
 
+const permissionCombo = computeVerdict(
+  [
+    { ...sig('apk.combo', 60), correlatedWith: ['apk.perm.READ_SMS'] },
+    sig('apk.perm.READ_SMS', 25),
+  ],
+  ['c1', 'c2']
+);
+eq('APK combo absorbs included permission', permissionCombo.signals.find(s => s.id === 'apk.perm.READ_SMS')?.absorbedBy, 'apk.combo');
+
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);

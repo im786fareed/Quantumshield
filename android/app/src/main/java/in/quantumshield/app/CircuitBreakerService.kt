@@ -195,7 +195,7 @@ class CircuitBreakerService : NotificationListenerService() {
             NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(android.R.drawable.stat_sys_warning)
                 .setContentTitle("🚨 Circuit Breaker Activated")
-                .setContentText("Distress alert sent to your Safety Circle.")
+                .setContentText("Open WhatsApp and send the prepared alert to your Safety Circle.")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .build()
         )

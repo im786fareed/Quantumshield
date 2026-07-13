@@ -2,6 +2,29 @@
 import { useState } from 'react';
 import { Shield, Lock, Unlock, Download, File, Trash2, Loader2 } from 'lucide-react';
 
+const FILE_MAGIC = new TextEncoder().encode('QSF1');
+const SALT_BYTES = 16;
+const IV_BYTES = 12;
+const LEGACY_SALT = new TextEncoder().encode('quantum-shield-salt');
+
+function hasMagic(bytes: Uint8Array): boolean {
+  return FILE_MAGIC.every((value, index) => bytes[index] === value);
+}
+
+async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+  const keyMaterial = await window.crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(password), { name: 'PBKDF2' }, false, ['deriveKey']
+  );
+
+  return window.crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 600000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
 export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState('');
@@ -17,34 +40,35 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
 
     setIsProcessing(true);
     try {
-      const fileData = await file.arrayBuffer();
-      const enc = new TextEncoder();
-      
-      // Generate a cryptographic key from your password
-      const keyMaterial = await window.crypto.subtle.importKey(
-        'raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveKey']
-      );
-
-      const key = await window.crypto.subtle.deriveKey(
-        {
-          name: 'PBKDF2',
-          salt: enc.encode('quantum-shield-salt'), // Constant salt for simplicity
-          iterations: 100000,
-          hash: 'SHA-256'
-        },
-        keyMaterial,
-        { name: 'AES-GCM', length: 256 },
-        false,
-        ['encrypt', 'decrypt']
-      );
-
-      let resultBuffer;
-      const iv = new Uint8Array(12); // Initialization Vector
+      const fileData = new Uint8Array(await file.arrayBuffer());
+      let resultBuffer: ArrayBuffer;
 
       if (mode === 'encrypt') {
-        resultBuffer = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, fileData);
+        const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
+        const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
+        const key = await deriveKey(password, salt);
+        const encrypted = new Uint8Array(
+          await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, fileData)
+        );
+        const output = new Uint8Array(FILE_MAGIC.length + SALT_BYTES + IV_BYTES + encrypted.length);
+        output.set(FILE_MAGIC);
+        output.set(salt, FILE_MAGIC.length);
+        output.set(iv, FILE_MAGIC.length + SALT_BYTES);
+        output.set(encrypted, FILE_MAGIC.length + SALT_BYTES + IV_BYTES);
+        resultBuffer = output.buffer;
       } else {
-        resultBuffer = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, fileData);
+        const isCurrentFormat = fileData.length >= FILE_MAGIC.length + SALT_BYTES + IV_BYTES && hasMagic(fileData);
+        const salt = isCurrentFormat
+          ? fileData.slice(FILE_MAGIC.length, FILE_MAGIC.length + SALT_BYTES)
+          : LEGACY_SALT;
+        const iv = isCurrentFormat
+          ? fileData.slice(FILE_MAGIC.length + SALT_BYTES, FILE_MAGIC.length + SALT_BYTES + IV_BYTES)
+          : new Uint8Array(IV_BYTES);
+        const ciphertext = isCurrentFormat
+          ? fileData.slice(FILE_MAGIC.length + SALT_BYTES + IV_BYTES)
+          : fileData;
+        const key = await deriveKey(password, salt);
+        resultBuffer = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
       }
 
       // Create a download link for the user
@@ -110,6 +134,7 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Min. 8 characters"
+            minLength={8}
             className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white outline-none focus:ring-2 focus:ring-cyan-500"
           />
         </div>

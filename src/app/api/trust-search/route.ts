@@ -41,6 +41,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (query.length > 2_000) {
+      return NextResponse.json({ error: "Query is too long" }, { status: 413 });
+    }
 
     if (!isTrustEngineAvailable()) {
       return NextResponse.json(

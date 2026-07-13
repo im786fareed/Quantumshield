@@ -18,6 +18,9 @@ export async function POST(req: NextRequest) {
     if (trimmed.length < 3) {
       return NextResponse.json({ error: "Text too short" }, { status: 400 });
     }
+    if (trimmed.length > 20_000) {
+      return NextResponse.json({ error: "Text is too long" }, { status: 413 });
+    }
 
     // Primary engine: Gemini. Falls back to the rule engine when
     // unavailable (no API key, network failure, rate limit).
