@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Monitor, Download, Trash2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Monitor, Download, Trash2, ShieldCheck, AlertCircle, Lock } from 'lucide-react';
+import { listEvidence, saveEvidence, deleteEvidence } from '@/lib/evidenceVault';
 
 // Fixed Prop interface to match your page.tsx call
 interface Props {
@@ -12,7 +13,7 @@ interface VideoRecording {
   blob: Blob;
   url: string;
   timestamp: string;
-  duration: number; // Used to override the 0:00 metadata bug
+  duration?: number; // Used to override the 0:00 metadata bug
 }
 
 export default function EvidenceCollector({ lang = 'en' }: Props) {
@@ -30,15 +31,36 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
   // FIX: use a ref to track duration — state closures inside recorder.onstop
   // always capture the initial value (0), causing the "0:00 duration" bug.
   const durationRef = useRef(0);
+  // Latest list for unmount-only URL cleanup (revoking on every list change
+  // would kill object URLs that are still displayed).
+  const recordingsRef = useRef<VideoRecording[]>([]);
+  recordingsRef.current = videoRecordings;
+
+  // Load previously saved recordings from the encrypted on-device vault
+  useEffect(() => {
+    listEvidence()
+      .then(items => {
+        setVideoRecordings(
+          items.map(item => ({
+            id: String(item.id),
+            blob: item.blob,
+            url: URL.createObjectURL(item.blob),
+            timestamp: item.date,
+            duration: item.duration,
+          }))
+        );
+      })
+      .catch(() => { /* vault unavailable — page still works for new captures */ });
+  }, []);
 
   // Cleanup URLs and streams when component unmounts
   useEffect(() => {
     return () => {
       streamRef.current?.getTracks().forEach(track => track.stop());
       micStreamRef.current?.getTracks().forEach(track => track.stop());
-      videoRecordings.forEach(rec => URL.revokeObjectURL(rec.url));
+      recordingsRef.current.forEach(rec => URL.revokeObjectURL(rec.url));
     };
-  }, [videoRecordings]);
+  }, []);
 
   const startRecording = async () => {
     try {
@@ -88,9 +110,10 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: mimeType });
         const url = URL.createObjectURL(blob);
+        const id = Date.now();
 
         const newEntry: VideoRecording = {
-          id: Date.now().toString(),
+          id: String(id),
           blob,
           url,
           timestamp: new Date().toLocaleString(),
@@ -101,6 +124,18 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
         combinedStream.getTracks().forEach(track => track.stop());
         screenStream.getTracks().forEach(track => track.stop());
         micStream.getTracks().forEach(track => track.stop());
+
+        // Persist to the encrypted vault so it survives closing the page.
+        // On failure the recording stays in the list above with its
+        // Download button — evidence is never lost silently.
+        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        saveEvidence(blob, `Evidence_${id}.${ext}`, durationRef.current).catch(() => {
+          setError(
+            lang === 'en'
+              ? 'Could not save to the vault — use the Download button to keep this recording.'
+              : 'वॉल्ट में सहेजा नहीं जा सका — रिकॉर्डिंग रखने के लिए डाउनलोड बटन का उपयोग करें।'
+          );
+        });
       };
 
       // Handle user clicking "Stop sharing" in the browser's native UI
@@ -150,6 +185,12 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
         <p className="text-gray-400 text-sm">
           {lang === 'en' ? 'Securing local video proof for cyber-incidents.' : 'साइबर घटनाओं के लिए स्थानीय वीडियो सबूत सुरक्षित करना।'}
         </p>
+        <p className="text-gray-500 text-xs mt-3 flex items-start gap-1.5">
+          <Lock size={12} className="mt-0.5 shrink-0" />
+          {lang === 'en'
+            ? 'Recordings are encrypted and stored only on this device — nothing is uploaded. Anyone who can unlock this device and open this browser can still view them.'
+            : 'रिकॉर्डिंग एन्क्रिप्ट होकर केवल इसी डिवाइस पर रहती हैं — कुछ भी अपलोड नहीं होता। जो कोई भी यह डिवाइस अनलॉक करके यह ब्राउज़र खोल सकता है, वह इन्हें देख सकता है।'}
+        </p>
       </div>
 
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
@@ -195,9 +236,11 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
               <div>
                 <h3 className="font-bold text-gray-200">Video Evidence #{rec.id.slice(-4)}</h3>
                 <p className="text-xs text-gray-500">{rec.timestamp}</p>
-                <p className="text-xs font-mono text-red-400 mt-1">
-                  Verified Duration: {formatTime(rec.duration)}
-                </p>
+                {typeof rec.duration === 'number' && rec.duration > 0 && (
+                  <p className="text-xs font-mono text-red-400 mt-1">
+                    Verified Duration: {formatTime(rec.duration)}
+                  </p>
+                )}
               </div>
               <div className="flex gap-2">
                 <a 
@@ -207,8 +250,12 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
                 >
                   <Download size={18} />
                 </a>
-                <button 
-                  onClick={() => setVideoRecordings(prev => prev.filter(v => v.id !== rec.id))}
+                <button
+                  onClick={() => {
+                    deleteEvidence(Number(rec.id)).catch(() => {});
+                    URL.revokeObjectURL(rec.url);
+                    setVideoRecordings(prev => prev.filter(v => v.id !== rec.id));
+                  }}
                   className="p-2 bg-white/10 rounded-lg hover:bg-red-900/40"
                 >
                   <Trash2 size={18} />

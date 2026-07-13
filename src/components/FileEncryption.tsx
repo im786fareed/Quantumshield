@@ -11,7 +11,7 @@ function hasMagic(bytes: Uint8Array): boolean {
   return FILE_MAGIC.every((value, index) => bytes[index] === value);
 }
 
-async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+async function deriveKey(password: string, salt: Uint8Array<ArrayBuffer>): Promise<CryptoKey> {
   const keyMaterial = await window.crypto.subtle.importKey(
     'raw', new TextEncoder().encode(password), { name: 'PBKDF2' }, false, ['deriveKey']
   );

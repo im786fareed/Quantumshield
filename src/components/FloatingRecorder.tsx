@@ -6,45 +6,7 @@ import {
   CheckCircle, Loader2, ShieldAlert, Download, AlertTriangle
 } from 'lucide-react';
 
-/* ══════════════════════════════════════════════
-   IndexedDB — robust save with per-request error
-══════════════════════════════════════════════ */
-function openVault(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open('QuantumShieldVault', 1);
-    req.onupgradeneeded = (e: any) => {
-      const db: IDBDatabase = e.target.result;
-      if (!db.objectStoreNames.contains('evidence')) {
-        db.createObjectStore('evidence', { keyPath: 'id' });
-      }
-    };
-    req.onsuccess = (e: any) => resolve(e.target.result);
-    req.onerror   = ()       => reject(new Error(`DB open failed: ${req.error?.message}`));
-  });
-}
-
-async function saveToVault(blob: Blob, fileName: string): Promise<void> {
-  const db = await openVault();
-  return new Promise((resolve, reject) => {
-    let tx: IDBTransaction;
-    try {
-      tx = db.transaction(['evidence'], 'readwrite');
-    } catch (e: any) {
-      return reject(new Error(`Transaction failed: ${e?.message}`));
-    }
-    const record = {
-      id:       Date.now(),
-      fileName,
-      blob,
-      date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-    };
-    const req = tx.objectStore('evidence').add(record);
-    req.onerror    = () => reject(new Error(`Add failed: ${req.error?.message}`));
-    tx.oncomplete  = () => resolve();
-    tx.onerror     = () => reject(new Error(`TX error: ${tx.error?.message}`));
-    tx.onabort     = () => reject(new Error(`TX aborted: ${tx.error?.message}`));
-  });
-}
+import { saveEvidence } from '@/lib/evidenceVault';
 
 /* Direct-download fallback — evidence is never lost */
 function downloadBlob(blob: Blob, fileName: string) {
@@ -95,6 +57,8 @@ export default function FloatingRecorder() {
 
   const mediaRecRef = useRef<MediaRecorder | null>(null);
   const chunksRef   = useRef<Blob[]>([]);
+  /* Mirror of `seconds` — handleStop's [] closure would otherwise read 0 */
+  const secondsRef  = useRef(0);
   const streamRef   = useRef<MediaStream | null>(null);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const previewRef  = useRef<HTMLVideoElement>(null);
@@ -150,8 +114,12 @@ export default function FloatingRecorder() {
       stream.getVideoTracks()[0]?.addEventListener('ended', stopRecording);
 
       setSeconds(0);
+      secondsRef.current = 0;
       setPhase('recording');
-      timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000);
+      timerRef.current = setInterval(() => {
+        secondsRef.current += 1;
+        setSeconds(secondsRef.current);
+      }, 1000);
     } catch (err: any) {
       const msg =
         err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError'
@@ -196,9 +164,9 @@ export default function FloatingRecorder() {
       return;
     }
 
-    /* Try IndexedDB first */
+    /* Try the encrypted vault first */
     try {
-      await saveToVault(blob, name);
+      await saveEvidence(blob, name, secondsRef.current);
       setSavedName(name);
       setPhase('saved');
       setTimeout(() => setPhase('idle'), 4000);
@@ -262,7 +230,7 @@ export default function FloatingRecorder() {
       </div>
 
       <p className="text-slate-400 text-xs leading-relaxed">
-        Saves directly to your <span className="text-emerald-400 font-semibold">Evidence Vault</span> on this device — zero cloud upload.
+        Encrypted &amp; saved to your <span className="text-emerald-400 font-semibold">Evidence Vault</span> on this device — zero cloud upload.
       </p>
 
       {/* Camera */}

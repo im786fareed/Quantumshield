@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import BackToHome from './BackToHome';
 import VoiceDictationButton from './VoiceDictationButton';
+import { countEvidence } from '@/lib/evidenceVault';
 
 /* ── Legal sections by crime type ── */
 const LEGAL_SECTIONS: Record<string, { section: string; desc: string }[]> = {
@@ -95,16 +96,7 @@ export default function PoliceReporter({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
   const [dictating, setDictating] = useState<{ on: boolean; lang: 'en-IN' | 'hi-IN' }>({ on: false, lang: 'en-IN' });
 
   useEffect(() => {
-    const req = indexedDB.open('QuantumShieldVault', 1);
-    req.onsuccess = (e: any) => {
-      const db = e.target.result;
-      if (db.objectStoreNames.contains('evidence')) {
-        const tx = db.transaction(['evidence'], 'readonly');
-        const store = tx.objectStore('evidence');
-        const countReq = store.count();
-        countReq.onsuccess = () => setEvidenceCount(countReq.result);
-      }
-    };
+    countEvidence().then(setEvidenceCount).catch(() => {});
   }, []);
 
   const sections = LEGAL_SECTIONS[fraudType] ?? LEGAL_SECTIONS['Digital Arrest'];
