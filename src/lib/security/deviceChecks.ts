@@ -15,6 +15,8 @@ export interface ScanResult {
   status: 'PASS' | 'WARN' | 'FAIL' | 'INFO';
   detail: string;
   detailHi: string;
+  /** Contribution to the 0–100 health score. Informational checks (network
+   *  type, device memory) always carry 0 — they are facts, not risks. */
   score: number;
 }
 
@@ -47,7 +49,7 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
   const results: ScanResult[] = [];
   let score = 0;
 
-  // ── Check 1: HTTPS (12 pts) ────────────────────────────────────────────────
+  // ── Check 1: HTTPS (16 pts) ────────────────────────────────────────────────
   await delay(350);
   const isHttps = typeof location !== 'undefined' && location.protocol === 'https:';
   const c1: ScanResult = {
@@ -60,12 +62,12 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
     detailHi: isHttps
       ? 'HTTPS सक्रिय — ट्रांजिट में सभी डेटा TLS-एन्क्रिप्टेड है।'
       : 'अनएन्क्रिप्टेड कनेक्शन पाया गया। नेटवर्क पर हमलावर आपका डेटा देख सकते हैं।',
-    score: isHttps ? 12 : 0,
+    score: isHttps ? 16 : 0,
   };
   results.push(c1);
   score += c1.score;
 
-  // ── Check 2: Browser version modernity (15 pts) ───────────────────────────
+  // ── Check 2: Browser version modernity (19 pts) ───────────────────────────
   await delay(400);
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const chromeVer = ua.match(/Chrome\/(\d+)/)?.[1];
@@ -87,53 +89,46 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
       : ver > 0
         ? `ब्राउज़र संस्करण ${ver} पुराना है। महत्वपूर्ण सुरक्षा पैच के लिए अपडेट करें।`
         : 'ब्राउज़र संस्करण निर्धारित नहीं किया जा सका।',
-    score: isModern ? 15 : ver > 0 ? 7 : 10,
+    score: isModern ? 19 : ver > 0 ? 9 : 12,
   };
   results.push(c2);
   score += c2.score;
 
-  // ── Check 3: Network connection quality (12 pts) ──────────────────────────
+  // ── Check 3: Network type (informational — not a security signal) ─────────
   await delay(350);
   const conn = typeof navigator !== 'undefined' ? (navigator as any).connection : null;
   const effectiveType: string = conn?.effectiveType || 'unknown';
-  const isSlow = effectiveType === '2g' || effectiveType === 'slow-2g';
+  const netLabel = effectiveType === 'unknown' ? 'not reported by this browser' : effectiveType.toUpperCase();
   const c3: ScanResult = {
-    check: 'Network Security',
-    checkHi: 'नेटवर्क सुरक्षा',
-    status: isSlow ? 'WARN' : 'PASS',
-    detail: isSlow
-      ? `Slow ${effectiveType} connection detected. Avoid online banking or OTP entry on slow networks.`
-      : `Network: ${effectiveType === 'unknown' ? 'WiFi/Fast' : effectiveType.toUpperCase()}. Connection speed adequate for secure operations.`,
-    detailHi: isSlow
-      ? `धीमा ${effectiveType} नेटवर्क पाया गया। धीमे नेटवर्क पर बैंकिंग या OTP से बचें।`
-      : `नेटवर्क: ${effectiveType === 'unknown' ? 'WiFi/तेज़' : effectiveType.toUpperCase()}। सुरक्षित ऑपरेशन के लिए पर्याप्त स्पीड।`,
-    score: isSlow ? 5 : 12,
+    check: 'Network Type',
+    checkHi: 'नेटवर्क प्रकार',
+    status: 'INFO',
+    detail: `Connection type: ${netLabel}. Informational only — connection speed is not a security risk. What matters is the HTTPS check above and whether you trust the network (avoid sensitive logins on open public Wi-Fi).`,
+    detailHi: `कनेक्शन प्रकार: ${netLabel === 'not reported by this browser' ? 'इस ब्राउज़र ने नहीं बताया' : netLabel}। केवल जानकारी — नेटवर्क की स्पीड कोई सुरक्षा जोखिम नहीं है। असली सुरक्षा ऊपर वाली HTTPS जांच और भरोसेमंद नेटवर्क से आती है (खुले सार्वजनिक Wi-Fi पर संवेदनशील लॉगिन से बचें)।`,
+    score: 0,
   };
   results.push(c3);
-  score += c3.score;
 
-  // ── Check 4: Device memory (10 pts) ───────────────────────────────────────
+  // ── Check 4: Device memory (informational — not a security signal) ────────
   await delay(300);
   const mem: number | undefined = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory : undefined;
-  const memScore = !mem ? 7 : mem >= 4 ? 10 : mem >= 2 ? 7 : 3;
   const c4: ScanResult = {
     check: 'Device Memory',
     checkHi: 'डिवाइस मेमोरी',
-    status: !mem ? 'INFO' : mem >= 2 ? 'PASS' : 'WARN',
+    status: 'INFO',
     detail: mem
-      ? `${mem}GB RAM. ${mem < 2 ? 'Low memory devices are vulnerable to resource exhaustion attacks and may fail to run security updates.' : 'Sufficient RAM for secure multitasking.'}`
-      : 'Device memory not reported (browser privacy protection).',
+      ? `About ${mem}GB RAM (browser-reported approximation). Informational only — memory size does not make a device more or less secure.`
+      : 'Device memory not reported (browser privacy protection). Informational only.',
     detailHi: mem
-      ? `${mem}GB RAM। ${mem < 2 ? 'कम मेमोरी वाले डिवाइस सुरक्षा अपडेट चलाने में विफल हो सकते हैं।' : 'सुरक्षित मल्टीटास्किंग के लिए पर्याप्त RAM।'}`
-      : 'डिवाइस मेमोरी रिपोर्ट नहीं हुई (ब्राउज़र गोपनीयता सुरक्षा)।',
-    score: memScore,
+      ? `लगभग ${mem}GB RAM (ब्राउज़र द्वारा अनुमानित)। केवल जानकारी — मेमोरी का आकार डिवाइस को कम या ज़्यादा सुरक्षित नहीं बनाता।`
+      : 'डिवाइस मेमोरी रिपोर्ट नहीं हुई (ब्राउज़र गोपनीयता सुरक्षा)। केवल जानकारी।',
+    score: 0,
   };
   results.push(c4);
-  score += c4.score;
 
-  // ── Check 5: Media permission exposure (13 pts) ───────────────────────────
+  // ── Check 5: Media permission exposure (17 pts) ───────────────────────────
   await delay(450);
-  let permScore = 10;
+  let permScore = 13;
   let permDetail = 'Permissions API not available on this browser.';
   let permDetailHi = 'इस ब्राउज़र पर Permissions API उपलब्ध नहीं है।';
   let permStatus: ScanResult['status'] = 'INFO';
@@ -145,15 +140,15 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
     if (bothGranted) {
       permDetail = 'Both mic & camera are pre-granted. Verify no background app is accessing them.';
       permDetailHi = 'माइक्रोफोन और कैमरा दोनों पहले से granted हैं। सुनिश्चित करें कोई बैकग्राउंड ऐप एक्सेस नहीं कर रहा।';
-      permScore = 7; permStatus = 'WARN';
+      permScore = 9; permStatus = 'WARN';
     } else if (eitherGranted) {
       permDetail = `${micPerm.state === 'granted' ? 'Microphone' : 'Camera'} already granted. Review if this was intentional.`;
       permDetailHi = `${micPerm.state === 'granted' ? 'माइक्रोफोन' : 'कैमरा'} पहले से granted है। जांचें कि यह जानबूझकर था या नहीं।`;
-      permScore = 9; permStatus = 'WARN';
+      permScore = 12; permStatus = 'WARN';
     } else {
       permDetail = 'Mic & camera permissions are restricted — no unauthorized background access possible.';
       permDetailHi = 'माइक्रोफोन और कैमरा प्रतिबंधित हैं — कोई अनधिकृत बैकग्राउंड एक्सेस संभव नहीं।';
-      permScore = 13; permStatus = 'PASS';
+      permScore = 17; permStatus = 'PASS';
     }
   } catch { /* permissions API unavailable */ }
   results.push({
@@ -163,10 +158,10 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
   });
   score += permScore;
 
-  // ── Check 6: Storage integrity (10 pts) ───────────────────────────────────
+  // ── Check 6: Storage integrity (13 pts) ───────────────────────────────────
   await delay(350);
   const suspiciousKeys = ['anydesk', 'teamviewer', 'rat_session', 'payload', 'inject', 'c2_', 'backdoor'];
-  let lsScore = 10;
+  let lsScore = 13;
   let lsDetail = 'No suspicious browser storage artifacts detected.';
   let lsDetailHi = 'कोई संदिग्ध ब्राउज़र स्टोरेज आर्टिफैक्ट नहीं मिला।';
   let lsStatus: ScanResult['status'] = 'PASS';
@@ -182,7 +177,7 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
   results.push({ check: 'Storage Integrity', checkHi: 'स्टोरेज अखंडता', status: lsStatus, detail: lsDetail, detailHi: lsDetailHi, score: lsScore });
   score += lsScore;
 
-  // ── Check 7: WebRTC IP leak risk (13 pts) ─────────────────────────────────
+  // ── Check 7: WebRTC IP leak risk (16 pts) ─────────────────────────────────
   await delay(400);
   const hasWebRTC = typeof window !== 'undefined' && !!(window as any).RTCPeerConnection;
   const c7: ScanResult = {
@@ -195,14 +190,14 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
     detailHi: hasWebRTC
       ? 'WebRTC सक्रिय है। VPN उपयोगकर्ता browserleaks.com पर IP लीक टेस्ट करें।'
       : 'WebRTC अक्षम/अवरुद्ध है — ब्राउज़र के माध्यम से IP पता लीक नहीं हो सकता।',
-    score: hasWebRTC ? 9 : 13,
+    score: hasWebRTC ? 11 : 16,
   };
   results.push(c7);
   score += c7.score;
 
-  // ── Check 8: JavaScript environment integrity (15 pts) ───────────────────
+  // ── Check 8: JavaScript environment integrity (19 pts) ───────────────────
   await delay(350);
-  let jsScore = 15;
+  let jsScore = 19;
   let jsDetail = 'JavaScript environment appears clean. No tampering detected.';
   let jsDetailHi = 'JavaScript वातावरण स्वच्छ दिखता है। कोई छेड़छाड़ नहीं पाई गई।';
   let jsStatus: ScanResult['status'] = 'PASS';
@@ -214,7 +209,7 @@ export async function runRealChecks(lang: 'en' | 'hi'): Promise<{ results: ScanR
     const suspiciousGlobals = ['__webdriver_evaluate', '__selenium_evaluate', 'callSelenium', '__webdriver_script_fn'];
     const foundGlobals = suspiciousGlobals.filter(g => g in window);
     if (tampered || foundGlobals.length > 0) {
-      jsScore = 4; jsStatus = 'WARN';
+      jsScore = 5; jsStatus = 'WARN';
       jsDetail = 'Potential automation/injection tool detected in browser environment. Use a clean browser.';
       jsDetailHi = 'ब्राउज़र वातावरण में संभावित ऑटोमेशन/इंजेक्शन टूल पाया गया।';
     }

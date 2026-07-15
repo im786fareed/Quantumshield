@@ -313,14 +313,23 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
           const providers: string[] = data.providers ?? (data.verifiedBy ? ['google-safe-browsing'] : []);
           verified = providers.length > 0;
           providers.forEach((p) => checksRun.push(INTEL_LABELS[p] ?? p));
-          for (const flag of (data.flags ?? []) as string[]) {
-            const isIntel = flag.startsWith('⛔') || flag.includes('Safe Browsing') || flag.includes('URLhaus');
+          // Prefer the server's structured signals; fall back to parsing the
+          // legacy display strings when talking to an older server.
+          const serverSignals: Array<{ text: string; source: string }> =
+            (data.signals as Array<{ text: string; source: string }> | undefined) ??
+            ((data.flags ?? []) as string[]).map((flag) => ({
+              text: flag.replace(/^⛔\s*/, ''),
+              source: flag.startsWith('⛔') || flag.includes('Safe Browsing') || flag.includes('URLhaus')
+                ? 'intel' : 'heuristic',
+            }));
+          for (const sig of serverSignals) {
+            const isIntel = sig.source === 'intel';
             outcomeSignals.push({
               id: `url.flag.${outcomeSignals.length}`,
               severity: isIntel ? 95 : Math.min(65, Math.max(25, serverScore)),
               confidence: isIntel ? 95 : 70,
-              title: flag.replace(/^⛔\s*/, ''),
-              titleHi: flag.replace(/^⛔\s*/, ''),
+              title: sig.text,
+              titleHi: sig.text,
               evidence: data.url ?? url,
               source: isIntel ? 'THIRD_PARTY_INTEL' : 'QS_SERVER',
             });
@@ -457,14 +466,15 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
           if (ures.ok) {
             const u = await ures.json();
             if ((u.score ?? 0) >= 35 || u.verifiedBy === 'google-safe-browsing' && u.safe === false) {
-              const intel = (u.flags ?? []).some((f: string) => f.includes('Safe Browsing'));
+              const intel = (u.signals ?? []).some((s: { source: string }) => s.source === 'intel')
+                || (u.flags ?? []).some((f: string) => f.includes('Safe Browsing'));
               signals.push({
                 id: 'msg.embeddedLink',
                 severity: Math.min(95, Math.max(50, u.score ?? 50)),
                 confidence: intel ? 95 : 70,
                 title: hi ? `संदेश का लिंक खतरनाक पाया गया (${u.score}/100)` : `The link inside this message was flagged (${u.score}/100)`,
                 titleHi: `संदेश का लिंक खतरनाक पाया गया (${u.score}/100)`,
-                evidence: `${embedded} — ${(u.flags ?? [])[0] ?? ''}`,
+                evidence: `${embedded} — ${(u.signals ?? [])[0]?.text ?? (u.flags ?? [])[0] ?? ''}`,
                 source: intel ? 'THIRD_PARTY_INTEL' : 'QS_SERVER',
               });
               risk = Math.max(risk, u.score ?? 0);

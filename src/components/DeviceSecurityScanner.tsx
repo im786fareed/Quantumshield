@@ -170,7 +170,7 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
                 <div className="flex items-center gap-2 mb-1.5">
                   {statusIcon(res.status)}
                   <span className="text-sm font-bold text-white">{L === 'en' ? res.check : res.checkHi}</span>
-                  <span className="ml-auto text-[9px] font-mono text-slate-500">{res.score}pts</span>
+                  <span className="ml-auto text-[9px] font-mono text-slate-500">{res.status === 'INFO' ? 'info' : `${res.score}pts`}</span>
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed pl-6">{L === 'en' ? res.detail : res.detailHi}</p>
               </div>

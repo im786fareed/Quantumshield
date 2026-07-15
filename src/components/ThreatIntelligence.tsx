@@ -2,6 +2,8 @@
 
 import { Shield, TrendingUp, AlertTriangle, BookOpen } from 'lucide-react';
 import { useLanguage } from '@/lib/useLanguage';
+import { SCAM_PATTERNS } from '@/lib/security/scamPatterns';
+import { BRANDS } from '@/lib/security/brands';
 
 interface Threat {
   id: string;
@@ -36,8 +38,11 @@ const CONTENT = {
   }
 };
 
-// Number of active detection patterns across textAnalyzer.ts + threatEngine.ts engines
-const ACTIVE_PATTERNS = 47;
+// Counted live from the shipped detection corpus (scamPatterns.ts + brands.ts)
+// so the stat can never drift from what the engine actually checks.
+const PHRASE_COUNT = Object.values(SCAM_PATTERNS).reduce((n, p) => n + p.length, 0);
+const CATEGORY_COUNT = Object.keys(SCAM_PATTERNS).length;
+const BRAND_COUNT = BRANDS.length;
 
 // Curated from public advisories; shipped with app updates (not a live feed).
 const DOCUMENTED_THREATS: Threat[] = [
@@ -124,9 +129,11 @@ export default function ThreatIntelligence(_props?: { lang?: 'en' | 'hi' }) {
             <Shield className="w-8 h-8 text-green-400" />
             <h3 className="text-lg font-bold text-white">{content.protected}</h3>
           </div>
-          <p className="text-5xl font-bold text-green-400 mb-2">{ACTIVE_PATTERNS}</p>
+          <p className="text-5xl font-bold text-green-400 mb-2">{PHRASE_COUNT}</p>
           <p className="text-sm text-gray-300">
-            {lang === 'en' ? 'Active detection patterns in engine' : 'इंजन में सक्रिय पहचान पैटर्न'}
+            {lang === 'en'
+              ? `Scam phrases the engine checks, in ${CATEGORY_COUNT} categories — plus ${BRAND_COUNT} protected Indian brands. Counted live from the engine.`
+              : `स्कैम वाक्यांश जो इंजन जांचता है, ${CATEGORY_COUNT} श्रेणियों में — साथ में ${BRAND_COUNT} संरक्षित भारतीय ब्रांड। इंजन से सीधे गिने गए।`}
           </p>
         </div>
 
@@ -197,8 +204,8 @@ export default function ThreatIntelligence(_props?: { lang?: 'en' | 'hi' }) {
                   ✅ <strong>{content.protection}</strong>
                   {' '}
                   {lang === 'en'
-                    ? `This pattern is in the detection database. ${threat.category === 'APK Malware' ? 'APK Guardian checks for it.' : threat.category === 'Phishing' ? 'URL Checker checks for it.' : 'The message/call analyzers check for it.'}`
-                    : `यह पैटर्न डिटेक्शन डेटाबेस में है। ${threat.category === 'APK Malware' ? 'APK Guardian इसकी जांच करता है।' : threat.category === 'Phishing' ? 'URL चेकर इसकी जांच करता है।' : 'मैसेज/कॉल एनालाइज़र इसकी जांच करते हैं।'}`}
+                    ? `This pattern is in the detection database. ${threat.category === 'APK Malware' ? "The Scanner's APK tab checks for it." : threat.category === 'Phishing' ? "The Scanner's Link tab checks for it." : 'The message/call analyzers check for it.'}`
+                    : `यह पैटर्न डिटेक्शन डेटाबेस में है। ${threat.category === 'APK Malware' ? 'स्कैनर का APK टैब इसकी जांच करता है।' : threat.category === 'Phishing' ? 'स्कैनर का लिंक टैब इसकी जांच करता है।' : 'मैसेज/कॉल एनालाइज़र इसकी जांच करते हैं।'}`}
                 </p>
               </div>
             </div>

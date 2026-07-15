@@ -25,13 +25,26 @@ export async function POST(req: NextRequest) {
     const intel = await queryIntel(url.trim(), "url");
     const malicious = intel.results.filter((r) => r.classification === "malicious");
 
+    // Structured findings so clients can style/weight by source instead of
+    // re-parsing display strings. `flags` remains for older clients.
+    const heuristicSignals = result.flags.map((text) => ({
+      text,
+      source: "heuristic" as const,
+    }));
+
     if (malicious.length > 0) {
+      const intelSignals = malicious.map((m) => ({
+        text: `${m.providerLabel}: ${m.detail}`,
+        source: "intel" as const,
+        provider: m.provider,
+      }));
       return NextResponse.json({
         success: true,
         ...result,
         safe: false,
         score: 100,
         level: "critical",
+        signals: [...intelSignals, ...heuristicSignals],
         flags: [
           ...malicious.map((m) => `⛔ ${m.providerLabel}: ${m.detail}`),
           ...result.flags,
@@ -49,6 +62,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       ...result,
+      signals: heuristicSignals,
       ...(intel.providersQueried.includes("google-safe-browsing")
         ? { verifiedBy: "google-safe-browsing" }
         : {}),
