@@ -59,6 +59,7 @@ Add these 7 secrets:
 | `NEWS_API_KEY` | Your News API key | newsapi.org |
 | `GOOGLE_SAFE_BROWSING_KEY` | Safe Browsing v4 API key (URL threat checks) | Google Cloud Console |
 | `ABUSECH_AUTH_KEY` | abuse.ch Auth-Key — enables URLhaus (malicious URLs) + MalwareBazaar (known-malware file hashes) in the Scanner | Free at auth.abuse.ch |
+| `VIRUSTOTAL_API_KEY` | Optional — VirusTotal multi-engine reputation for URLs and file hashes (70+ antivirus vendors). Free tier (4 req/min) is enough thanks to server-side caching. | Free at virustotal.com → sign up → profile → API key |
 | `UPSTASH_REDIS_REST_URL` | Optional — durable per-IP rate limiting shared across servers. Without it, limiting falls back to per-instance memory. | Free at upstash.com |
 | `UPSTASH_REDIS_REST_TOKEN` | Token paired with the URL above | Upstash console |
 

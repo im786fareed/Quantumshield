@@ -17,12 +17,14 @@ import { safeBrowsingProvider } from './safeBrowsing';
 import { urlhausProvider } from './urlhaus';
 import { malwareBazaarProvider } from './malwareBazaar';
 import { xposedOrNotProvider } from './xposedOrNot';
+import { virusTotalProvider } from './virusTotal';
 
 const PROVIDERS: ThreatIntelProvider[] = [
   safeBrowsingProvider,
   urlhausProvider,
   malwareBazaarProvider,
   xposedOrNotProvider,
+  virusTotalProvider,
 ];
 
 export interface IntelOutcome {

@@ -44,6 +44,7 @@ const INTEL_LABELS: Record<string, string> = {
   urlhaus: 'URLhaus malicious-URL database (abuse.ch)',
   malwarebazaar: 'MalwareBazaar known-malware database (abuse.ch)',
   xposedornot: 'XposedOrNot breach database',
+  virustotal: 'VirusTotal multi-engine scan (70+ antivirus vendors)',
 };
 
 /**
