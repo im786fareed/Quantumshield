@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
-import { analyzeText } from "@/lib/ai/textAnalyzer";
+import { explainScamText, textRiskLevel } from "@/lib/security/scamPatterns";
 import { analyzeThreat } from "@/lib/ai/threatEngine";
 import { analyzeWithLlm } from "@/lib/ai/llmAnalyzer";
 
@@ -41,8 +41,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Run both rule engines
-    const textResult = analyzeText(trimmed);
+    // Run both rule engines (shared corpus: phrase explanations + threat typing)
+    const textResult = explainScamText(trimmed);
     const threatResult = analyzeThreat(trimmed);
 
     // Merge scores — take the higher risk signal
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       engine: "rules",
       confidence: parseFloat(confidence.toFixed(2)),
       score: combinedScore,
-      level: textResult.level,
+      level: textRiskLevel(combinedScore),
       threatType: threatResult.type,
       message: isSpam ? threatResult.message : "No scam indicators detected in this message.",
       reasons: textResult.reasons,

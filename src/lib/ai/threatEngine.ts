@@ -3,24 +3,7 @@
 // same phrases the AI Call Analyzer uses — so message, SMS and call detection
 // all agree when the AI engine is unavailable.
 
-import { scoreScamText } from "@/lib/security/scamPatterns";
-
-// Retained for any callers importing the legacy keyword lists directly.
-export const SCAM_DATABASE = {
-  dataLoss: [
-    "reset", "format", "factory settings", "delete all", "erase data",
-    "anydesk", "teamviewer", "rustdesk", "remote control", "screen share",
-  ],
-  digitalArrest: [
-    "digital arrest", "cbi", "narcotics", "customs", "money laundering",
-    "illegal parcel", "skype call", "whatsapp video", "police station",
-    "arrest warrant", "supreme court", "central bureau",
-  ],
-  financial: [
-    "otp", "password", "transaction limit", "beneficiary", "kyc update",
-    "account blocked", "unauthorized transaction",
-  ],
-};
+import { scoreScamText, REMOTE_TOOL_RE } from "@/lib/security/scamPatterns";
 
 export interface ThreatResult {
   type: string;
@@ -30,11 +13,13 @@ export interface ThreatResult {
 }
 
 export const analyzeThreat = (text: string): ThreatResult => {
-  const lower = text.toLowerCase();
+  // Rich corpus scoring (shared with the Call Analyzer and text routes).
+  const scam = scoreScamText(text);
 
   // 1. Remote-access / data-wipe coercion is the highest-priority live danger.
-  const dataLossMatch = SCAM_DATABASE.dataLoss.find((w) => lower.includes(w));
-  if (dataLossMatch) {
+  //    (Corpus dataWipe phrases or a remote-control tool being named —
+  //    a bare word like "reset" no longer trips this alone.)
+  if (scam.firedCategories.includes("dataWipe") || REMOTE_TOOL_RE.test(text)) {
     return {
       type: "EMERGENCY_DATA_LOSS",
       riskScore: 100,
@@ -43,9 +28,6 @@ export const analyzeThreat = (text: string): ThreatResult => {
         "🚨 EMERGENCY: Caller is trying to wipe your data or access your device remotely! DO NOT follow instructions. Disconnect and turn off internet now.",
     };
   }
-
-  // 2. Rich corpus scoring (shared with the Call Analyzer).
-  const scam = scoreScamText(text);
 
   if (scam.hasDigitalArrest) {
     return {

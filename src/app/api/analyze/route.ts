@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
-import { analyzeText } from "@/lib/ai/textAnalyzer";
+import { explainScamText, textRiskLevel } from "@/lib/security/scamPatterns";
 import { analyzeThreat } from "@/lib/ai/threatEngine";
 import { analyzeWithLlm } from "@/lib/ai/llmAnalyzer";
 
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const textResult = analyzeText(text);
+    const textResult = explainScamText(text);
     const threatResult = analyzeThreat(text);
 
     const combinedScore = Math.max(textResult.score, threatResult.riskScore);
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       type,
       engine: "rules",
       score: combinedScore,
-      level: textResult.level,
+      level: textRiskLevel(combinedScore),
       isThreat,
       threatType: threatResult.type,
       riskLevel: threatResult.riskLevel,

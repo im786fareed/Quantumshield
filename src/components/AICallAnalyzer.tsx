@@ -17,6 +17,7 @@ import {
   CATEGORY_WEIGHTS as WEIGHTS,
   BANKING_KEYWORDS as BANKING_KW,
   hasNegationBefore,
+  phraseMatches,
   AMOUNT_REGEX,
 } from '@/lib/security/scamPatterns';
 
@@ -518,7 +519,7 @@ export default function AICallAnalyzer() {
     const firedCategories = new Set<string>();
 
     Object.entries(PATTERNS).forEach(([cat, phrases]) => {
-      const hits = phrases.filter(p => lower.includes(p) && !hasNegationBefore(lower, p));
+      const hits = phrases.filter(p => phraseMatches(lower, p) && !hasNegationBefore(lower, p));
       if (!hits.length) return;
 
       firedCategories.add(cat);

@@ -6,10 +6,10 @@
 
    Requires the GEMINI_API_KEY environment variable.
    When the key is missing or the API call fails, callers fall
-   back to the deterministic rule engine (textAnalyzer/threatEngine).
+   back to the deterministic rule engine (scamPatterns/threatEngine).
    ========================================================= */
 
-import type { RiskLevel } from "./textAnalyzer";
+import type { TextRiskLevel as RiskLevel } from "@/lib/security/scamPatterns";
 
 export interface LlmAnalysis {
   score: number;

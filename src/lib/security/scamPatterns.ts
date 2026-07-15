@@ -3,12 +3,14 @@
  * based scam detection across QuantumShield.
  *
  * This corpus was the richest scam-phrase library in the app (it lived inside
- * the AI Call Analyzer). It is now shared so three previously-separate engines
+ * the AI Call Analyzer). It is now shared so all previously-separate engines
  * agree:
  *   • AI Call Analyzer (live call transcripts) imports the data below;
  *   • the server rule engine (threatEngine) uses scoreScamText() as the
  *     deterministic fallback for /api/check-spam and /api/analyze when the AI
- *     engine is unavailable.
+ *     engine is unavailable;
+ *   • explainScamText() gives those routes their plain-language reasons —
+ *     it replaced the old standalone textAnalyzer keyword engine.
  *
  * Pure data + pure functions — safe on client and server.
  */
@@ -125,7 +127,36 @@ export const SCAM_PATTERNS: Record<string, string[]> = {
     'install app', 'download app', 'apna screen share karo',
     'apna net banking kholo', 'banking app open karo',
   ],
+  dataWipe: [
+    'factory reset', 'factory settings', 'format your phone', 'format kar',
+    'delete all data', 'erase all data', 'erase your data', 'wipe your phone',
+    'wipe your data', 'phone reset karo', 'data delete karo', 'rustdesk',
+    'remote control of your',
+  ],
+  bankScare: [
+    'kyc', 're-kyc', 'kyc update', 'kyc expire', 'kyc pending', 'kyc suspend',
+    'update your kyc', 'kyc verification',
+    'account blocked', 'account will be blocked', 'account has been blocked',
+    'account suspended', 'account frozen', 'card blocked', 'card has been blocked',
+    'unauthorized transaction', 'suspicious transaction', 'sim block', 'sim band',
+    'khata band', 'account band', 'pan card link', 'aadhaar link expire',
+  ],
+  prizeLure: [
+    'lottery', 'you have won', 'you won a', 'you won the', 'winner selected',
+    'lucky draw', 'lucky winner', 'jackpot', 'prize money', 'claim your prize',
+    'claim your reward', 'scratch card', 'kbc', 'crore jeeta', 'lakh jeeta',
+    'inaam jeeta', 'congratulations! you',
+  ],
+  clickBait: [
+    'click here', 'click the link', 'click below', 'click on the link',
+    'tap here', 'tap the link', 'open the link', 'open this link',
+    'link par click', 'is link par', 'diye gaye link', 'link kholo',
+  ],
 };
+
+/** Remote-access tooling — combined with dataWipe it marks the live
+ *  "caller is taking over the device" emergency in the threat engine. */
+export const REMOTE_TOOL_RE = /anydesk|teamviewer|rustdesk|screen ?shar|remote (access|control)/i;
 
 export const BANKING_KEYWORDS = [
   'bank', 'account', 'transfer', 'payment', 'upi', 'neft', 'rtgs', 'transaction',
@@ -144,12 +175,55 @@ export const CATEGORY_WEIGHTS: Record<string, number> = {
   silenceControl: 20,
   kashmirBiharMTI: 12,
   accountRequest: 30,
+  dataWipe: 35,
+  bankScare: 25,
+  prizeLure: 25,
+  clickBait: 15,
+};
+
+/** Plain-language reason shown to users when a category fires. */
+export const CATEGORY_LABELS: Record<string, string> = {
+  digitalArrest: "'Digital arrest' scam language — no such thing exists in Indian law",
+  authorityClaim: 'Claims to be police/CBI/government authority',
+  urgencyPressure: 'Urgency and pressure tactics',
+  legalThreat: 'Threats of arrest or legal action',
+  financialRequest: 'Demands money or payment',
+  informationRequest: 'Asks for OTP, PIN or personal information',
+  packageScam: 'Fake parcel/courier storyline',
+  silenceControl: 'Tries to isolate you and keep this secret',
+  kashmirBiharMTI: 'Matches known scam-call script phrasing',
+  accountRequest: 'Asks for account access, screen sharing or app install',
+  dataWipe: 'Tries to make you wipe or hand over control of your device',
+  bankScare: 'Fake bank/KYC scare (account blocked, KYC expiry)',
+  prizeLure: 'Lottery / prize / reward lure',
+  clickBait: 'Pressures you to click a link',
 };
 
 const NEGATION_WORDS = [
   'not ', 'never ', 'no ', "isn't ", "aren't ", "don't ", "won't ", "can't ", "doesn't ",
   'nahi ', 'nahi', 'mat ', 'nahin ', 'nahi hai', 'nahi hoga', 'nahi kiya', 'nahi karunga',
 ];
+
+/**
+ * Short tokens like 'ed', 'fir', 'pin', 'upi' must match whole words only —
+ * plain substring matching fires them inside 'reachED', 'FIRst', 'shopPINg',
+ * 'occUPIed'. Longer phrases keep substring matching so 'arrest' still
+ * catches 'arrested'.
+ */
+const SHORT_PHRASE_MAX = 4;
+const boundaryCache = new Map<string, RegExp>();
+
+export function phraseMatches(lowerText: string, phrase: string): boolean {
+  if (phrase.length > SHORT_PHRASE_MAX || phrase.includes(' ')) {
+    return lowerText.includes(phrase);
+  }
+  let re = boundaryCache.get(phrase);
+  if (!re) {
+    re = new RegExp(`\\b${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+    boundaryCache.set(phrase, re);
+  }
+  return re.test(lowerText);
+}
 
 export function hasNegationBefore(lower: string, phrase: string): boolean {
   const idx = lower.indexOf(phrase);
@@ -180,7 +254,7 @@ export function scoreScamText(text: string): ScamScore {
   let total = 0;
 
   for (const [cat, phrases] of Object.entries(SCAM_PATTERNS)) {
-    const matched = phrases.filter((p) => lower.includes(p) && !hasNegationBefore(lower, p));
+    const matched = phrases.filter((p) => phraseMatches(lower, p) && !hasNegationBefore(lower, p));
     if (!matched.length) continue;
     firedCategories.push(cat);
     hits[cat] = matched.slice(0, 4);
@@ -211,4 +285,53 @@ export function scoreScamText(text: string): ScamScore {
     hasDigitalArrest: firedCategories.includes('digitalArrest'),
     amount: amountMatch,
   };
+}
+
+/** Message-risk scale used by the text routes and the AI analyzer. */
+export type TextRiskLevel = 'safe' | 'low' | 'medium' | 'high' | 'critical';
+
+export function textRiskLevel(score: number): TextRiskLevel {
+  if (score >= 80) return 'critical';
+  if (score >= 60) return 'high';
+  if (score >= 40) return 'medium';
+  if (score >= 20) return 'low';
+  return 'safe';
+}
+
+export interface TextExplanation {
+  score: number;
+  level: TextRiskLevel;
+  reasons: string[];     // plain-language, one per fired category + extras
+  indicators: string[];  // the matched phrases themselves
+  scam: ScamScore;
+}
+
+const LINK_RE = /(https?:\/\/|www\.|bit\.ly|tinyurl)/i;
+const PHONE_RE = /\b\d{10}\b/;
+
+/**
+ * Corpus-driven replacement for the old standalone textAnalyzer: same
+ * output shape (score/level/reasons/indicators) but the reasons come from
+ * the shared corpus, so every engine explains threats with one voice.
+ */
+export function explainScamText(text: string): TextExplanation {
+  const scam = scoreScamText(text);
+  const reasons = scam.firedCategories.map((c) => CATEGORY_LABELS[c] ?? c);
+  const indicators = Object.values(scam.hits).flat().slice(0, 12);
+  let score = scam.score;
+
+  if (LINK_RE.test(text)) {
+    score = Math.min(100, score + 15);
+    reasons.push('Contains a link');
+    indicators.push('link');
+  }
+  if (PHONE_RE.test(text)) {
+    reasons.push('Contains a phone number');
+    indicators.push('phone-number');
+  }
+  if (scam.amount) {
+    reasons.push(`Monetary demand found: ${scam.amount}`);
+  }
+
+  return { score, level: textRiskLevel(score), reasons, indicators, scam };
 }
