@@ -8,7 +8,7 @@ import {
   Brain, BookOpen, Newspaper, ChevronDown, ChevronUp,
   CreditCard, Scale, MessageSquare, Database,
   ExternalLink, PhoneCall, Users, Link2, ArrowRight,
-  Cpu, ServerOff, Languages, BadgeCheck, ShieldCheck, Radar, SearchCheck
+  Cpu, ServerOff, Languages, BadgeCheck, ShieldCheck, Radar, SearchCheck, MapPin
 } from 'lucide-react';
 import { useLanguage } from '@/lib/useLanguage';
 
@@ -176,7 +176,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
       quickTitle: 'Got something suspicious right now?',
       quickMsg: 'Check a message', quickMsgDesc: 'SMS · WhatsApp · Email',
       quickUrl: 'Check a link', quickUrlDesc: 'Phishing & fake sites',
-      quickNum: 'Check a number', quickNumDesc: 'Scam caller lookup',
+      quickNum: 'Check a number', quickNumDesc: 'QuantumLocate caller intel',
       statsCasesLabel: 'Cases in India 2025',
       statsLostLabel: 'Lost to fraud 2025',
       statsSavedLabel: 'Saved by I4C helpline',
@@ -206,7 +206,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
       quickTitle: 'अभी कुछ संदिग्ध मिला है?',
       quickMsg: 'मैसेज जांचें', quickMsgDesc: 'SMS · WhatsApp · ईमेल',
       quickUrl: 'लिंक जांचें', quickUrlDesc: 'फ़िशिंग और नकली साइट',
-      quickNum: 'नंबर जांचें', quickNumDesc: 'स्कैम कॉलर खोज',
+      quickNum: 'नंबर जांचें', quickNumDesc: 'QuantumLocate कॉलर इंटेल',
       statsCasesLabel: '2025 में साइबर मामले',
       statsLostLabel: '2025 में नुकसान',
       statsSavedLabel: 'I4C ने बचाए',
@@ -241,7 +241,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
         4 news/threat tools → one Scam Intel hub. ── */
   const MORE_TOOLS: Tool[] = [
     // Phone & number safety
-    { id: 'phoneguard', name: 'Phone Number Guard', nameHi: 'फोन नंबर गार्ड',   description: 'Detect scam calls · TRAI · VoIP · Spoofed', descriptionHi: 'स्कैम कॉल पहचान',               icon: PhoneCall,     path: '/phoneguard',     category: 'antifraud' },
+    { id: 'phoneguard', name: 'QuantumLocate', nameHi: 'QuantumLocate',   description: 'AI caller intelligence · origin · carrier · scam risk', descriptionHi: 'AI कॉलर इंटेलिजेंस · मूल · कैरियर · जोखिम',               icon: PhoneCall,     path: '/phoneguard',     category: 'antifraud' },
     { id: 'scamdb',     name: 'Scam Number Lookup', nameHi: 'स्कैम नंबर खोज',   description: 'Check a number against known scammers',     descriptionHi: 'ज्ञात स्कैमर नंबर जांचें',       icon: Database,      path: '/scamdb',         category: 'antifraud' },
     // Device safety — one place
     { id: 'tuneup',     name: 'Device Checkup',     nameHi: 'डिवाइस जांच',       description: 'Battery, storage & full security scan',     descriptionHi: 'बैटरी, स्टोरेज और सुरक्षा स्कैन', icon: Activity,      path: '/tuneup',         category: 'protect' },
@@ -505,6 +505,32 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
             </p>
           </div>
           <ArrowRight className="w-5 h-5 text-indigo-300 shrink-0 group-hover:translate-x-1 transition-transform" />
+        </motion.a>
+
+        {/* ── QuantumLocate — AI caller intelligence ── */}
+        <motion.a
+          variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
+          href="/phoneguard"
+          className="qs-card relative overflow-hidden flex items-center gap-5 bg-gradient-to-r from-teal-600/25 via-emerald-600/15 to-transparent border-2 border-teal-500/50 rounded-2xl p-6 mb-10 hover:border-teal-400 hover:from-teal-600/35 transition-all group"
+        >
+          <MapPin className="absolute right-5 bottom-3 w-24 h-24 opacity-10" />
+          <div className="w-12 h-12 rounded-xl bg-teal-500/25 flex items-center justify-center shrink-0">
+            <MapPin className="w-6 h-6 text-teal-300" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-xl font-black">QuantumLocate<span className="text-teal-300">™</span></h2>
+              <span className="text-[10px] font-black uppercase tracking-widest text-teal-300 bg-teal-500/15 border border-teal-500/40 rounded-full px-2.5 py-0.5">
+                {language === 'en' ? 'New' : 'नया'}
+              </span>
+            </div>
+            <p className="text-sm text-gray-300 leading-snug">
+              {language === 'en'
+                ? 'AI caller intelligence for any number. Get a trust score, likely origin, carrier, number type and scam-pattern risk — with an explainable AI verdict. Origin estimated honestly, never faked, and the risk check runs on-device.'
+                : 'किसी भी नंबर की AI कॉलर इंटेलिजेंस। ट्रस्ट स्कोर, संभावित मूल, कैरियर, नंबर प्रकार और स्कैम-पैटर्न जोखिम पाएं — व्याख्येय AI फैसले के साथ। मूल का ईमानदार अनुमान, कभी नकली नहीं, और जोखिम जांच ऑन-डिवाइस।'}
+            </p>
+          </div>
+          <ArrowRight className="w-5 h-5 text-teal-300 shrink-0 group-hover:translate-x-1 transition-transform" />
         </motion.a>
 
         {/* ── Quick check row ── */}

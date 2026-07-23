@@ -18,6 +18,8 @@
     "firebase": "^12.15.0",
     "framer-motion": "^12.23.26",
     "jszip": "^3.10.1",
+    "libphonenumber-geo-carrier": "^2.0.0",
+    "libphonenumber-js": "^1.12.31",
     "next": "^16.1.1",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",

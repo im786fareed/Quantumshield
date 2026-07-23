@@ -41,7 +41,7 @@ const LABELS: Record<TabId, string> = {
   awareness: 'Scam Awareness',
   privacy: 'Privacy Shield',
   'system-guardian': 'System Guardian',
-  phoneguard: 'Phone Number Guard',
+  phoneguard: 'QuantumLocate — Caller Intelligence',
   'legal-rights': 'My Legal Rights',
   sentinel: 'Sentinel: Privacy Sweep',
   'trust-search': 'Trust Search',

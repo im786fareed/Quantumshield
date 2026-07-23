@@ -13,7 +13,7 @@ export const COMMAND_ITEMS: CommandItem[] = [
   { id: 'encryption', label: 'File Encryption', keywords: 'encrypt security' },
   { id: 'breach', label: 'Breach Checker', keywords: 'leak password email breach' },
   { id: 'device', label: 'Device Checkup', keywords: 'phone security health battery storage scan tuneup' },
-  { id: 'phoneguard', label: 'Phone Number Guard', keywords: 'call spam trai voip spoof' },
+  { id: 'phoneguard', label: 'QuantumLocate — Caller Intelligence', keywords: 'call caller id spam trai voip spoof origin carrier circle location number lookup intelligence quantumlocate' },
   { id: 'scamdb', label: 'Scam Number Lookup', keywords: 'scam list number database' },
   { id: 'simprotection', label: 'SIM Protection', keywords: 'sim hijack swap' },
   { id: 'privacy', label: 'Privacy Shield', keywords: 'privacy permissions' },

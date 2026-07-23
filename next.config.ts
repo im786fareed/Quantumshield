@@ -60,6 +60,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // libphonenumber-geo-carrier loads its offline .bson metadata via __dirname
+  // + fs at runtime; bundling it (Turbopack/webpack) breaks those file reads.
+  // Keep it (and its bson dep) external so the API route requires it from
+  // node_modules exactly as plain Node does.
+  serverExternalPackages: ["libphonenumber-geo-carrier", "bson"],
+
   // CAPACITOR_BUILD=true → static export bundled into the Android APK.
   // API routes are excluded by scripts/build-android.mjs; the app calls
   // the production deployment instead (see src/lib/apiBase.ts).
