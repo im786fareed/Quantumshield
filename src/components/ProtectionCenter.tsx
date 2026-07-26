@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Protection Center — QuantumShield's command center.
+ * Protection Center — AdamasVault's command center.
  *
  * A single dashboard that surfaces the protection the app already provides,
  * with an HONEST security posture: the posture score comes from real
@@ -115,7 +115,7 @@ export default function ProtectionCenter() {
         {/* ── Header ── */}
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-cyan-400 font-bold mb-1">
-            {en ? 'QuantumShield' : 'क्वांटमशील्ड'}
+            {'AdamasVault'}
           </p>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
             {en ? 'Protection Center' : 'सुरक्षा केंद्र'}
@@ -168,8 +168,8 @@ export default function ProtectionCenter() {
             <Info className="w-4 h-4 shrink-0 mt-0.5 text-slate-500" />
             <p>
               {en
-                ? 'QuantumShield protects on demand — scan any link, file, app or message, anytime. Continuous real-time background protection (like a desktop antivirus) requires the installed Android app; a website cannot run in the background.'
-                : 'QuantumShield ऑन-डिमांड सुरक्षा देता है — किसी भी लिंक, फ़ाइल, ऐप या संदेश को कभी भी स्कैन करें। लगातार रियल-टाइम बैकग्राउंड सुरक्षा के लिए इंस्टॉल किया गया Android ऐप चाहिए; वेबसाइट बैकग्राउंड में नहीं चल सकती।'}
+                ? 'AdamasVault protects on demand — scan any link, file, app or message, anytime. Continuous real-time background protection (like a desktop antivirus) requires the installed Android app; a website cannot run in the background.'
+                : 'AdamasVault ऑन-डिमांड सुरक्षा देता है — किसी भी लिंक, फ़ाइल, ऐप या संदेश को कभी भी स्कैन करें। लगातार रियल-टाइम बैकग्राउंड सुरक्षा के लिए इंस्टॉल किया गया Android ऐप चाहिए; वेबसाइट बैकग्राउंड में नहीं चल सकती।'}
             </p>
           </div>
         </div>

@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       const heuristics = analyzeUrl(trimmed);
       if (heuristics.flags.length > 0) {
         technicalSignals.push(
-          `QuantumShield URL heuristics for ${extractDomain(trimmed)} (risk score ${heuristics.score}/100): ${heuristics.flags.join("; ")}`
+          `AdamasVault URL heuristics for ${extractDomain(trimmed)} (risk score ${heuristics.score}/100): ${heuristics.flags.join("; ")}`
         );
       }
       safeBrowsingThreats = await checkSafeBrowsing(trimmed);

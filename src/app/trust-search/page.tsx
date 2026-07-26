@@ -3,7 +3,7 @@ import PageWrapper from '../_shared/PageWrapper';
 import { createMetadata } from '@/lib/seo';
 
 export const metadata = createMetadata({
-  title: 'Trust Search — Verify Before You Trust | QuantumShield',
+  title: 'Trust Search — Verify Before You Trust | AdamasVault',
   description:
     'Verify any phone number, website, email, UPI ID, app or organization against real authoritative sources before you call, click or pay. Evidence-based trust verdicts, no ads, no sponsored results.',
   path: '/trust-search',

@@ -1,4 +1,4 @@
-# QuantumShield — Switching On Login + 2-Step Verification (MFA)
+# AdamasVault — Switching On Login + 2-Step Verification (MFA)
 
 Everything in the app is already built and waiting. Login (and MFA on top of it)
 turns on automatically once you complete these console steps. Until then the
@@ -9,10 +9,10 @@ site stays fully open, exactly as it is today — nothing breaks.
 ## Part 1 — Connect your Firebase project (turns login ON)
 
 1. Go to https://console.firebase.google.com and sign in with your Google account.
-2. If you already created the `QuantumShield` project (for Circuit Breaker),
-   open it. Otherwise **Add project** → name it `QuantumShield` → Analytics off is fine.
+2. If you already created the `AdamasVault` project (for Circuit Breaker),
+   open it. Otherwise **Add project** → name it `AdamasVault` → Analytics off is fine.
 3. On the project home page, click the **`</>` (Web)** icon → nickname
-   `QuantumShield Web` → **Register app**. Firebase shows a block of code with
+   `AdamasVault Web` → **Register app**. Firebase shows a block of code with
    six values — keep that page open.
 4. Copy each value into `.env.local` in the project folder (the names match):
 
@@ -25,7 +25,7 @@ site stays fully open, exactly as it is today — nothing breaks.
    | `messagingSenderId` | `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` |
    | `appId` | `NEXT_PUBLIC_FIREBASE_APP_ID` |
 
-5. Add the same six values in **Vercel** → project `quantumshield` →
+5. Add the same six values in **Vercel** → project `AdamasVault` →
    Settings → Environment Variables (Production + Preview), then redeploy.
 6. In Firebase: **Authentication → Get started**, then under
    **Sign-in method** enable:
@@ -33,7 +33,7 @@ site stays fully open, exactly as it is today — nothing breaks.
    - **Email/Password** (one click)
    - **Phone** — only if you enable billing (see Part 3)
 7. Still in Authentication → **Settings → Authorized domains** → add
-   `quantumshield.in`.
+   `AdamasVault.in`.
 
 **That's it — the login wall activates by itself** as soon as the keys are
 present. Test locally first (restart `npm run dev`), then on the live site.

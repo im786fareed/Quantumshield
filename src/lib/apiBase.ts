@@ -1,13 +1,13 @@
 import { Capacitor } from '@capacitor/core';
 
 /**
- * Base URL for QuantumShield API routes.
+ * Base URL for AdamasVault API routes.
  *
  * - On the web (Vercel), API routes live on the same origin → relative path.
  * - In the bundled Android/iOS app (Capacitor static export), there is no
  *   local server → calls go to the production deployment.
  */
-const PROD_API_ORIGIN = 'https://quantumshield.in';
+const PROD_API_ORIGIN = 'https://AdamasVault.in';
 
 export function apiUrl(path: string): string {
   try {

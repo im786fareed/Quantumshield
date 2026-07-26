@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'in.quantumshield.app',
-  appName: 'QuantumShield',
+  appId: 'in.AdamasVault.app',
+  appName: 'AdamasVault',
   webDir: 'out',           // Next.js static export (npm run build:android)
   // The app is fully bundled in the APK — no remote server.url.
   // API calls go to the production deployment via src/lib/apiBase.ts.

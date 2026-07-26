@@ -4,8 +4,8 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "QuantumShield",
-    short_name: "QuantumShield",
+    name: "AdamasVault",
+    short_name: "AdamasVault",
     description: "AI-powered cybersecurity protection platform",
     start_url: "/",
     display: "standalone",

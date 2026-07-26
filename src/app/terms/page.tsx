@@ -10,12 +10,12 @@ export default function TermsPage() {
         <div className="space-y-6 text-gray-300">
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Acceptance of Terms</h2>
-            <p>By using QuantumShield, you agree to these terms. If you don't agree, please don't use our service.</p>
+            <p>By using AdamasVault, you agree to these terms. If you don't agree, please don't use our service.</p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Service Description</h2>
-            <p>QuantumShield provides AI-powered cybersecurity tools to help users identify and protect against online threats, scams, and fraud.</p>
+            <p>AdamasVault provides AI-powered cybersecurity tools to help users identify and protect against online threats, scams, and fraud.</p>
           </section>
 
           <section>
@@ -30,12 +30,12 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Disclaimer</h2>
-            <p>While we strive for accuracy, QuantumShield's threat analysis is provided "as is" without warranties. Always verify critical information independently.</p>
+            <p>While we strive for accuracy, AdamasVault's threat analysis is provided "as is" without warranties. Always verify critical information independently.</p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Limitation of Liability</h2>
-            <p>QuantumShield is not liable for damages resulting from use of the service. We are a security assistance tool, not a guarantee against all threats.</p>
+            <p>AdamasVault is not liable for damages resulting from use of the service. We are a security assistance tool, not a guarantee against all threats.</p>
           </section>
 
           <section>
@@ -45,7 +45,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Contact</h2>
-            <p>Questions: <a href="mailto:quantumshield4india@gmail.com" className="text-blue-400 hover:text-blue-300">quantumshield4india@gmail.com</a></p>
+            <p>Questions: <a href="mailto:AdamasVault4india@gmail.com" className="text-blue-400 hover:text-blue-300">AdamasVault4india@gmail.com</a></p>
           </section>
         </div>
       </div>

@@ -27,7 +27,7 @@ export default function DataBreachChecker({ lang = 'en' }: { lang?: 'en' | 'hi' 
       breachedText: 'This email appeared in the following breached services. Change those passwords now.',
       safeTitle: '✅ Good news — no known breaches',
       safeText: 'This email does not appear in any publicly known data breach. Keep using strong, unique passwords.',
-      privacy: 'Your email is checked against the public XposedOrNot database and is never stored by QuantumShield.',
+      privacy: 'Your email is checked against the public XposedOrNot database and is never stored by AdamasVault.',
       alsoCheck: 'You can also cross-check on',
       whatToDo: 'What to Do If Breached',
       steps: [
@@ -50,7 +50,7 @@ export default function DataBreachChecker({ lang = 'en' }: { lang?: 'en' | 'hi' 
       breachedText: 'यह ईमेल इन सेवाओं के डेटा उल्लंघन में मिला। उन पासवर्ड को तुरंत बदलें।',
       safeTitle: '✅ अच्छी खबर — कोई ज्ञात उल्लंघन नहीं',
       safeText: 'यह ईमेल किसी सार्वजनिक रूप से ज्ञात डेटा उल्लंघन में नहीं मिला। मजबूत, अद्वितीय पासवर्ड उपयोग करते रहें।',
-      privacy: 'आपका ईमेल सार्वजनिक XposedOrNot डेटाबेस से जांचा जाता है और QuantumShield द्वारा कभी संग्रहीत नहीं किया जाता।',
+      privacy: 'आपका ईमेल सार्वजनिक XposedOrNot डेटाबेस से जांचा जाता है और AdamasVault द्वारा कभी संग्रहीत नहीं किया जाता।',
       alsoCheck: 'आप यहां भी जांच सकते हैं',
       whatToDo: 'यदि उल्लंघन हो तो क्या करें',
       steps: [

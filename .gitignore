@@ -48,3 +48,9 @@ android/*.keystore
 android/keystore.properties
 android/keystore-base64.txt
 scripts/b64.js
+
+.vercel
+.env*.local
+
+# Claude Code local worktrees
+.claude/

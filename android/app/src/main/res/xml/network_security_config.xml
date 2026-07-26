@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Network Security Config for QuantumShield
+    Network Security Config for AdamasVault
     - Forces HTTPS only (no cleartext)
     - Trusts system + user CAs for development
     - Pins production domain for extra protection
 -->
 <network-security-config>
     <domain-config cleartextTrafficPermitted="false">
-        <domain includeSubdomains="true">quantumshield.in</domain>
+        <domain includeSubdomains="true">AdamasVault.in</domain>
     </domain-config>
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>

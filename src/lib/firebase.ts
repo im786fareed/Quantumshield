@@ -1,5 +1,5 @@
 /* =========================================================
-   QuantumShield – Firebase initialisation (client-side)
+   AdamasVault – Firebase initialisation (client-side)
 
    Reads config from NEXT_PUBLIC_FIREBASE_* environment variables.
    These are PUBLIC by design (Firebase web config is not a secret —

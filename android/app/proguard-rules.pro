@@ -1,4 +1,4 @@
-# QuantumShield ProGuard Rules
+# AdamasVault ProGuard Rules
 # Applied when minifyEnabled = true in release build
 
 # Keep line numbers for crash reporting

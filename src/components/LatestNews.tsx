@@ -431,7 +431,7 @@ export default function LatestNews(_props?: Props) {
         <p className="text-gray-300 text-sm mb-4">{isEn ? 'Share these alerts with family and friends' : 'इन अलर्ट को परिवार और दोस्तों के साथ साझा करें'}</p>
         <button
           onClick={() => {
-            const msg = 'QuantumShield Scam Alert: Stay updated on latest cyber threats worldwide! https://quantumshield.vercel.app/news';
+            const msg = 'AdamasVault Scam Alert: Stay updated on latest cyber threats worldwide! https://AdamasVault.vercel.app/news';
             if (navigator.share) { navigator.share({ text: msg }); } else { navigator.clipboard.writeText(msg); }
           }}
           className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full font-bold hover:scale-105 transition"

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 /* =========================================================
-   QuantumShield Sentinel — Privacy & Surveillance Inspection
+   AdamasVault Sentinel — Privacy & Surveillance Inspection
    Honest, on-device privacy sweep. Every functional module uses
    a REAL capability of the phone/browser:
      • AI Room Inspector  → Gemini vision: ~10 s video sweep
@@ -870,8 +870,8 @@ function HardwareRoadmap({ lang }: { lang: Lang }) {
       <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-[13px] text-gray-300 leading-relaxed flex gap-2">
         <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
         {L(lang,
-          "These modules need hardware a phone doesn't have, or access the platform blocks. We'd rather show them as honest roadmap than fake a reading — that's the QuantumShield promise.",
-          'इन मॉड्यूल्स को ऐसा हार्डवेयर चाहिए जो फ़ोन में नहीं है, या जिसे प्लेटफ़ॉर्म रोकता है। नकली रीडिंग दिखाने के बजाय हम इन्हें ईमानदार रोडमैप के रूप में दिखाते हैं — यही QuantumShield का वादा है।')}
+          "These modules need hardware a phone doesn't have, or access the platform blocks. We'd rather show them as honest roadmap than fake a reading — that's the AdamasVault promise.",
+          'इन मॉड्यूल्स को ऐसा हार्डवेयर चाहिए जो फ़ोन में नहीं है, या जिसे प्लेटफ़ॉर्म रोकता है। नकली रीडिंग दिखाने के बजाय हम इन्हें ईमानदार रोडमैप के रूप में दिखाते हैं — यही AdamasVault का वादा है।')}
       </div>
       {HARDWARE.map((h, i) => (
         <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 flex gap-3 opacity-90">
@@ -1033,7 +1033,7 @@ export default function SentinelHub() {
           <Globe className="w-3.5 h-3.5" /> {lang === 'en' ? 'हिं' : 'EN'}
         </button>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[11px] font-black uppercase tracking-widest mb-3">
-          <ShieldCheck className="w-4 h-4" /> QuantumShield Sentinel
+          <ShieldCheck className="w-4 h-4" /> AdamasVault Sentinel
         </div>
         <h1 className="text-3xl font-black tracking-tight">{L(lang, 'Privacy & Surveillance Sweep', 'निजता और निगरानी स्वीप')}</h1>
         <p className="text-sm text-gray-400 mt-2 max-w-md mx-auto leading-relaxed">{L(lang,

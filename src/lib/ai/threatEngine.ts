@@ -1,4 +1,4 @@
-// Deterministic threat engine for QuantumShield's server rule-engine fallback.
+// Deterministic threat engine for AdamasVault's server rule-engine fallback.
 // Uses the shared India-scam corpus (src/lib/security/scamPatterns.ts) — the
 // same phrases the AI Call Analyzer uses — so message, SMS and call detection
 // all agree when the AI engine is unavailable.

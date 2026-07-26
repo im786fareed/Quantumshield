@@ -28,7 +28,7 @@ const CONTENT = {
       'If a scam call is pressuring you right now, tap a contact below to send them a prewritten alert by WhatsApp or SMS. You stay in control — nothing is ever sent automatically.',
     noContactsYet: 'Add up to 3 trusted contacts to enable one-tap alerts.',
     honestyNote:
-      'QuantumShield does not monitor your calls or send alerts by itself — a web app cannot do that honestly. This tool makes it fast for YOU to call for help.',
+      'AdamasVault does not monitor your calls or send alerts by itself — a web app cannot do that honestly. This tool makes it fast for YOU to call for help.',
 
     maxContacts: 'You can add a maximum of 3 trusted contacts.',
 
@@ -44,7 +44,7 @@ const CONTENT = {
     remove: 'Remove',
 
     alertMessage:
-      '🚨 EMERGENCY ALERT from QuantumShield\n\nI may be targeted by a scam call (possible digital arrest / fraud). Please call me RIGHT NOW and stay on the line with me.\n\nIf you cannot reach me: Police 100, Cybercrime helpline 1930.',
+      '🚨 EMERGENCY ALERT from AdamasVault\n\nI may be targeted by a scam call (possible digital arrest / fraud). Please call me RIGHT NOW and stay on the line with me.\n\nIf you cannot reach me: Police 100, Cybercrime helpline 1930.',
 
     nationalHelplines: 'National Emergency Helplines',
     callNow: 'Call Now',
@@ -74,7 +74,7 @@ const CONTENT = {
       'अगर अभी कोई स्कैम कॉल आप पर दबाव डाल रही है, तो नीचे किसी संपर्क पर टैप करके WhatsApp या SMS से पहले से लिखा अलर्ट भेजें। नियंत्रण आपके पास है — कुछ भी अपने आप नहीं भेजा जाता।',
     noContactsYet: 'एक-टैप अलर्ट के लिए 3 तक विश्वसनीय संपर्क जोड़ें।',
     honestyNote:
-      'QuantumShield आपकी कॉल की निगरानी नहीं करता और न ही खुद अलर्ट भेजता है — वेब ऐप ईमानदारी से ऐसा नहीं कर सकता। यह टूल आपके लिए मदद मांगना तेज़ बनाता है।',
+      'AdamasVault आपकी कॉल की निगरानी नहीं करता और न ही खुद अलर्ट भेजता है — वेब ऐप ईमानदारी से ऐसा नहीं कर सकता। यह टूल आपके लिए मदद मांगना तेज़ बनाता है।',
 
     maxContacts: 'आप केवल 3 विश्वसनीय संपर्क जोड़ सकते हैं।',
 
@@ -90,7 +90,7 @@ const CONTENT = {
     remove: 'हटाएं',
 
     alertMessage:
-      '🚨 आपातकालीन अलर्ट (QuantumShield)\n\nमुझ पर स्कैम कॉल (संभावित डिजिटल अरेस्ट/धोखाधड़ी) का दबाव हो सकता है। कृपया मुझे अभी कॉल करें और लाइन पर बने रहें।\n\nसंपर्क न हो तो: पुलिस 100, साइबर क्राइम 1930।',
+      '🚨 आपातकालीन अलर्ट (AdamasVault)\n\nमुझ पर स्कैम कॉल (संभावित डिजिटल अरेस्ट/धोखाधड़ी) का दबाव हो सकता है। कृपया मुझे अभी कॉल करें और लाइन पर बने रहें।\n\nसंपर्क न हो तो: पुलिस 100, साइबर क्राइम 1930।',
 
     nationalHelplines: 'राष्ट्रीय हेल्पलाइन',
     callNow: 'कॉल करें',
@@ -132,7 +132,7 @@ export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
   const t = CONTENT[lang];
 
   useEffect(() => {
-    const saved = localStorage.getItem('quantumshield_trusted_contacts');
+    const saved = localStorage.getItem('AdamasVault_trusted_contacts');
     if (saved) {
       try { setTrustedContacts(JSON.parse(saved)); } catch { /* corrupt entry — start fresh */ }
     }
@@ -147,7 +147,7 @@ export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
 
     const updated = [...trustedContacts, newContact];
     setTrustedContacts(updated);
-    localStorage.setItem('quantumshield_trusted_contacts', JSON.stringify(updated));
+    localStorage.setItem('AdamasVault_trusted_contacts', JSON.stringify(updated));
 
     setNewContact({ name: '', phone: '', relation: '' });
     setShowAddContact(false);
@@ -156,7 +156,7 @@ export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
   const removeTrustedContact = (index: number) => {
     const updated = trustedContacts.filter((_, i) => i !== index);
     setTrustedContacts(updated);
-    localStorage.setItem('quantumshield_trusted_contacts', JSON.stringify(updated));
+    localStorage.setItem('AdamasVault_trusted_contacts', JSON.stringify(updated));
   };
 
   const encodedAlert = encodeURIComponent(t.alertMessage);

@@ -10,7 +10,7 @@ export default function DisclaimerPage() {
         <div className="space-y-6 text-gray-300">
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">No Guarantee of Protection</h2>
-            <p>QuantumShield provides security analysis tools to help identify potential threats. However, we cannot guarantee 100% protection against all cyber threats.</p>
+            <p>AdamasVault provides security analysis tools to help identify potential threats. However, we cannot guarantee 100% protection against all cyber threats.</p>
           </section>
 
           <section>
@@ -22,7 +22,7 @@ export default function DisclaimerPage() {
             <h2 className="text-2xl font-bold text-white mb-3">Not a Substitute for Official Authorities</h2>
             <ul className="list-disc list-inside space-y-2">
               <li>Always report cybercrimes to official authorities (Call 1930 in India)</li>
-              <li>QuantumShield does not investigate crimes or take legal action</li>
+              <li>AdamasVault does not investigate crimes or take legal action</li>
               <li>We provide tools to assist you in protecting yourself</li>
               <li>For emergencies, contact local police (100) or cybercrime helpline (1930)</li>
             </ul>
@@ -50,7 +50,7 @@ export default function DisclaimerPage() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">User Responsibility</h2>
-            <p>Users are responsible for their own security practices. QuantumShield is a supplementary tool to assist your cybersecurity awareness.</p>
+            <p>Users are responsible for their own security practices. AdamasVault is a supplementary tool to assist your cybersecurity awareness.</p>
           </section>
 
           <section className="bg-red-500/10 border border-red-500/50 rounded-xl p-6">
@@ -66,7 +66,7 @@ export default function DisclaimerPage() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Contact</h2>
-            <p>For support or questions: <a href="mailto:quantumshield4india@gmail.com" className="text-blue-400 hover:text-blue-300">quantumshield4india@gmail.com</a></p>
+            <p>For support or questions: <a href="mailto:AdamasVault4india@gmail.com" className="text-blue-400 hover:text-blue-300">AdamasVault4india@gmail.com</a></p>
           </section>
         </div>
       </div>

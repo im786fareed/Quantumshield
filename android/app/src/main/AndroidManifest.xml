@@ -15,7 +15,7 @@
         <!-- Requires user to grant Notification Access in System Settings    -->
         <service
             android:name=".CircuitBreakerService"
-            android:label="QuantumShield Guardian"
+            android:label="AdamasVault Guardian"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
             android:exported="true">
             <intent-filter>
@@ -52,12 +52,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep links: quantumshield://open -->
+            <!-- Deep links: AdamasVault://open -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="quantumshield.in" />
+                <data android:scheme="https" android:host="AdamasVault.in" />
             </intent-filter>
 
         </activity>

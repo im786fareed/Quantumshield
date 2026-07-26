@@ -185,7 +185,7 @@ export default function LoginScreen() {
             <Shield className="w-9 h-9 text-blue-400" />
           </div>
           <h1 className="text-3xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            QuantumShield
+            AdamasVault
           </h1>
           <p className="text-sm text-gray-500 mt-2">Sign in to continue</p>
         </div>

@@ -32,7 +32,7 @@ export async function safeBrowsingThreats(url: string): Promise<string[] | null>
       headers: { 'Content-Type': 'application/json' },
       signal: AbortSignal.timeout(8_000),
       body: JSON.stringify({
-        client: { clientId: 'quantumshield', clientVersion: '1.0' },
+        client: { clientId: 'AdamasVault', clientVersion: '1.0' },
         threatInfo: {
           threatTypes: [
             'MALWARE',

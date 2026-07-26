@@ -1,6 +1,6 @@
 'use client';
 /* =========================================================
-   QuantumShield – Auth context (client-side)
+   AdamasVault – Auth context (client-side)
    Wraps the app, tracks the signed-in user, and exposes the
    sign-in / sign-out actions used by the login screen, plus
    full multi-factor (2-step verification) support:
@@ -236,8 +236,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!current) throw new Error('Not signed in');
     const session = await multiFactor(current).getSession();
     const secret = await TotpMultiFactorGenerator.generateSecret(session);
-    const account = current.email || current.phoneNumber || 'QuantumShield user';
-    const uri = secret.generateQrCodeUrl(account, 'QuantumShield');
+    const account = current.email || current.phoneNumber || 'AdamasVault user';
+    const uri = secret.generateQrCodeUrl(account, 'AdamasVault');
     return { secret, uri };
   }, []);
 

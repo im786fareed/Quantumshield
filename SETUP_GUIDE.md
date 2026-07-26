@@ -1,4 +1,4 @@
-# QuantumShield — Go-Live Setup Guide
+# AdamasVault — Go-Live Setup Guide
 ## From Code to Play Store in 4 Steps
 
 ---
@@ -13,7 +13,7 @@
    scripts\generate-keystore.ps1   (double-click or run in PowerShell)
    ```
 3. It creates:
-   - `android/quantumshield-release.jks` — your signing key (KEEP SECRET, BACK UP)
+   - `android/AdamasVault-release.jks` — your signing key (KEEP SECRET, BACK UP)
    - `android/keystore.properties` — passwords (KEEP SECRET, never commit)
    - `android/keystore-base64.txt` — base64 string for GitHub Secret
 
@@ -21,17 +21,17 @@
 
 ## Step 2 — Set Up Firebase (Free — for Circuit Breaker FCM alerts)
 
-1. Go to https://console.firebase.google.com → **Add project** → Name: `QuantumShield`
+1. Go to https://console.firebase.google.com → **Add project** → Name: `AdamasVault`
 2. In the project: **Add Android app**
-   - Package name: `com.quantumshield.app`
-   - App nickname: `QuantumShield Android`
+   - Package name: `com.AdamasVault.app`
+   - App nickname: `AdamasVault Android`
 3. Download `google-services.json` → place it in `android/app/google-services.json`
 4. Enable **Cloud Messaging** in Firebase Console → Project Settings → Cloud Messaging
 5. Deploy the Cloud Function:
    ```bash
    npm install -g firebase-tools
    firebase login
-   firebase init functions   # select existing project: QuantumShield
+   firebase init functions   # select existing project: AdamasVault
    firebase deploy --only functions
    ```
 6. Copy your Cloud Function URL and update `CircuitBreakerService.kt`:
@@ -44,7 +44,7 @@
 
 ## Step 3 — Add GitHub Secrets (Powers the Auto-Build)
 
-Go to: **GitHub → im786fareed/Quantumshield → Settings → Secrets and variables → Actions**
+Go to: **GitHub → im786fareed/AdamasVault → Settings → Secrets and variables → Actions**
 
 Add these 7 secrets:
 
@@ -52,7 +52,7 @@ Add these 7 secrets:
 |---|---|---|
 | `KEYSTORE_BASE64` | Content of `android/keystore-base64.txt` | Step 1 script |
 | `KEYSTORE_PASSWORD` | Your keystore password | Step 1 |
-| `KEY_ALIAS` | `quantumshield` | Fixed value |
+| `KEY_ALIAS` | `AdamasVault` | Fixed value |
 | `KEY_PASSWORD` | Your key password | Step 1 |
 | `GOOGLE_SERVICES_JSON` | Full content of `google-services.json` | Step 2 |
 | `GEMINI_API_KEY` | Your Gemini API key | Google AI Studio |
@@ -71,11 +71,11 @@ Add these 7 secrets:
 Every push to `main` automatically builds a signed AAB + APK.
 
 1. Push any change → GitHub Actions runs (~8 min)
-2. Go to **Actions** tab → download `QuantumShield-release-N.aab`
+2. Go to **Actions** tab → download `AdamasVault-release-N.aab`
 
 ### Submit to Play Store:
 1. Go to https://play.google.com/console
-2. Create app → Package: `com.quantumshield.app`
+2. Create app → Package: `com.AdamasVault.app`
 3. **Production → Create new release → Upload AAB**
 4. Fill in store listing (see `PLAYSTORE_SUBMISSION.md` for all copy)
 5. Submit for review (~3–7 days)
@@ -86,12 +86,12 @@ Every push to `main` automatically builds a signed AAB + APK.
 
 | Field | Value |
 |---|---|
-| Package Name | `com.quantumshield.app` |
+| Package Name | `com.AdamasVault.app` |
 | Version | 1.2 (versionCode 3) |
 | Min Android | 7.0 (API 24) |
 | Target Android | Android 15 (API 36) |
 | Category | Tools / Safety |
-| Privacy Policy | https://quantumshield.in/privacy |
+| Privacy Policy | https://AdamasVault.in/privacy |
 
 ---
 
@@ -100,7 +100,7 @@ Every push to `main` automatically builds a signed AAB + APK.
 When users first open the app, guide them to:
 1. **Safety Circle** → Add 3 emergency contacts (WhatsApp numbers)
 2. **Activate Guardian** → Toggle in Circuit Breaker
-3. **Grant Notification Access** → Settings → Apps → Special App Access → Notification Access → QuantumShield ✓
+3. **Grant Notification Access** → Settings → Apps → Special App Access → Notification Access → AdamasVault ✓
 4. **Test Alert** → Send a test WhatsApp message to confirm it works
 
 ---
@@ -109,8 +109,8 @@ When users first open the app, guide them to:
 
 | Service | URL |
 |---|---|
-| Web App | https://quantumshield.in |
-| Circuit Breaker | https://quantumshield.in/circuit-breaker |
-| GitHub | https://github.com/im786fareed/Quantumshield |
-| Privacy Policy | https://quantumshield.in/privacy |
+| Web App | https://AdamasVault.in |
+| Circuit Breaker | https://AdamasVault.in/circuit-breaker |
+| GitHub | https://github.com/im786fareed/AdamasVault |
+| Privacy Policy | https://AdamasVault.in/privacy |
 | Cybercrime Helpline | 1930 |

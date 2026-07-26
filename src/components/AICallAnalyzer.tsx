@@ -98,7 +98,7 @@ interface ForensicLog {
 // ─── TRANSLATION DICTIONARY (BILINGUAL EN/HI) ──────────────────────────────────
 const T = {
   en: {
-    title: "QuantumShield AI Call & Deepfake Analyzer",
+    title: "AdamasVault AI Call & Deepfake Analyzer",
     subtitle: "State-of-the-art on-device bio-acoustic audits, real-time speech pattern transcribers, visual facial scan layers, and offline file forensics.",
     tabVoice: "Voice Spectrogram",
     tabScam: "Scam Transcriber",
@@ -158,7 +158,7 @@ const T = {
     forensicLogs: "Forensic Analysis Log Feed",
     scannedTitle: "Audit Target File",
     threatLevel: "Deepfake Threat Level",
-    certHeader: "QuantumShield Forensic Certificate of Authenticity",
+    certHeader: "AdamasVault Forensic Certificate of Authenticity",
     certPassed: "CERTIFICATE VERIFIED: HUMAN SIGNAL",
     certFailed: "ALERT: MULTIPLE SYNTHETIC SIGNATURES FOUND",
     certDesc: "This file has undergone spectral decomposition, compression quantization check, and voice model profile matching.",
@@ -166,12 +166,12 @@ const T = {
 
     // General
     backToHome: "Back to Dashboard",
-    disclaimer: "QuantumShield operates 100% locally. No audio, transcript, or camera stream is ever sent to servers. Your privacy is absolute.",
+    disclaimer: "AdamasVault operates 100% locally. No audio, transcript, or camera stream is ever sent to servers. Your privacy is absolute.",
     riskScore: "Threat Score",
     confidence: "Diagnostic Certainty"
   },
   hi: {
-    title: "क्वांटमशील्ड AI कॉल और डीपफेक विश्लेषक",
+    title: "AdamasVault AI कॉल और डीपफेक विश्लेषक",
     subtitle: "ऑन-डिवाइस रीयल-टाइम वॉयस स्पेक्ट्रोग्राम, स्कैम कॉल ट्रैकर, बायोमेट्रिक वीडियो ऑडिट और फोरेंसिक फाइल विश्लेषण।",
     tabVoice: "वॉयस स्पेक्ट्रोग्राम",
     tabScam: "स्कैम ट्रैकर",
@@ -231,7 +231,7 @@ const T = {
     forensicLogs: "फोरेंसिक विश्लेषण लॉग फीड",
     scannedTitle: "ऑडिट टारगेट फ़ाइल",
     threatLevel: "डीपफेक खतरा स्तर",
-    certHeader: "क्वांटमशील्ड फोरेंसिक प्रामाणिकता प्रमाण पत्र",
+    certHeader: "AdamasVault फोरेंसिक प्रामाणिकता प्रमाण पत्र",
     certPassed: "प्रमाण पत्र सत्यापित: मानव सिग्नल",
     certFailed: "चेतावनी: कई कृत्रिम एआई प्रोफाइल पाए गए",
     certDesc: "यह फ़ाइल स्पेक्ट्रल डीकंपोज़िशन, कंप्रेशन क्वांटिज़ेशन जांच और वॉयस मॉडल मिलान से गुजर चुकी है।",
@@ -239,7 +239,7 @@ const T = {
 
     // General
     backToHome: "डैशबोर्ड पर वापस जाएं",
-    disclaimer: "क्वांटमशील्ड 100% स्थानीय स्तर पर काम करता है। कोई भी ऑडियो, रिकॉर्डिंग, या कैमरा फीड बाहरी सर्वर पर नहीं भेजी जाती।",
+    disclaimer: "AdamasVault 100% स्थानीय स्तर पर काम करता है। कोई भी ऑडियो, रिकॉर्डिंग, या कैमरा फीड बाहरी सर्वर पर नहीं भेजी जाती।",
     riskScore: "खतरा स्कोर",
     confidence: "सटीकता दर"
   }
@@ -1863,7 +1863,7 @@ export default function AICallAnalyzer() {
             Secure Cryptographic Diagnostics Suite · Version 4.1.0-Forensic
           </p>
           <p className="text-[10px] text-gray-800">
-            QuantumShield Client Sandbox protected. All rights reserved.
+            AdamasVault Client Sandbox protected. All rights reserved.
           </p>
         </div>
       </div>

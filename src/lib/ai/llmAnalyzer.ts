@@ -1,5 +1,5 @@
 /* =========================================================
-   QuantumShield – LLM Scam Analyzer (real AI engine)
+   AdamasVault – LLM Scam Analyzer (real AI engine)
    Server-side only. Uses the Google Gemini API to classify
    scam/fraud content with multilingual understanding
    (English, Hindi, Hinglish, regional languages).
@@ -27,7 +27,7 @@ export interface LlmAnalysis {
 // Can be switched to "gemini-2.5-pro" for higher accuracy at higher cost.
 const MODEL = "gemini-2.5-flash";
 
-const SYSTEM_PROMPT = `You are the detection engine of QuantumShield, a cyber-fraud protection app for users in India. You analyze a message, call transcript, or text snippet and decide whether it is a scam.
+const SYSTEM_PROMPT = `You are the detection engine of AdamasVault, a cyber-fraud protection app for users in India. You analyze a message, call transcript, or text snippet and decide whether it is a scam.
 
 You are an expert on fraud patterns targeting Indians, including:
 - "Digital arrest" scams (fake CBI/police/customs/narcotics officers on WhatsApp or Skype video calls, fake arrest warrants, demands to stay on the line, "money laundering case", "illegal parcel")

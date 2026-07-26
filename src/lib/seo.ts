@@ -9,7 +9,7 @@ export function createMetadata({
   description: string;
   path: string;
 }): Metadata {
-  const baseUrl = "https://quantumshield.in";
+  const baseUrl = "https://AdamasVault.in";
 
   return {
     title,
@@ -21,7 +21,7 @@ export function createMetadata({
       title,
       description,
       url: `${baseUrl}${path}`,
-      siteName: "QuantumShield",
+      siteName: "AdamasVault",
       type: "website",
     },
     twitter: {

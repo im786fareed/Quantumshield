@@ -125,7 +125,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
       callEnded: 'Call Ended — Clear Protocol',
 
       protocolTitle: 'Distress Protocol',
-      protocolDesc: 'When triggered, Quantum Shield sends a critical alert to your entire Safety Circle via WhatsApp.',
+      protocolDesc: 'When triggered, AdamasVault sends a critical alert to your entire Safety Circle via WhatsApp.',
       sendTest: 'Send Test Alert',
       testSent: 'Test Sent!',
       sendDistress: 'TRIGGER DISTRESS SIGNAL NOW',
@@ -189,7 +189,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
       callEnded: 'कॉल समाप्त — प्रोटोकॉल बंद',
 
       protocolTitle: 'डिस्ट्रेस प्रोटोकॉल',
-      protocolDesc: 'ट्रिगर होने पर, QuantumShield आपके पूरे Safety Circle को WhatsApp के जरिए क्रिटिकल अलर्ट भेजता है।',
+      protocolDesc: 'ट्रिगर होने पर, AdamasVault आपके पूरे Safety Circle को WhatsApp के जरिए क्रिटिकल अलर्ट भेजता है।',
       sendTest: 'टेस्ट अलर्ट भेजें',
       testSent: 'टेस्ट भेजा!',
       sendDistress: 'अभी डिस्ट्रेस सिग्नल भेजें',
@@ -358,15 +358,15 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
         contacts.forEach(c => {
           if (c.whatsapp) {
             const msg = mode === 'test'
-              ? `🧪 [TEST] QuantumShield Circuit Breaker — Safety check from ${c.name || 'your contact'}. You can ignore this message.`
-              : `🚨 *QUANTUM SHIELD — CIRCUIT BREAKER ALERT*\n\n` +
+              ? `🧪 [TEST] AdamasVault Circuit Breaker — Safety check from ${c.name || 'your contact'}. You can ignore this message.`
+              : `🚨 *AdamasVault — CIRCUIT BREAKER ALERT*\n\n` +
                 `*${c.name}*, this is an automated distress signal.\n\n` +
                 `Your contact has been in an *unverified call (${callerLabel}) for 6+ hours* and is unreachable.\n\n` +
                 `📍 Last known location: ${mapsUrl}\n\n` +
                 `🌍 Shield Region: *${countryInfo.flag} ${countryInfo.name}*\n\n` +
                 `⚠️ Possible *Virtual Kidnapping / Digital Arrest* scam.\n\n` +
                 `Please call them immediately or contact:\n${cyberLine}\n• ${cyberAgency}\n• Portal: ${cyberPortal}\n\n` +
-                `— QuantumShield Global Guardian · Anti-Isolation Protocol`;
+                `— AdamasVault Global Guardian · Anti-Isolation Protocol`;
             const phone = c.phone.replace(/\D/g, '');
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
           }
@@ -379,8 +379,8 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
         contacts.forEach(c => {
           if (c.whatsapp) {
             const msg = mode === 'test'
-              ? `🧪 [TEST] QuantumShield Circuit Breaker test alert.`
-              : `🚨 *QUANTUM SHIELD — CIRCUIT BREAKER ALERT*\n\n` +
+              ? `🧪 [TEST] AdamasVault Circuit Breaker test alert.`
+              : `🚨 *AdamasVault — CIRCUIT BREAKER ALERT*\n\n` +
                 `*${c.name}*, your contact has been isolated in an unknown call for 6+ hours. Please reach them immediately.\n\n` +
                 `🌍 Shield Region: *${countryInfo.flag} ${countryInfo.name}*\n${cyberLine}\nPortal: ${cyberPortal}`;
             const phone = c.phone.replace(/\D/g, '');

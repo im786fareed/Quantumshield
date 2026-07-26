@@ -1,5 +1,5 @@
 /**
- * Brand-impersonation registry for QuantumShield's URL engine.
+ * Brand-impersonation registry for AdamasVault's URL engine.
  *
  * Scammers rarely reuse a URL long enough to land in a blocklist — but they
  * almost always impersonate a trusted Indian brand in the domain (sbi-kyc.xyz,

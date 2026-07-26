@@ -42,7 +42,7 @@ export default function TabClient({ params }: Props) {
       <div className="text-center py-20 space-y-4">
         <h2 className="text-3xl font-black text-rose-500 tracking-tight">SECURITY ENDPOINT UNRESOLVED</h2>
         <p className="text-gray-400 max-w-md mx-auto text-base">
-          The requested QuantumShield dynamic forensics component <code className="text-cyan-400 font-mono">/{tab}</code> does not exist or has been relocated.
+          The requested AdamasVault dynamic forensics component <code className="text-cyan-400 font-mono">/{tab}</code> does not exist or has been relocated.
         </p>
       </div>
     );

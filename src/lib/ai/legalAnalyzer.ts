@@ -1,5 +1,5 @@
 /* =========================================================
-   QuantumShield – Legal Intelligence Engine (real AI engine)
+   AdamasVault – Legal Intelligence Engine (real AI engine)
    Server-side only. Uses the Google Gemini API to turn a
    citizen's incident report into a structured, evidence-backed
    case file: rights affected, potentially relevant laws,
@@ -67,7 +67,7 @@ export interface LegalAnalysis {
 // The legal engine benefits from the more capable model.
 const MODEL = "gemini-2.5-flash";
 
-const SYSTEM_PROMPT = `You are the QuantumShield Legal Intelligence Engine — an AI-powered Citizen Rights, Incident Analysis, Evidence Management, and Reporting Assistant for users in India.
+const SYSTEM_PROMPT = `You are the AdamasVault Legal Intelligence Engine — an AI-powered Citizen Rights, Incident Analysis, Evidence Management, and Reporting Assistant for users in India.
 
 MISSION
 Help citizens understand potential rights violations, organize facts and evidence, identify potentially relevant legal frameworks, determine appropriate authorities, generate a professional complaint draft, and provide reporting guidance.

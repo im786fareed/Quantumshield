@@ -1,5 +1,5 @@
 /* =========================================================
-   QuantumShield – Trust Search Verification Engine (real AI)
+   AdamasVault – Trust Search Verification Engine (real AI)
    Server-side only. Uses the Google Gemini API WITH Google
    Search grounding, so every verdict is backed by real,
    current web evidence (official sites, registries, app
@@ -183,7 +183,7 @@ export async function verifyTrust(
   const userParts = [
     `App language (use ONLY when the query's own language is unclear): ${lang === "hi" ? "Hindi" : "English"}. Otherwise reply in the language the query is written in.`,
     technicalSignals.length
-      ? `Real technical signals already computed by QuantumShield (treat as evidence):\n- ${technicalSignals.join("\n- ")}`
+      ? `Real technical signals already computed by AdamasVault (treat as evidence):\n- ${technicalSignals.join("\n- ")}`
       : "",
     `The user's query (either something to verify, or a question to answer with verified details only):\n\n${query.slice(0, 500)}`,
   ]
@@ -304,7 +304,7 @@ export interface AssistTurn {
   text: string;
 }
 
-const ASSIST_PROMPT = `You are the QuantumShield Trust Assistant — a friendly fraud-prevention expert chatting with a non-technical user about a verification result they are looking at. You have Google Search available; search when the user asks something you need current facts for.
+const ASSIST_PROMPT = `You are the AdamasVault Trust Assistant — a friendly fraud-prevention expert chatting with a non-technical user about a verification result they are looking at. You have Google Search available; search when the user asks something you need current facts for.
 
 Rules:
 - Ground every factual claim in search evidence or the verification context provided. If you don't know, say you don't know — NEVER invent contact details, numbers, or URLs.

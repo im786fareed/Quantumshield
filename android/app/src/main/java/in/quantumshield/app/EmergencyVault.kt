@@ -1,4 +1,4 @@
-package in.quantumshield.app
+package in.AdamasVault.app
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -9,7 +9,7 @@ import org.json.JSONObject
 /**
  * EmergencyVault — stores the user's Safety Circle contacts on-device.
  *
- * Contacts are set via the QuantumShield web layer (localStorage) and mirrored
+ * Contacts are set via the AdamasVault web layer (localStorage) and mirrored
  * here by the Capacitor bridge on app launch, or can be written directly
  * from the Android-native onboarding flow.
  */

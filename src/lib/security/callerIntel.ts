@@ -3,7 +3,7 @@
 
    Turns a phone number into an explainable security assessment.
    This module is CLIENT-SAFE: it depends only on libphonenumber-js
-   (lightweight, offline) plus QuantumShield's India scam-rule set.
+   (lightweight, offline) plus AdamasVault's India scam-rule set.
    No number ever leaves the device for this core analysis.
 
    Carrier + telecom-circle enrichment and the optional AI summary

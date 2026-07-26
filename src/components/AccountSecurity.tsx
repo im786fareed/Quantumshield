@@ -1,6 +1,6 @@
 'use client';
 /* =========================================================
-   QuantumShield – Account & Security page body
+   AdamasVault – Account & Security page body
    Shows the signed-in identity and manages 2-step
    verification (MFA):
      • Authenticator app (TOTP) — free, works offline

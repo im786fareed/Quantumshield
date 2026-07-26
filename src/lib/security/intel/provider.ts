@@ -1,5 +1,5 @@
 /**
- * Threat Intelligence Provider interface — QuantumShield is never tied to
+ * Threat Intelligence Provider interface — AdamasVault is never tied to
  * one vendor. Every provider adapter normalises its answer into this one
  * schema; the router (router.ts) fans out, caches and merges.
  *
@@ -22,7 +22,7 @@ export interface IntelResult {
   classification: IntelClassification;
   /** 0–100: how authoritative this specific answer is. */
   confidence: number;
-  /** 0–100 on the QuantumShield risk scale. */
+  /** 0–100 on the AdamasVault risk scale. */
   normalizedRisk: number;
   /** Plain-language detail, e.g. "malware distribution URL (tags: apk, banker)". */
   detail: string;

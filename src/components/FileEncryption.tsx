@@ -94,7 +94,7 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           <Shield className="w-8 h-8 text-cyan-400" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">QuantumShield File Vault</h2>
+          <h2 className="text-2xl font-bold text-white">AdamasVault File Vault</h2>
           <p className="text-slate-400 text-sm">Secure local-only AES-GCM 256-bit encryption</p>
         </div>
       </div>

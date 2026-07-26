@@ -28,7 +28,7 @@ export async function logError(
     };
 
     // Log locally (always)
-    console.error("[QuantumShield Error]", payload);
+    console.error("[AdamasVault Error]", payload);
 
     // OPTIONAL remote logging (safe)
     const { apiUrl } = await import("./apiBase");

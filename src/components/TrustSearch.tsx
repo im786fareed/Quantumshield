@@ -1,7 +1,7 @@
 'use client';
 
 /* =========================================================
-   QuantumShield – Trust Search
+   AdamasVault – Trust Search
    "Verify before you trust."
 
    A global digital-trust lookup: the user enters anything —
@@ -313,9 +313,9 @@ export default function TrustSearch() {
   const doShare = async () => {
     if (!result) return;
     const v = result.verification;
-    const text = `QuantumShield Trust Search — "${v.subjectName}": ${t.status[v.status]}. ${v.summary}`;
+    const text = `AdamasVault Trust Search — "${v.subjectName}": ${t.status[v.status]}. ${v.summary}`;
     try {
-      if (navigator.share) await navigator.share({ title: 'QuantumShield Trust Search', text });
+      if (navigator.share) await navigator.share({ title: 'AdamasVault Trust Search', text });
       else await doCopy(text, 'share');
     } catch { /* user cancelled */ }
   };

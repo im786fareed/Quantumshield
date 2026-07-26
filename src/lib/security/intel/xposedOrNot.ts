@@ -25,7 +25,7 @@ export const xposedOrNotProvider: ThreatIntelProvider = {
     const res = await fetch(
       `https://api.xposedornot.com/v1/check-email/${encodeURIComponent(indicator.toLowerCase())}`,
       {
-        headers: { 'User-Agent': 'QuantumShield-BreachCheck' },
+        headers: { 'User-Agent': 'AdamasVault-BreachCheck' },
         signal: AbortSignal.timeout(15_000),
         cache: 'no-store',
       }

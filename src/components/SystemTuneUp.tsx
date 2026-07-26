@@ -250,7 +250,7 @@ export default function SystemTuneUp({ embedded = false }: { embedded?: boolean 
       guideTitle: activeTab === 'tuneup' ? 'Guided Cleanup Checklist' : 'Real Battery Savings',
       progress: (d: number, total: number) => `${d} of ${total} steps done`,
       honestTitle: 'Why no "one-tap boost" button?',
-      honestBody: 'No app can truly clear your phone\'s system cache or speed up the CPU — apps that claim a one-tap boost show fake numbers, and many are scams or adware. QuantumShield instead measures what is real and walks you through the cleanups that genuinely work.',
+      honestBody: 'No app can truly clear your phone\'s system cache or speed up the CPU — apps that claim a one-tap boost show fake numbers, and many are scams or adware. AdamasVault instead measures what is real and walks you through the cleanups that genuinely work.',
       tab1: 'Cleanup Guide',
       tab2: 'Battery Guide',
     },
@@ -264,7 +264,7 @@ export default function SystemTuneUp({ embedded = false }: { embedded?: boolean 
       guideTitle: activeTab === 'tuneup' ? 'निर्देशित सफाई चेकलिस्ट' : 'वास्तविक बैटरी बचत',
       progress: (d: number, total: number) => `${total} में से ${d} चरण पूर्ण`,
       honestTitle: '"वन-टैप बूस्ट" बटन क्यों नहीं?',
-      honestBody: 'कोई भी ऐप वास्तव में आपके फोन का सिस्टम कैश साफ या CPU तेज़ नहीं कर सकता — "वन-टैप बूस्ट" का दावा करने वाले ऐप्स नकली आंकड़े दिखाते हैं, और कई स्कैम या एडवेयर होते हैं। QuantumShield वही मापता है जो असली है और आपको वे कदम बताता है जो सच में काम करते हैं।',
+      honestBody: 'कोई भी ऐप वास्तव में आपके फोन का सिस्टम कैश साफ या CPU तेज़ नहीं कर सकता — "वन-टैप बूस्ट" का दावा करने वाले ऐप्स नकली आंकड़े दिखाते हैं, और कई स्कैम या एडवेयर होते हैं। AdamasVault वही मापता है जो असली है और आपको वे कदम बताता है जो सच में काम करते हैं।',
       tab1: 'सफाई गाइड',
       tab2: 'बैटरी गाइड',
     }

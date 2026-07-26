@@ -313,7 +313,7 @@ export default function QuantumLocate() {
             )}
             {!enrich && (
               <p className="text-[11px] text-slate-500 mt-2 text-center">
-                {en ? 'This sends the number to QuantumShield servers for carrier/circle metadata.' : 'यह कैरियर/सर्कल मेटाडेटा के लिए नंबर QuantumShield सर्वर पर भेजता है।'}
+                {en ? 'This sends the number to AdamasVault servers for carrier/circle metadata.' : 'यह कैरियर/सर्कल मेटाडेटा के लिए नंबर AdamasVault सर्वर पर भेजता है।'}
               </p>
             )}
             {enrichError && (

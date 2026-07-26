@@ -9,7 +9,7 @@ const ACTIVITY_KEY = 'qs_activity';
 // Keys already written by other real features — we only READ these.
 const EDUCATION_WATCHED_KEY = 'qs_education_watched';
 const SAFETY_CIRCLE_KEY = 'qs_cb_safety_circle';
-const TRUSTED_CONTACTS_KEY = 'quantumshield_trusted_contacts';
+const TRUSTED_CONTACTS_KEY = 'AdamasVault_trusted_contacts';
 
 type ActivityStore = {
   checks: number;     // total scans the user has actually run

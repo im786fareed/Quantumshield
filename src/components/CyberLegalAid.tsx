@@ -38,7 +38,7 @@ const DIGITAL_ARREST_STEPS = [
     step: 3,
     title: 'Record Evidence',
     titleHi: 'सबूत रिकॉर्ड करें',
-    desc: 'Screenshot the call, save the phone number, note the time & what was said. Evidence is critical for filing an FIR. Use the QuantumShield Evidence Vault.',
+    desc: 'Screenshot the call, save the phone number, note the time & what was said. Evidence is critical for filing an FIR. Use the AdamasVault Evidence Vault.',
     descHi: 'कॉल का स्क्रीनशॉट, नंबर, और समय नोट करें। सबूत FIR के लिए जरूरी है।',
     action: 'Open Evidence Vault →',
     actionHi: 'एविडेंस वॉल्ट खोलें →',
@@ -379,11 +379,11 @@ export default function CyberLegalAid() {
               })}
             </div>
 
-            {/* QuantumShield internal tools */}
+            {/* AdamasVault internal tools */}
             <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/30 rounded-2xl p-5">
               <h3 className="font-bold mb-4 flex items-center gap-2 text-blue-400">
                 <Shield className="w-5 h-5" />
-                QuantumShield Tools for Legal Cases
+                AdamasVault Tools for Legal Cases
               </h3>
               <div className="space-y-3">
                 <Link href="/evidence" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">

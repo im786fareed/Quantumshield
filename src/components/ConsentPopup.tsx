@@ -36,7 +36,7 @@ export default function ConsentPopup() {
         </h2>
 
         <p className="text-sm text-slate-400 text-center mb-8 leading-relaxed">
-          To protect you from "Digital Arrest" scams, QuantumShield needs your permission for two local-only features:
+          To protect you from "Digital Arrest" scams, AdamasVault needs your permission for two local-only features:
         </p>
 
         <div className="space-y-4 mb-8">

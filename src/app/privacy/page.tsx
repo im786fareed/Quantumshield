@@ -37,7 +37,7 @@ export default function PrivacyPage() {
               <Lock className="w-6 h-6 text-indigo-400" /> Our Privacy Promise
             </h2>
             <p className="leading-relaxed">
-              QuantumShield is built <strong>local-first</strong>. We do <strong>not</strong> store your
+              AdamasVault is built <strong>local-first</strong>. We do <strong>not</strong> store your
               scans, messages, recordings, or evidence on our servers, and we never sell your data.
               To analyse a threat in real time, some of what you submit is sent securely to trusted
               processing services (listed below), used only to produce your result, and then discarded —
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
               <UserCheck className="w-6 h-6 text-indigo-400" /> Accounts &amp; Sign-In
             </h2>
             <p className="leading-relaxed text-sm">
-              Account sign-in is <strong>not currently enabled</strong> — you can use QuantumShield
+              Account sign-in is <strong>not currently enabled</strong> — you can use AdamasVault
               without creating an account. If we add optional accounts in a future update (for example,
               to let you sync your cases across devices), your login details would be managed by
               <strong> Google Firebase Authentication</strong>, and only your account identity — never
@@ -135,10 +135,10 @@ export default function PrivacyPage() {
             </h2>
             <p>For privacy inquiries or technical support:</p>
             <a
-              href="mailto:quantumshield4india@gmail.com"
+              href="mailto:AdamasVault4india@gmail.com"
               className="text-blue-400 hover:text-blue-300 font-bold underline underline-offset-4"
             >
-              quantumshield4india@gmail.com
+              AdamasVault4india@gmail.com
             </a>
           </section>
         </div>

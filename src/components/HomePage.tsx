@@ -161,8 +161,8 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
   /* ── i18n ── */
   const t = {
     en: {
-      title: 'QuantumShield',
-      pitch: 'QuantumShield:',
+      title: 'AdamasVault',
+      pitch: 'AdamasVault:',
       pitchAccent: 'AI cyber defender for you & your loved ones.',
       tagline: 'AI-powered protection during the scam, not after',
       runCheck: 'Run Security Check',
@@ -191,8 +191,8 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
       trustHelp: 'Helpline 1930', trustHelpSub: 'One-tap national line',
     },
     hi: {
-      title: 'क्वांटमशील्ड',
-      pitch: 'क्वांटमशील्ड:',
+      title: 'AdamasVault',
+      pitch: 'AdamasVault:',
       pitchAccent: 'आपके और आपके अपनों के लिए AI साइबर रक्षक।',
       tagline: 'स्कैम के दौरान सुरक्षा, बाद में नहीं',
       runCheck: 'सुरक्षा जांच चलाएं',
@@ -251,7 +251,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
     { id: 'whatsapp',   name: 'WhatsApp Guard',     nameHi: 'WhatsApp गार्ड',   description: 'Detect ghost pairing & account hijack',    descriptionHi: 'Ghost pairing पहचान',           icon: MessageSquare, path: '/whatsapp',       category: 'protect' },
     // News, alerts & threat map — one hub
     { id: 'news',       name: 'Scam Intel',         nameHi: 'स्कैम इंटेल',      description: 'News, alerts & live threat map in one feed', descriptionHi: 'समाचार, अलर्ट और लाइव खतरा मैप',  icon: Newspaper,     path: '/news',           category: 'learn' },
-    { id: 'aboutai',    name: 'About Our AI',       nameHi: 'हमारा AI',         description: 'How QuantumShield\'s AI engine works',     descriptionHi: 'AI इंजन कैसे काम करता है',      icon: Brain,         path: '/aboutai',        category: 'more' },
+    { id: 'aboutai',    name: 'About Our AI',       nameHi: 'हमारा AI',         description: 'How AdamasVault\'s AI engine works',     descriptionHi: 'AI इंजन कैसे काम करता है',      icon: Brain,         path: '/aboutai',        category: 'more' },
   ];
 
   /* ── Real I4C 2025 stats — animated count-up, source cited ── */
@@ -337,7 +337,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
               <div className="qs-ring relative w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-600/30 to-purple-600/30 border border-blue-500/40 flex items-center justify-center">
                 <img
                   src="/logo.png"
-                  alt="QuantumShield logo"
+                  alt="AdamasVault logo"
                   width={96}
                   height={96}
                   className="w-16 h-16 object-contain"

@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import EmergencyContact from "@/components/EmergencyContact";
 
 export const metadata: Metadata = {
-  title: "Emergency Protection & Helpline | QuantumShield",
+  title: "Emergency Protection & Helpline | AdamasVault",
   description:
     "Get instant emergency help, scam alerts, and trusted contact protection.",
   openGraph: {
-    title: "Emergency Protection – QuantumShield",
+    title: "Emergency Protection – AdamasVault",
     description:
       "Immediate help during scams, fraud, and cyber emergencies.",
-    url: "https://quantumshield.in/emergency",
-    siteName: "QuantumShield",
+    url: "https://AdamasVault.in/emergency",
+    siteName: "AdamasVault",
     type: "website",
   },
 };

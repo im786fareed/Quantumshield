@@ -1,4 +1,4 @@
-package in.quantumshield.app
+package in.AdamasVault.app
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -144,7 +144,7 @@ class CircuitBreakerService : NotificationListenerService() {
 
         val notif = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setContentTitle("QuantumShield: Are you safe?")
+            .setContentTitle("AdamasVault: Are you safe?")
             .setContentText("You have been in an unknown call for 5+ hours. Tap if you are safe to reset the timer.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(0, "I AM SAFE — Reset Timer", resetPending)
@@ -169,12 +169,12 @@ class CircuitBreakerService : NotificationListenerService() {
         // Fallback: WhatsApp deep-link (fires even if Firebase is unreachable)
         contacts.filter { it.whatsapp }.forEach { c ->
             val phone = c.phone.replace(Regex("\\D"), "")
-            val msg = "🚨 QUANTUM SHIELD — CIRCUIT BREAKER ALERT\n\n" +
+            val msg = "🚨 AdamasVault — CIRCUIT BREAKER ALERT\n\n" +
                 "Your contact has been in an unknown call ($callerLabel) for 6+ hours " +
                 "and is unreachable from your number.\n\n" +
                 "⚠️ Possible Virtual Kidnapping / Digital Arrest scam.\n\n" +
                 "Call immediately or contact:\n• Cybercrime: 1930\n• Police: 100\n\n" +
-                "— QuantumShield Anti-Isolation Protocol"
+                "— AdamasVault Anti-Isolation Protocol"
 
             val uri = Uri.parse("https://wa.me/$phone?text=${Uri.encode(msg)}")
             val intent = Intent(Intent.ACTION_VIEW, uri).apply {

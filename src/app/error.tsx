@@ -27,7 +27,7 @@ export default function Error({
         </h1>
 
         <p className="text-gray-400 mb-6">
-          QuantumShield safely caught an error. You can retry or return home.
+          AdamasVault safely caught an error. You can retry or return home.
         </p>
 
         <div className="flex gap-4 justify-center">

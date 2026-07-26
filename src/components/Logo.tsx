@@ -4,7 +4,7 @@ export default function Logo({ className = "w-8 h-8" }: { className?: string }) 
   return (
     <Image
       src="/logo.png"
-      alt="QuantumShield Logo"
+      alt="AdamasVault Logo"
       width={512}
       height={512}
       className={className}

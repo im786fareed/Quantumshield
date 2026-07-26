@@ -18,23 +18,23 @@ interface Threat {
 const CONTENT = {
   en: {
     title: 'Threat Pattern Library',
-    subtitle: 'The documented scam patterns QuantumShield checks every scan against',
+    subtitle: 'The documented scam patterns AdamasVault checks every scan against',
     protected: 'Detection Patterns',
     howTitle: 'How this library works:',
-    how: 'These patterns are built into QuantumShield\'s detection engines — the rule engine that runs on every scan, and the AI engine (when configured) that reads messages the way a fraud investigator would. The library is curated from public advisories (CERT-In, I4C, cybercrime.gov.in) and ships with app updates — it is not a live feed.',
+    how: 'These patterns are built into AdamasVault\'s detection engines — the rule engine that runs on every scan, and the AI engine (when configured) that reads messages the way a fraud investigator would. The library is curated from public advisories (CERT-In, I4C, cybercrime.gov.in) and ships with app updates — it is not a live feed.',
     listTitle: 'Documented Major Scam Patterns',
     documented: 'Documented',
-    protection: 'QuantumShield Protection:',
+    protection: 'AdamasVault Protection:',
   },
   hi: {
     title: 'खतरा पैटर्न लाइब्रेरी',
-    subtitle: 'दस्तावेज़ित स्कैम पैटर्न जिनसे QuantumShield हर स्कैन की जांच करता है',
+    subtitle: 'दस्तावेज़ित स्कैम पैटर्न जिनसे AdamasVault हर स्कैन की जांच करता है',
     protected: 'डिटेक्शन पैटर्न',
     howTitle: 'यह लाइब्रेरी कैसे काम करती है:',
-    how: 'ये पैटर्न QuantumShield के डिटेक्शन इंजन में बने हैं — नियम इंजन जो हर स्कैन पर चलता है, और AI इंजन (कॉन्फ़िगर होने पर)। लाइब्रेरी सार्वजनिक सलाह (CERT-In, I4C, cybercrime.gov.in) से बनाई गई है और ऐप अपडेट के साथ आती है — यह लाइव फ़ीड नहीं है।',
+    how: 'ये पैटर्न AdamasVault के डिटेक्शन इंजन में बने हैं — नियम इंजन जो हर स्कैन पर चलता है, और AI इंजन (कॉन्फ़िगर होने पर)। लाइब्रेरी सार्वजनिक सलाह (CERT-In, I4C, cybercrime.gov.in) से बनाई गई है और ऐप अपडेट के साथ आती है — यह लाइव फ़ीड नहीं है।',
     listTitle: 'दस्तावेज़ित प्रमुख स्कैम पैटर्न',
     documented: 'दस्तावेज़ित',
-    protection: 'QuantumShield सुरक्षा:',
+    protection: 'AdamasVault सुरक्षा:',
   }
 };
 

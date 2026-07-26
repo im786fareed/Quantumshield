@@ -72,7 +72,7 @@ export default function InstallPrompt() {
           <Smartphone className="w-6 h-6 text-white" />
         </div>
         <div className="flex-1">
-          <h3 className="font-bold text-white mb-1">📱 Install QuantumShield</h3>
+          <h3 className="font-bold text-white mb-1">📱 Install AdamasVault</h3>
           <p className="text-sm text-white/90 mb-3">
             Get instant access during emergencies. Works offline. 100% safe—no APK download needed.
           </p>

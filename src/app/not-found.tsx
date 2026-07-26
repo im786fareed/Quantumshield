@@ -25,7 +25,7 @@ export default function NotFound() {
         </Link>
 
         <p className="mt-6 text-sm text-gray-400">
-          QuantumShield protects you — even from broken links.
+          AdamasVault protects you — even from broken links.
         </p>
       </div>
     </div>

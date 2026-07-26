@@ -1,5 +1,5 @@
 /**
- * Threat Intelligence Router — the switchboard between QuantumShield's
+ * Threat Intelligence Router — the switchboard between AdamasVault's
  * detection code and whichever providers are configured.
  *
  *   Detection Core ──► queryIntel(indicator, type)

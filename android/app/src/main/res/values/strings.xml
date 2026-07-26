@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">QuantumShield</string>
-    <string name="title_activity_main">QuantumShield</string>
-    <string name="package_name">in.quantumshield.app</string>
-    <string name="custom_url_scheme">in.quantumshield.app</string>
+    <string name="app_name">AdamasVault</string>
+    <string name="title_activity_main">AdamasVault</string>
+    <string name="package_name">in.AdamasVault.app</string>
+    <string name="custom_url_scheme">in.AdamasVault.app</string>
     <!--
       Circuit Breaker distress relay (functions/main.py). Leave EMPTY until the
       Firebase project is deployed — an empty value makes DistressRelay report

@@ -1,5 +1,5 @@
 /* =========================================================
-   QuantumShield Sentinel – AI Room Inspector (real vision AI)
+   AdamasVault Sentinel – AI Room Inspector (real vision AI)
    Server-side only. Sends user-supplied imagery of a room or
    object to Google Gemini (multimodal) and asks it to identify
    everyday objects and flag anything that could conceal a
@@ -46,7 +46,7 @@ export interface RoomInspection {
 // Same fast multimodal model the rest of the app uses.
 const MODEL = "gemini-2.5-flash";
 
-const SYSTEM_PROMPT = `You are the AI Room Inspector inside QuantumShield Sentinel, a privacy-protection app used in India by travellers, women, journalists, lawyers and ordinary people who worry about hidden cameras, microphones or trackers in hotels, rentals, changing rooms, offices and vehicles.
+const SYSTEM_PROMPT = `You are the AI Room Inspector inside AdamasVault Sentinel, a privacy-protection app used in India by travellers, women, journalists, lawyers and ordinary people who worry about hidden cameras, microphones or trackers in hotels, rentals, changing rooms, offices and vehicles.
 
 You are shown ONE photo of a room or an object. Your job:
 1. Identify the everyday objects you can actually see (e.g. smoke detector, clock, wall charger, USB adapter, TV box, Wi-Fi router, mirror, lamp, photo frame, fan, ceiling light, air purifier, fire alarm, power/extension board, decor).
@@ -100,7 +100,7 @@ export type InspectMode = 'wide' | 'closeup' | 'video';
    The model must treat them as ONE scene seen from moving
    angles — reflections that shift or blink between frames are
    exactly the lens-glint signal a single photo misses. */
-const VIDEO_SYSTEM_PROMPT = `You are the AI Room Inspector inside QuantumShield Sentinel, a privacy-protection app used in India by travellers, women, journalists, lawyers and ordinary people who worry about hidden cameras, microphones or trackers in hotels, rentals, changing rooms, offices and vehicles.
+const VIDEO_SYSTEM_PROMPT = `You are the AI Room Inspector inside AdamasVault Sentinel, a privacy-protection app used in India by travellers, women, journalists, lawyers and ordinary people who worry about hidden cameras, microphones or trackers in hotels, rentals, changing rooms, offices and vehicles.
 
 You are shown a SEQUENCE of frames sampled, in order, from one slow video pan of a single room. Treat them as ONE scene viewed from gradually changing angles — NOT as separate rooms. Your job:
 1. Identify the everyday objects visible across the sweep (smoke detector, clock, wall charger, USB adapter, TV box, Wi-Fi router, mirror, lamp, photo frame, fan, ceiling light, air purifier, power/extension board, decor). Report each real-world object ONCE, even if it appears in several frames.
@@ -129,7 +129,7 @@ Scoring guide for "riskScore" (0-100), reflecting how much manual inspection thi
    usually because the wide scan flagged it. At this distance a 1–2 mm
    pinhole lens is actually resolvable, so the instructions focus on
    physical tell-tale details rather than room context. */
-const CLOSEUP_SYSTEM_PROMPT = `You are the AI Room Inspector inside QuantumShield Sentinel, doing a CLOSE-UP inspection of a single object (e.g. smoke detector, clock, charger, mirror edge, vent) photographed from roughly 15–20 cm away. The user is checking it for a concealed camera, microphone or tracker.
+const CLOSEUP_SYSTEM_PROMPT = `You are the AI Room Inspector inside AdamasVault Sentinel, doing a CLOSE-UP inspection of a single object (e.g. smoke detector, clock, charger, mirror edge, vent) photographed from roughly 15–20 cm away. The user is checking it for a concealed camera, microphone or tracker.
 
 Examine the surface in detail for:
 - Pinhole apertures or tiny dark circles that could be a lens (1–3 mm), especially ones with a glassy glint or that sit oddly in the design

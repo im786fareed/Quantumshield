@@ -1,8 +1,8 @@
-# 🛡️ QuantumShield — AI-Powered Cyber Fraud Protection for India
+# 🛡️ AdamasVault — AI-Powered Cyber Fraud Protection for India
 
 **The app that protects you *during* the scam, not after.**
 
-QuantumShield detects digital-arrest scams, UPI fraud, phishing, and OTP theft targeting Indian users — and when a scam is detected mid-call, it can instantly alert the victim's family.
+AdamasVault detects digital-arrest scams, UPI fraud, phishing, and OTP theft targeting Indian users — and when a scam is detected mid-call, it can instantly alert the victim's family.
 
 ---
 
@@ -10,7 +10,7 @@ QuantumShield detects digital-arrest scams, UPI fraud, phishing, and OTP theft t
 
 Indians lost **₹2,140+ crore** to digital-arrest scams in 2024. Victims are kept isolated on a video call for hours while scammers impersonate CBI/police officers. By the time anyone finds out, the money is gone.
 
-**QuantumShield breaks that isolation.**
+**AdamasVault breaks that isolation.**
 
 ---
 
@@ -34,7 +34,7 @@ Indians lost **₹2,140+ crore** to digital-arrest scams in 2024. Victims are ke
 
 ## 🧠 How Detection Works (honestly)
 
-QuantumShield uses a **two-layer engine**:
+AdamasVault uses a **two-layer engine**:
 
 1. **Gemini AI (primary)** — a frontier language model analyzes the text with real language understanding. It reads Hindi/Hinglish, sees through deliberate misspellings ("0TP", "k.y.c"), and recognizes *new* scam scripts it has never seen verbatim. Requires a `GEMINI_API_KEY` (server-side).
 2. **Rule engine (fallback)** — a deterministic, transparent pattern engine covering known India-specific fraud signals (digital arrest, KYC fraud, remote-access demands). Runs when the AI is unavailable, so the app always answers.
@@ -49,7 +49,7 @@ We do not publish accuracy percentages because we have not yet run an independen
 
 - **No account required** — anonymous usage
 - **Scans are ephemeral** — analyzed in memory, never stored on our servers
-- **Breach checks** query the public XposedOrNot API; your email is not stored by QuantumShield
+- **Breach checks** query the public XposedOrNot API; your email is not stored by AdamasVault
 - **Analytics** — privacy-first, cookieless Vercel Analytics (aggregate page counts only, no personal tracking)
 
 ---
@@ -68,8 +68,8 @@ We do not publish accuracy percentages because we have not yet run an independen
 ## 📦 Quick Start
 
 ```bash
-git clone https://github.com/im786fareed/Quantumshield.git
-cd quantumshield
+git clone https://github.com/im786fareed/AdamasVault.git
+cd AdamasVault
 npm install
 
 # Optional but recommended — enables the real AI engine:
@@ -90,7 +90,7 @@ Without the keys, the app still works fully — it uses the rule engine and heur
 📞 **Call 1930** — National Cybercrime Helpline (24/7)
 🌐 **[cybercrime.gov.in](https://cybercrime.gov.in)**
 
-*QuantumShield is a protection and awareness tool. For financial or legal decisions, always verify independently.*
+*AdamasVault is a protection and awareness tool. For financial or legal decisions, always verify independently.*
 
 ---
 

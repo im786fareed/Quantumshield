@@ -18,7 +18,7 @@ import ProtectionNavLink from "@/components/ProtectionNavLink";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "QuantumShield – AI Cyber Protection Platform",
+  title: "AdamasVault – AI Cyber Protection Platform",
   description: "Advanced protection against scams, fraud, and digital threats using AI-powered tools.",
   keywords: ["cybersecurity", "scam protection", "AI security", "fraud detection", "digital arrest"],
   manifest: "/manifest.json",
@@ -47,7 +47,7 @@ export default function RootLayout({
               <Logo className="w-9 h-9 transition-transform group-hover:scale-110" />
               <div>
                 <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent uppercase tracking-tighter">
-                  QuantumShield
+                  AdamasVault
                 </h1>
                 <p className="text-[10px] text-gray-500 font-mono">AI PROTECTION NETWORK</p>
               </div>
@@ -90,16 +90,16 @@ export default function RootLayout({
               <div className="flex flex-col sm:flex-row items-center gap-8 text-center sm:text-left">
                 <img
                   src="/founder.png"
-                  alt="Fareed Shaik, founder of QuantumShield"
+                  alt="Fareed Shaik, founder of AdamasVault"
                   className="w-28 h-28 rounded-2xl object-cover ring-2 ring-purple-500/40 shadow-lg shadow-purple-900/30 shrink-0"
                 />
                 <div>
                   <h3 className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-3">
-                    Why I Built QuantumShield
+                    Why I Built AdamasVault
                   </h3>
                   <p className="text-gray-300 leading-relaxed text-sm">
                     Scams often work by isolating the victim and creating pressure before anyone
-                    around them realizes what is happening. QuantumShield is built to reduce that gap
+                    around them realizes what is happening. AdamasVault is built to reduce that gap
                     by watching for suspicious signals, not by promising perfect protection. If the
                     app can help surface unusual behavior early enough for family to step in, it gives
                     people a better chance to avoid fraud before the damage is done.
@@ -109,7 +109,7 @@ export default function RootLayout({
                   </p>
                   <p className="mt-4 text-sm font-semibold text-white">
                     Fareed Shaik
-                    <span className="text-gray-500 font-normal"> · Founder, QuantumShield</span>
+                    <span className="text-gray-500 font-normal"> · Founder, AdamasVault</span>
                   </p>
                 </div>
               </div>
@@ -120,7 +120,7 @@ export default function RootLayout({
             <div>
               <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                 <Logo className="w-7 h-7" />
-                <span className="font-semibold uppercase tracking-widest text-xs text-white">QuantumShield</span>
+                <span className="font-semibold uppercase tracking-widest text-xs text-white">AdamasVault</span>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">
                 Shielding the nation from cyber threats through
@@ -131,7 +131,7 @@ export default function RootLayout({
             <div>
               <h3 className="font-bold text-xs uppercase text-gray-500 mb-4 tracking-widest">Direct Support</h3>
               <ul className="space-y-3 text-sm text-gray-400">
-                <li><a href="mailto:quantumshield4india@gmail.com" className="hover:text-white transition">Email Security Team</a></li>
+                <li><a href="mailto:AdamasVault4india@gmail.com" className="hover:text-white transition">Email Security Team</a></li>
                 <li><a href="tel:1930" className="hover:text-white transition">Cyber Crime Helpline (1930)</a></li>
               </ul>
             </div>
@@ -147,7 +147,7 @@ export default function RootLayout({
           </div>
 
           <div className="text-center text-[10px] text-gray-600 border-t border-white/5 py-6 font-mono tracking-widest uppercase">
-            © {new Date().getFullYear()} QUANTUMSHIELD · LOCAL-FIRST — WE DON'T STORE YOUR SCANS OR EVIDENCE.
+            © {new Date().getFullYear()} AdamasVault · LOCAL-FIRST — WE DON'T STORE YOUR SCANS OR EVIDENCE.
           </div>
         </footer>
 

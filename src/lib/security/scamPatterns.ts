@@ -1,6 +1,6 @@
 /**
  * Shared India-scam pattern corpus — the single source of truth for phrase-
- * based scam detection across QuantumShield.
+ * based scam detection across AdamasVault.
  *
  * This corpus was the richest scam-phrase library in the app (it lived inside
  * the AI Call Analyzer). It is now shared so all previously-separate engines

@@ -1,7 +1,7 @@
-# QuantumShield — Google Play Store Submission Guide
+# AdamasVault — Google Play Store Submission Guide
 
 ## App Details
-- **Package ID:** `in.quantumshield.app`
+- **Package ID:** `in.AdamasVault.app`
 - **Version:** 1.1 (versionCode 2)
 - **Min Android:** 7.0 (API 24)
 - **Target Android:** 15 (API 36)
@@ -23,7 +23,7 @@ You just download the file from GitHub and upload it to Play Console.
 
 These secrets let GitHub Actions sign the APK with your keystore.
 
-1. Go to: **https://github.com/im786fareed/Quantumshield/settings/secrets/actions**
+1. Go to: **https://github.com/im786fareed/AdamasVault/settings/secrets/actions**
 2. Click **"New repository secret"** and add these 3 secrets:
 
 | Secret name | Value |
@@ -41,10 +41,10 @@ These secrets let GitHub Actions sign the APK with your keystore.
 
 After pushing any code to GitHub:
 
-1. Go to: **https://github.com/im786fareed/Quantumshield/actions**
+1. Go to: **https://github.com/im786fareed/AdamasVault/actions**
 2. Click the latest **"Android Release Build"** run
 3. Scroll to the bottom → **Artifacts** section
-4. Download **`QuantumShield-vXX.aab`**
+4. Download **`AdamasVault-vXX.aab`**
 
 That file is your signed Play Store bundle, ready to upload.
 
@@ -55,7 +55,7 @@ That file is your signed Play Store bundle, ready to upload.
 1. Go to: **https://play.google.com/console**
 2. Sign in with your Google account
 3. Pay the **$25 USD one-time registration fee**
-4. Fill in your developer name: `QuantumShield Security`
+4. Fill in your developer name: `AdamasVault Security`
 5. Complete the developer profile
 
 ---
@@ -64,7 +64,7 @@ That file is your signed Play Store bundle, ready to upload.
 
 1. Click **"Create app"**
 2. Fill in:
-   - **App name:** `QuantumShield — Cyber Safety`
+   - **App name:** `AdamasVault — Cyber Safety`
    - **Default language:** `English (India)`
    - **App or Game:** App
    - **Free or Paid:** Free
@@ -81,10 +81,10 @@ India's AI-powered scam detector. Stop fraud calls & UPI scams instantly.
 
 ### Full Description (4000 chars max)
 ```
-QuantumShield is India's most comprehensive cybercrime defence app — built
+AdamasVault is India's most comprehensive cybercrime defence app — built
 for everyday users, seniors, and professionals who face digital fraud daily.
 
-🛡️ WHAT QUANTUMSHIELD DOES:
+🛡️ WHAT AdamasVault DOES:
 
 📞 AI CALL ANALYZER
 Real-time scam detection during calls. Speaks Hinglish. Catches digital
@@ -129,11 +129,11 @@ Step-by-step digital arrest response guide.
 • ₹22,495 Crore lost to cybercriminals
 • ₹8,189 Crore recovered by law enforcement
 
-QuantumShield is a free, privacy-first app. No ads. No data sold.
+AdamasVault is a free, privacy-first app. No ads. No data sold.
 Built in India, for India.
 
 Website: https://quantumguard.vercel.app
-Support: quantumshield4india@gmail.com
+Support: AdamasVault4india@gmail.com
 ```
 
 ---
@@ -226,7 +226,7 @@ Use: **https://quantumguard.vercel.app/privacy**
 
 | File | Purpose |
 |------|---------|
-| `android/quantumshield-release.jks` | Signing keystore (**back this up!**) |
+| `android/AdamasVault-release.jks` | Signing keystore (**back this up!**) |
 | `android/keystore-base64.txt` | Base64 version for GitHub Secrets |
 | `android/keystore.properties` | Local signing config (gitignored) |
 | `capacitor.config.ts` | Capacitor settings (app ID, live URL) |

@@ -1,7 +1,7 @@
-# QuantumShield Native Android Agent — Specification
+# AdamasVault Native Android Agent — Specification
 
 **Status:** Plan / specification (Phase 3). No code yet. This document is the
-build contract for turning the QuantumShield web app into a device-aware
+build contract for turning the AdamasVault web app into a device-aware
 security app on Android.
 
 **Guiding rule (unchanged):** never claim a capability we do not have. Android
@@ -70,7 +70,7 @@ Three buckets. This is the heart of the spec — everything else follows from it
 
 > **Honesty consequence for the UI:** the native app must **not** show a
 > desktop-AV style "Real-Time Protection: ON, scanning everything." The honest
-> framing is **"Device Watch"** — QuantumShield reacts to *events it is allowed
+> framing is **"Device Watch"** — AdamasVault reacts to *events it is allowed
 > to see* (new downloads, incoming calls, notifications, risky app state) and
 > checks *what you install*. That is genuinely valuable and genuinely truthful.
 
@@ -199,6 +199,6 @@ These are real gates that will block a release if ignored:
 
 ---
 
-*Phase 3 deliverable for the QuantumShield Defence Depth upgrade. Companion to
+*Phase 3 deliverable for the AdamasVault Defence Depth upgrade. Companion to
 the audit at the project root. Written against public Android platform
 capabilities only — no proprietary or reverse-engineered material.*

@@ -1,5 +1,5 @@
 /**
- * QuantumShield Detection Core — shared evidence schema + risk engine.
+ * AdamasVault Detection Core — shared evidence schema + risk engine.
  *
  * Every scanner produces SecuritySignals; this module turns them into ONE
  * consistent, explainable verdict with two separate dimensions:

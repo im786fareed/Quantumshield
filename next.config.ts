@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-/** * QuantumShield Security Configuration
+/** * AdamasVault Security Configuration
  * Optimized for Mobile Permissions and Educational Video Playback
  */
 

@@ -1,5 +1,5 @@
 /**
- * Single shared SHA-256 implementation for all QuantumShield scanners.
+ * Single shared SHA-256 implementation for all AdamasVault scanners.
  * Uses the browser's native WebCrypto when available and falls back to a
  * pure-JS implementation (older WebViews / non-secure contexts).
  *

@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * QuantumShield Scanner — the ONE scanner.
+ * AdamasVault Scanner — the ONE scanner.
  *
  * Merges the former FileScanner, UrlChecker, APKGuardian, SMSGuardian,
  * SpamChecker, DownloadScanner and RansomwareDetector into four tabs
@@ -11,7 +11,7 @@
  * Honesty rules:
  *  • nothing simulated — no fake progress, no invented metadata;
  *  • files & APKs are analysed entirely on this device and never uploaded;
- *  • links & messages are sent to the QuantumShield server for checking
+ *  • links & messages are sent to the AdamasVault server for checking
  *    (Google Safe Browsing + AI) — stated in the UI;
  *  • "found nothing" is reported as low risk with honest confidence,
  *    never as a guarantee of safety.
@@ -94,13 +94,13 @@ async function lookupHashIntel(sha256: string): Promise<{
 // ─────────────────────────────────────────────────────────────────────────
 const T = {
   en: {
-    title: 'QuantumShield Scanner',
+    title: 'AdamasVault Scanner',
     subtitle: 'One scanner for links, files, APKs and messages — every result explained with its evidence',
     tabs: { link: 'Link', file: 'File', apk: 'APK', message: 'Message' } as Record<ScanTab, string>,
     linkPlaceholder: 'Paste a link, e.g. https://example.com/offer',
-    linkPrivacy: 'The link is checked on your device and on the QuantumShield server (includes Google Safe Browsing when configured).',
+    linkPrivacy: 'The link is checked on your device and on the AdamasVault server (includes Google Safe Browsing when configured).',
     msgPlaceholder: 'Paste the suspicious SMS, WhatsApp or email text here…',
-    msgPrivacy: 'The message text is sent to the QuantumShield server for AI analysis. It is not stored.',
+    msgPrivacy: 'The message text is sent to the AdamasVault server for AI analysis. It is not stored.',
     filePrivacy: 'Files are analysed entirely on your device — nothing is uploaded. Archives (ZIP/Office docs) and PDFs are also inspected inside for hidden executables, macros and active content.',
     apkPrivacy: 'The APK is opened and analysed on your device — nothing is uploaded.',
     dropFile: 'Drag & drop a file here, or click to choose (up to 100 MB)',
@@ -131,14 +131,14 @@ const T = {
     permissions: 'Extracted permissions',
     estPackage: 'Package (estimated from manifest)',
     notExtractable: 'not extractable in the browser',
-    engineAi: 'Analysed by QuantumShield AI (Gemini) with rule-engine cross-check',
+    engineAi: 'Analysed by AdamasVault AI (Gemini) with rule-engine cross-check',
     engineRules: 'Analysed by the deterministic rule engine (AI engine not configured/reachable)',
     linkInMsg: 'A link inside the message was also checked',
     offline: 'Server unreachable — result is from on-device checks only, so confidence is reduced.',
     intelUnconfigured: 'Global malware-database lookup was not performed — no intelligence provider is configured on the server yet.',
     intelUnreachable: 'Global malware-database lookup could not reach the server — result is from on-device checks only.',
     intelStage: 'Checking global malware database…',
-    sources: { ON_DEVICE: 'on your device', QS_SERVER: 'QuantumShield server', THIRD_PARTY_INTEL: 'threat intelligence', AI_ANALYSIS: 'AI analysis' } as Record<SignalSource, string>,
+    sources: { ON_DEVICE: 'on your device', QS_SERVER: 'AdamasVault server', THIRD_PARTY_INTEL: 'threat intelligence', AI_ANALYSIS: 'AI analysis' } as Record<SignalSource, string>,
     errGeneric: 'Analysis failed. Please try again.',
     errTooBig: 'File is larger than 100 MB. Please analyse a smaller file.',
     errNotApk: 'Please choose an .apk file for APK analysis.',
@@ -146,13 +146,13 @@ const T = {
     scanAnother: 'Scan something else',
   },
   hi: {
-    title: 'QuantumShield स्कैनर',
+    title: 'AdamasVault स्कैनर',
     subtitle: 'लिंक, फ़ाइल, APK और संदेश — एक ही स्कैनर, हर नतीजा सबूत के साथ',
     tabs: { link: 'लिंक', file: 'फ़ाइल', apk: 'APK', message: 'संदेश' } as Record<ScanTab, string>,
     linkPlaceholder: 'लिंक पेस्ट करें, जैसे https://example.com/offer',
-    linkPrivacy: 'लिंक आपके डिवाइस और QuantumShield सर्वर पर जांचा जाता है (Google Safe Browsing सहित, जब कॉन्फ़िगर हो)।',
+    linkPrivacy: 'लिंक आपके डिवाइस और AdamasVault सर्वर पर जांचा जाता है (Google Safe Browsing सहित, जब कॉन्फ़िगर हो)।',
     msgPlaceholder: 'संदिग्ध SMS, WhatsApp या ईमेल टेक्स्ट यहाँ पेस्ट करें…',
-    msgPrivacy: 'संदेश AI विश्लेषण के लिए QuantumShield सर्वर पर भेजा जाता है। इसे संग्रहीत नहीं किया जाता।',
+    msgPrivacy: 'संदेश AI विश्लेषण के लिए AdamasVault सर्वर पर भेजा जाता है। इसे संग्रहीत नहीं किया जाता।',
     filePrivacy: 'फ़ाइलें पूरी तरह आपके डिवाइस पर जांची जाती हैं — कुछ भी अपलोड नहीं होता। ZIP/Office और PDF के अंदर छिपे executable, मैक्रो और सक्रिय सामग्री की भी जांच होती है।',
     apkPrivacy: 'APK आपके डिवाइस पर खोला और जांचा जाता है — कुछ भी अपलोड नहीं होता।',
     dropFile: 'फ़ाइल यहाँ खींचें-छोड़ें या चुनने के लिए क्लिक करें (100 MB तक)',
@@ -183,14 +183,14 @@ const T = {
     permissions: 'निकाली गई अनुमतियाँ',
     estPackage: 'पैकेज (manifest से अनुमानित)',
     notExtractable: 'ब्राउज़र में नहीं निकाला जा सकता',
-    engineAi: 'QuantumShield AI (Gemini) + नियम-इंजन से विश्लेषित',
+    engineAi: 'AdamasVault AI (Gemini) + नियम-इंजन से विश्लेषित',
     engineRules: 'नियम-इंजन से विश्लेषित (AI इंजन उपलब्ध नहीं)',
     linkInMsg: 'संदेश के अंदर मिले लिंक की भी जाँच की गई',
     offline: 'सर्वर उपलब्ध नहीं — नतीजा केवल डिवाइस-जाँचों से है, इसलिए विश्वसनीयता कम है।',
     intelUnconfigured: 'वैश्विक मैलवेयर-डेटाबेस जाँच नहीं हुई — सर्वर पर अभी कोई इंटेलिजेंस प्रदाता कॉन्फ़िगर नहीं है।',
     intelUnreachable: 'वैश्विक मैलवेयर-डेटाबेस जाँच सर्वर तक नहीं पहुँच सकी — नतीजा केवल डिवाइस-जाँचों से है।',
     intelStage: 'वैश्विक मैलवेयर डेटाबेस जाँच…',
-    sources: { ON_DEVICE: 'आपके डिवाइस पर', QS_SERVER: 'QuantumShield सर्वर', THIRD_PARTY_INTEL: 'थ्रेट इंटेलिजेंस', AI_ANALYSIS: 'AI विश्लेषण' } as Record<SignalSource, string>,
+    sources: { ON_DEVICE: 'आपके डिवाइस पर', QS_SERVER: 'AdamasVault सर्वर', THIRD_PARTY_INTEL: 'थ्रेट इंटेलिजेंस', AI_ANALYSIS: 'AI विश्लेषण' } as Record<SignalSource, string>,
     errGeneric: 'विश्लेषण विफल। कृपया पुनः प्रयास करें।',
     errTooBig: 'फ़ाइल 100 MB से बड़ी है। कृपया छोटी फ़ाइल जांचें।',
     errNotApk: 'APK विश्लेषण के लिए .apk फ़ाइल चुनें।',
@@ -284,7 +284,7 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
     setStage(hi ? 'लिंक की जाँच…' : 'Checking link…');
     try {
       const outcomeSignals: SecuritySignal[] = [];
-      const checksRun: string[] = ['On-device URL heuristics', 'QuantumShield server URL engine'];
+      const checksRun: string[] = ['On-device URL heuristics', 'AdamasVault server URL engine'];
       const notes: string[] = [t.linkPrivacy];
 
       // APK-download link — the single most dangerous Indian scam vector.
@@ -447,7 +447,7 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
       }));
 
       const checksRun = [
-        aiEngine ? 'QuantumShield AI (Gemini) fraud analysis' : 'Deterministic scam rule engine',
+        aiEngine ? 'AdamasVault AI (Gemini) fraud analysis' : 'Deterministic scam rule engine',
         'India scam-pattern library',
       ];
       const notes = [t.msgPrivacy, aiEngine ? t.engineAi : t.engineRules];
