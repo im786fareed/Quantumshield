@@ -90,8 +90,8 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl">
       <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 bg-cyan-500/20 rounded-2xl">
-          <Shield className="w-8 h-8 text-cyan-400" />
+        <div className="p-3 bg-teal-500/20 rounded-2xl">
+          <Shield className="w-8 h-8 text-teal-400" />
         </div>
         <div>
           <h2 className="text-2xl font-bold text-white">AdamasVault File Vault</h2>
@@ -101,7 +101,7 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
 
       <div className="space-y-6">
         {/* File Drop Zone */}
-        <div className={`border-2 border-dashed rounded-2xl p-8 text-center transition ${file ? 'border-cyan-500 bg-cyan-500/5' : 'border-slate-700 hover:border-slate-500'}`}>
+        <div className={`border-2 border-dashed rounded-2xl p-8 text-center transition ${file ? 'border-teal-500 bg-teal-500/5' : 'border-slate-700 hover:border-slate-500'}`}>
           <input 
             type="file" 
             onChange={(e) => setFile(e.target.files?.[0] || null)} 
@@ -111,7 +111,7 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           <label htmlFor="file-upload" className="cursor-pointer">
             {file ? (
               <div className="flex flex-col items-center gap-2">
-                <File className="w-12 h-12 text-cyan-400" />
+                <File className="w-12 h-12 text-teal-400" />
                 <span className="text-white font-medium">{file.name}</span>
                 <button onClick={(e) => { e.preventDefault(); setFile(null); }} className="text-red-400 text-xs flex items-center gap-1 mt-2">
                   <Trash2 className="w-3 h-3" /> Remove
@@ -135,7 +135,7 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Min. 8 characters"
             minLength={8}
-            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white outline-none focus:ring-2 focus:ring-cyan-500"
+            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
 
@@ -144,7 +144,7 @@ export default function FileEncryption({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           <button 
             disabled={isProcessing}
             onClick={() => processFile('encrypt')}
-            className="flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl disabled:opacity-50 transition"
+            className="flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-bold py-4 rounded-xl disabled:opacity-50 transition"
           >
             {isProcessing ? <Loader2 className="animate-spin" /> : <Lock className="w-5 h-5" />}
             Encrypt

@@ -256,12 +256,12 @@ export default function FloatingRecorder() {
         onClick={() => startRecording('screen')}
         className="
           flex items-center gap-3 text-left
-          bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30
+          bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30
           rounded-xl px-4 py-3 transition group
         "
       >
-        <div className="p-2 bg-blue-600/30 rounded-lg group-hover:bg-blue-600/50 transition">
-          <Monitor className="w-5 h-5 text-blue-400" />
+        <div className="p-2 bg-emerald-600/30 rounded-lg group-hover:bg-emerald-600/50 transition">
+          <Monitor className="w-5 h-5 text-emerald-400" />
         </div>
         <div>
           <div className="text-white font-semibold text-sm">Screen Recording</div>
@@ -328,7 +328,7 @@ export default function FloatingRecorder() {
       bg-slate-900 border border-slate-700/70 rounded-2xl
       shadow-2xl p-5 flex flex-col items-center gap-3 text-center
     ">
-      <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+      <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
       <div className="text-white font-semibold text-sm">Saving to Evidence Vault…</div>
       <div className="text-slate-400 text-xs">Stays on your device — no cloud upload</div>
     </div>
@@ -368,21 +368,21 @@ export default function FloatingRecorder() {
   if (phase === 'downloaded') return (
     <div className="
       fixed bottom-24 right-4 z-[9999] w-72
-      bg-blue-950 border border-blue-500/50 rounded-2xl
+      bg-emerald-950 border border-emerald-500/50 rounded-2xl
       shadow-2xl p-5 flex flex-col gap-3
     ">
       <div className="flex items-center gap-3">
-        <Download className="w-7 h-7 text-blue-400 shrink-0" />
+        <Download className="w-7 h-7 text-emerald-400 shrink-0" />
         <div>
-          <div className="text-blue-300 font-bold text-sm">Saved to Downloads ✓</div>
-          <div className="text-blue-700 text-xs">Duration: {fmt(seconds)}</div>
+          <div className="text-emerald-300 font-bold text-sm">Saved to Downloads ✓</div>
+          <div className="text-emerald-700 text-xs">Duration: {fmt(seconds)}</div>
         </div>
       </div>
-      <p className="text-blue-700 text-xs leading-relaxed">
+      <p className="text-emerald-700 text-xs leading-relaxed">
         The vault was unavailable so the recording was downloaded directly to your device. Check your Downloads folder.
       </p>
-      <p className="text-[10px] text-blue-900">
-        File: <span className="text-blue-600 font-mono break-all">{savedName}</span>
+      <p className="text-[10px] text-emerald-900">
+        File: <span className="text-emerald-600 font-mono break-all">{savedName}</span>
       </p>
     </div>
   );
@@ -408,8 +408,8 @@ export default function FloatingRecorder() {
           onClick={() => downloadBlob(finalBlobRef.current!, finalNameRef.current)}
           className="
             flex items-center justify-center gap-2
-            bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30
-            text-blue-300 text-xs font-semibold rounded-xl py-2.5 transition
+            bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30
+            text-emerald-300 text-xs font-semibold rounded-xl py-2.5 transition
           "
         >
           <Download className="w-4 h-4" />

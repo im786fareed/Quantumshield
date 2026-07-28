@@ -78,10 +78,10 @@ export default function PrivacyShield({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
         <Shield className="absolute right-[-20px] top-[-20px] w-64 h-64 opacity-10" />
         <h1 className="text-4xl font-black mb-2 tracking-tight">{t.title}</h1>
-        <p className="text-blue-100 text-lg opacity-80">{t.subtitle}</p>
+        <p className="text-emerald-100 text-lg opacity-80">{t.subtitle}</p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -90,23 +90,23 @@ export default function PrivacyShield({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Brain className="text-cyan-400 w-6 h-6" /> {t.aiTitle}
+              <Brain className="text-teal-400 w-6 h-6" /> {t.aiTitle}
             </h2>
             <textarea 
               value={userScenario}
               onChange={(e) => setUserScenario(e.target.value)}
               placeholder={t.aiPlaceholder}
-              className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-white focus:ring-2 focus:ring-cyan-500 outline-none h-32"
+              className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-white focus:ring-2 focus:ring-teal-500 outline-none h-32"
             />
             <button 
               onClick={runAiAudit}
-              className="mt-4 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
+              className="mt-4 w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
             >
               <Zap className="w-4 h-4" /> {t.auditButton}
             </button>
 
             {aiAdvice && (
-              <div className="mt-6 p-6 rounded-2xl bg-slate-800 border-l-4 border-cyan-500 animate-in fade-in zoom-in duration-300">
+              <div className="mt-6 p-6 rounded-2xl bg-slate-800 border-l-4 border-teal-500 animate-in fade-in zoom-in duration-300">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm uppercase font-black text-slate-400">Security Score</span>
                   <span className={`text-xl font-bold ${aiAdvice.score < 50 ? 'text-red-400' : 'text-green-400'}`}>{aiAdvice.score}/100</span>
@@ -141,7 +141,7 @@ export default function PrivacyShield({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
             <button
               onClick={testDNS}
               disabled={dnsTest === 'testing'}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold text-white transition disabled:opacity-50"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 py-3 rounded-xl font-bold text-white transition disabled:opacity-50"
             >
               {dnsTest === 'testing' ? 'Analysing...' : 'Run Security Test'}
             </button>
@@ -153,8 +153,8 @@ export default function PrivacyShield({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
             )}
           </div>
 
-          <div className="bg-indigo-950/30 border border-indigo-500/30 rounded-3xl p-6">
-            <h3 className="font-bold text-indigo-300 mb-4 tracking-wide uppercase text-xs">Trusted Tools</h3>
+          <div className="bg-emerald-950/30 border border-emerald-500/30 rounded-3xl p-6">
+            <h3 className="font-bold text-emerald-300 mb-4 tracking-wide uppercase text-xs">Trusted Tools</h3>
             <div className="space-y-3">
               {['ProtonVPN (Free)', 'Cloudflare WARP', 'uBlock Origin'].map((tool) => (
                 <div key={tool} className="flex justify-between items-center bg-slate-950/50 p-3 rounded-xl border border-slate-800">

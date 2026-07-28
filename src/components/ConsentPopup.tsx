@@ -24,15 +24,15 @@ export default function ConsentPopup() {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-      <div className="bg-slate-900 border border-indigo-500/30 max-w-md w-full rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in duration-300">
+      <div className="bg-[#0b1210] border border-emerald-500/25 max-w-md w-full rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in duration-300">
         <div className="flex justify-center mb-6">
-          <div className="bg-indigo-500/20 p-4 rounded-full">
-            <ShieldCheck className="w-12 h-12 text-indigo-400" />
+          <div className="bg-emerald-500/15 border border-emerald-500/25 p-4 rounded-full">
+            <ShieldCheck className="w-12 h-12 text-emerald-400" />
           </div>
         </div>
 
         <h2 className="text-2xl font-black text-white text-center uppercase tracking-tighter italic mb-4">
-          Privacy <span className="text-indigo-500">First</span> Setup
+          Privacy <span className="text-emerald-400">First</span> Setup
         </h2>
 
         <p className="text-sm text-slate-400 text-center mb-8 leading-relaxed">
@@ -41,7 +41,7 @@ export default function ConsentPopup() {
 
         <div className="space-y-4 mb-8">
           <div className="flex gap-4 items-start bg-black/40 p-4 rounded-2xl border border-white/5">
-            <Mic className="w-5 h-5 text-indigo-400 shrink-0 mt-1" />
+            <Mic className="w-5 h-5 text-emerald-400 shrink-0 mt-1" />
             <div>
               <p className="text-xs font-bold text-white uppercase">Microphone (Local Only)</p>
               <p className="text-[10px] text-slate-500 leading-tight">Analyzes voice artifacts for deepfakes. Audio is never recorded or uploaded.</p>
@@ -49,7 +49,7 @@ export default function ConsentPopup() {
           </div>
 
           <div className="flex gap-4 items-start bg-black/40 p-4 rounded-2xl border border-white/5">
-            <MapPin className="w-5 h-5 text-indigo-400 shrink-0 mt-1" />
+            <MapPin className="w-5 h-5 text-emerald-400 shrink-0 mt-1" />
             <div>
               <p className="text-xs font-bold text-white uppercase">GPS Location</p>
               <p className="text-[10px] text-slate-500 leading-tight">Only used during an SOS trigger to alert your family. Data stays on your device.</p>
@@ -59,7 +59,7 @@ export default function ConsentPopup() {
 
         <button 
           onClick={handleAccept}
-          className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest rounded-2xl transition-all active:scale-95"
+          className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest rounded-2xl transition-all active:scale-95"
         >
           I AGREE & PROTECT ME
         </button>

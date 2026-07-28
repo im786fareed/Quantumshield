@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 via-blue-900 to-black text-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-emerald-900 via-emerald-900 to-black text-white flex items-center justify-center p-4">
       <div className="max-w-xl w-full bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-8 text-center">
         <div className="inline-block p-4 bg-red-500/20 rounded-2xl mb-6">
           <AlertTriangle className="w-16 h-16 text-red-400" />
@@ -33,7 +33,7 @@ export default function Error({
         <div className="flex gap-4 justify-center">
           <button
             onClick={reset}
-            className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-semibold hover:scale-105 transition"
+            className="px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl font-semibold hover:scale-105 transition"
           >
             Try Again
           </button>

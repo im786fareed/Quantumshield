@@ -21,7 +21,7 @@ import { friendlyError } from '@/components/LoginScreen';
 import type { TotpSecret, MultiFactorInfo } from 'firebase/auth';
 
 const btn = 'flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold text-sm transition disabled:opacity-60';
-const input = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-600';
+const input = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500 placeholder-slate-600';
 
 export default function AccountSecurity() {
   const auth = useAuth();
@@ -115,7 +115,7 @@ export default function AccountSecurity() {
         {user.photoURL
           /* eslint-disable-next-line @next/next/no-img-element */
           ? <img src={user.photoURL} alt="" className="w-12 h-12 rounded-full border border-white/10" />
-          : <div className="w-12 h-12 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center"><UserIcon className="w-6 h-6 text-indigo-300" /></div>}
+          : <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center"><UserIcon className="w-6 h-6 text-emerald-300" /></div>}
         <div className="min-w-0">
           <p className="font-bold truncate">{user.displayName || user.email || user.phoneNumber || 'Your account'}</p>
           {user.email && <p className="text-xs text-gray-500 truncate">{user.email}</p>}
@@ -148,7 +148,7 @@ export default function AccountSecurity() {
       {/* 2-step verification */}
       <section className="rounded-2xl border border-slate-700/50 bg-slate-900/70 p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-cyan-400" />
+          <ShieldCheck className="w-5 h-5 text-teal-400" />
           <h2 className="font-black">2-step verification</h2>
         </div>
         <p className="text-[13px] text-gray-400 leading-relaxed">
@@ -181,12 +181,12 @@ export default function AccountSecurity() {
 
         {/* Add authenticator app */}
         {!totp ? (
-          <button onClick={startTotp} disabled={!!busy} className={`${btn} w-full bg-indigo-600 hover:bg-indigo-500`}>
+          <button onClick={startTotp} disabled={!!busy} className={`${btn} w-full bg-emerald-600 hover:bg-emerald-500`}>
             {busy === 'totp-start' ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
             Add authenticator app (recommended)
           </button>
         ) : (
-          <div className="rounded-xl border border-indigo-500/40 bg-indigo-500/5 p-4 space-y-3">
+          <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-4 space-y-3">
             <h4 className="font-bold text-sm">Scan with your authenticator app</h4>
             <p className="text-[13px] text-gray-400 leading-relaxed">
               Open Google Authenticator (or any authenticator app), tap “+”, and scan this code. Then type the 6-digit code it shows.
@@ -197,13 +197,13 @@ export default function AccountSecurity() {
             </div>
             <button
               onClick={() => { navigator.clipboard?.writeText(totp.secret.secretKey).then(() => setNotice('Setup key copied — paste it in your authenticator app if you can’t scan.')); }}
-              className="w-full text-[12px] text-indigo-300 hover:text-indigo-200 flex items-center justify-center gap-1.5 py-1 transition">
+              className="w-full text-[12px] text-emerald-300 hover:text-emerald-200 flex items-center justify-center gap-1.5 py-1 transition">
               <Copy className="w-3.5 h-3.5" /> Can’t scan? Copy the setup key instead
             </button>
             <input className={input} inputMode="numeric" autoComplete="one-time-code" placeholder="6-digit code from the app"
               value={totpCode} onChange={(e) => setTotpCode(e.target.value)} />
             <div className="flex gap-2">
-              <button onClick={confirmTotp} disabled={!!busy || totpCode.trim().length < 6} className={`${btn} flex-1 bg-indigo-600 hover:bg-indigo-500`}>
+              <button onClick={confirmTotp} disabled={!!busy || totpCode.trim().length < 6} className={`${btn} flex-1 bg-emerald-600 hover:bg-emerald-500`}>
                 {busy === 'totp-finish' ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Turn on
               </button>
               <button onClick={() => { setTotp(null); setTotpCode(''); }} className={`${btn} bg-white/5 hover:bg-white/10 border border-white/10`}>
@@ -227,7 +227,7 @@ export default function AccountSecurity() {
                 <input className={input} type="tel" placeholder="+91 98765 43210"
                   value={smsPhone} onChange={(e) => setSmsPhone(e.target.value)} />
                 <div className="flex gap-2">
-                  <button onClick={sendSms} disabled={!!busy || !smsPhone.trim()} className={`${btn} flex-1 bg-indigo-600 hover:bg-indigo-500`}>
+                  <button onClick={sendSms} disabled={!!busy || !smsPhone.trim()} className={`${btn} flex-1 bg-emerald-600 hover:bg-emerald-500`}>
                     {busy === 'sms-send' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />} Send code
                   </button>
                   <button onClick={() => { setSmsOpen(false); setSmsPhone(''); }} className={`${btn} bg-white/5 hover:bg-white/10 border border-white/10`}>
@@ -240,7 +240,7 @@ export default function AccountSecurity() {
                 <p className="text-[13px] text-gray-400">Enter the 6-digit code sent to {smsPhone}.</p>
                 <input className={input} inputMode="numeric" autoComplete="one-time-code" placeholder="6-digit code"
                   value={smsCode} onChange={(e) => setSmsCode(e.target.value)} />
-                <button onClick={confirmSms} disabled={!!busy || smsCode.trim().length < 6} className={`${btn} w-full bg-indigo-600 hover:bg-indigo-500`}>
+                <button onClick={confirmSms} disabled={!!busy || smsCode.trim().length < 6} className={`${btn} w-full bg-emerald-600 hover:bg-emerald-500`}>
                   {busy === 'sms-finish' ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Verify &amp; turn on
                 </button>
               </>

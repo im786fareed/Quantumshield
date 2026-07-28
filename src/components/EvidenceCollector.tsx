@@ -246,7 +246,7 @@ export default function EvidenceCollector({ lang = 'en' }: Props) {
                 <a 
                   href={rec.url} 
                   download={`Evidence_${rec.id}.webm`}
-                  className="p-2 bg-blue-600 rounded-lg hover:bg-blue-700"
+                  className="p-2 bg-emerald-600 rounded-lg hover:bg-emerald-700"
                 >
                   <Download size={18} />
                 </a>

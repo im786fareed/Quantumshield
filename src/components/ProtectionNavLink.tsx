@@ -14,7 +14,7 @@ export default function ProtectionNavLink() {
     <Link
       href="/protection"
       aria-label={lang === 'en' ? 'Protection Center' : 'सुरक्षा केंद्र'}
-      className="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-[10px] font-black uppercase tracking-wide shadow-lg shadow-cyan-600/20 whitespace-nowrap"
+      className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-[10px] font-black uppercase tracking-wide shadow-lg shadow-emerald-600/25 whitespace-nowrap transition-colors"
     >
       🛡️ {lang === 'en' ? 'Protection' : 'सुरक्षा'}
     </Link>

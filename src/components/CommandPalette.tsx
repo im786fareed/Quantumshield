@@ -136,7 +136,7 @@ export default function CommandPalette() {
               }}
               className={`w-full text-left px-4 py-3 text-sm transition ${
                 idx === highlight
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-emerald-600 text-white'
                   : 'hover:bg-white/10'
               }`}
             >

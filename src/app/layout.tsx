@@ -15,6 +15,7 @@ import AuthGate from "@/components/AuthGate";
 import AccountButton from "@/components/AccountButton";
 import LanguageToggle from "@/components/LanguageToggle";
 import ProtectionNavLink from "@/components/ProtectionNavLink";
+import PremiumNavLink from "@/components/PremiumNavLink";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -46,25 +47,27 @@ export default function RootLayout({
             <Link href="/" className="flex items-center gap-3 group">
               <Logo className="w-9 h-9 transition-transform group-hover:scale-110" />
               <div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent uppercase tracking-tighter">
+                <h1 className="text-lg font-bold bg-gradient-to-r from-[#eef3f0] via-[#dfe7e3] to-[#7fe3c0] bg-clip-text text-transparent uppercase tracking-tighter">
                   AdamasVault
                 </h1>
-                <p className="text-[10px] text-gray-500 font-mono">AI PROTECTION NETWORK</p>
+                <p className="text-[10px] text-emerald-500/70 font-mono tracking-wider">AI PROTECTION NETWORK</p>
               </div>
             </Link>
 
             <div className="flex gap-4 md:gap-6 items-center">
-              <Link href="/" className="hidden md:block text-xs font-bold hover:text-blue-400 transition uppercase tracking-widest">
+              <Link href="/" className="hidden md:block text-xs font-bold text-gray-300 hover:text-emerald-400 transition uppercase tracking-widest">
                 Home
               </Link>
-              <Link href="/legal-rights" className="hidden md:block text-xs font-bold hover:text-indigo-400 transition uppercase tracking-widest">
+              <Link href="/legal-rights" className="hidden md:block text-xs font-bold text-gray-300 hover:text-emerald-400 transition uppercase tracking-widest">
                 My Rights
               </Link>
-              <Link href="/education" className="hidden md:block text-xs font-bold hover:text-blue-400 transition uppercase tracking-widest">
+              <Link href="/education" className="hidden md:block text-xs font-bold text-gray-300 hover:text-emerald-400 transition uppercase tracking-widest">
                 Education
               </Link>
               {/* Always visible (incl. mobile) — the main entry to the command center */}
               <ProtectionNavLink />
+              {/* Always visible — entry to the Premium upgrade page */}
+              <PremiumNavLink />
               <a
                 href="tel:1930"
                 className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-[10px] font-black uppercase shadow-lg shadow-red-600/20 whitespace-nowrap"
@@ -91,10 +94,10 @@ export default function RootLayout({
                 <img
                   src="/founder.png"
                   alt="Fareed Shaik, founder of AdamasVault"
-                  className="w-28 h-28 rounded-2xl object-cover ring-2 ring-purple-500/40 shadow-lg shadow-purple-900/30 shrink-0"
+                  className="w-28 h-28 rounded-2xl object-cover ring-2 ring-emerald-500/30 shadow-lg shadow-emerald-900/30 shrink-0"
                 />
                 <div>
-                  <h3 className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-3">
+                  <h3 className="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-3">
                     Why I Built AdamasVault
                   </h3>
                   <p className="text-gray-300 leading-relaxed text-sm">
@@ -104,7 +107,7 @@ export default function RootLayout({
                     app can help surface unusual behavior early enough for family to step in, it gives
                     people a better chance to avoid fraud before the damage is done.
                   </p>
-                  <p className="mt-4 text-sm font-semibold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  <p className="mt-4 text-sm font-semibold bg-gradient-to-r from-emerald-300 to-teal-200 bg-clip-text text-transparent">
                     Every citizen should know their legal rights.
                   </p>
                   <p className="mt-4 text-sm font-semibold text-white">

@@ -332,11 +332,11 @@ export default function SIMProtection({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
             value={ussdCode}
             onChange={(e) => setUssdCode(e.target.value)}
             placeholder={t.ussdChecker.placeholder}
-            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-4 py-3 font-mono focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-4 py-3 font-mono focus:outline-none focus:border-emerald-500"
           />
           <button
             onClick={analyzeUSSD}
-            className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"
+            className="bg-emerald-600 hover:bg-emerald-700 px-6 py-3 rounded-lg font-semibold transition"
           >
             {t.ussdChecker.checkButton}
           </button>
@@ -372,7 +372,7 @@ export default function SIMProtection({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
       </div>
 
       {/* Check Now */}
-      <div className="bg-blue-600/20 border border-blue-500/50 rounded-xl p-6 mb-6">
+      <div className="bg-emerald-600/20 border border-emerald-500/50 rounded-xl p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4">{t.checkNow.title}</h2>
         
         <div className="space-y-4">
@@ -386,7 +386,7 @@ export default function SIMProtection({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
 <div className="flex gap-2">
                   <button
                     onClick={() => copyCode(check.code)}
-                    className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2"
+                    className="bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2"
                   >
                     <Copy className="w-4 h-4" />
                     Copy
@@ -404,7 +404,7 @@ export default function SIMProtection({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
                   )}
                 </div>
               </div>
-              <div className="bg-blue-600/20 px-3 py-2 rounded font-mono text-lg">
+              <div className="bg-emerald-600/20 px-3 py-2 rounded font-mono text-lg">
                 {check.code}
               </div>
             </div>

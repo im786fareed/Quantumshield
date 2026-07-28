@@ -567,7 +567,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
       <BackToHome />
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-700 via-purple-700 to-cyan-700 rounded-2xl p-6 mb-6 shadow-2xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-emerald-700 via-emerald-700 to-teal-700 rounded-2xl p-6 mb-6 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent pointer-events-none" />
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
           <div className="flex items-center gap-4">
@@ -576,14 +576,14 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
             </div>
             <div>
               <h1 className="text-3xl font-black text-white tracking-tight">{t.title}</h1>
-              <p className="text-blue-100 text-xs mt-0.5">{t.subtitle}</p>
+              <p className="text-emerald-100 text-xs mt-0.5">{t.subtitle}</p>
             </div>
           </div>
           <button
             onClick={() => setCurrentLang(currentLang === 'en' ? 'hi' : 'en')}
             className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/20 text-xs font-black text-white flex items-center gap-1.5 transition"
           >
-            <Globe className="w-4 h-4 text-cyan-300" />
+            <Globe className="w-4 h-4 text-teal-300" />
             {currentLang === 'en' ? 'हिन्दी' : 'English'}
           </button>
         </div>
@@ -594,7 +594,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
         <div className="bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-md md:col-span-2">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <MemoryStick className="w-5 h-5 text-cyan-400" />
+              <MemoryStick className="w-5 h-5 text-teal-400" />
               <span className="text-sm font-bold text-white">{t.liveRamMonitor}</span>
             </div>
             <span className={`text-sm font-mono font-bold ${
@@ -608,7 +608,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
             <div
               className={`h-full transition-all duration-1000 rounded-full ${
                 liveMemory.percent > 80 ? 'bg-red-500' :
-                liveMemory.percent > 60 ? 'bg-yellow-500' : 'bg-cyan-500'
+                liveMemory.percent > 60 ? 'bg-yellow-500' : 'bg-teal-500'
               }`}
               style={{ width: `${liveMemory.percent > 0 ? liveMemory.percent : 15}%` }}
             />
@@ -641,8 +641,8 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
           {/* Diagnosis Trigger Card */}
           {overallScore === null && !isScanning ? (
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
-              <div className="inline-block p-4 bg-cyan-500/10 rounded-full mb-4">
-                <Cpu className="w-10 h-10 text-cyan-400 animate-pulse" />
+              <div className="inline-block p-4 bg-teal-500/10 rounded-full mb-4">
+                <Cpu className="w-10 h-10 text-teal-400 animate-pulse" />
               </div>
               <h2 className="text-xl font-bold text-white mb-2">{t.systemMetrics}</h2>
               <p className="text-xs text-gray-400 leading-relaxed mb-6 max-w-sm mx-auto">
@@ -650,7 +650,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
               </p>
               <button
                 onClick={runFullScan}
-                className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/25"
+                className="px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-teal-500/25"
               >
                 <Gauge className="w-4 h-4 inline mr-2" />
                 {t.runScan}
@@ -659,12 +659,12 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
           ) : isScanning ? (
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <RefreshCw className="w-5 h-5 text-cyan-400 animate-spin" />
-                <span className="text-xs font-mono text-cyan-400">{scanPhase}</span>
+                <RefreshCw className="w-5 h-5 text-teal-400 animate-spin" />
+                <span className="text-xs font-mono text-teal-400">{scanPhase}</span>
               </div>
               <div className="w-full h-2.5 bg-black/50 rounded-full overflow-hidden mb-1">
                 <div
-                  className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300 rounded-full"
+                  className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-300 rounded-full"
                   style={{ width: `${scanProgress}%` }}
                 />
               </div>
@@ -690,12 +690,12 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
               {/* Grid of details */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-black/30 rounded-xl p-3 border border-white/5 text-center">
-                  <Cpu className="w-4 h-4 mx-auto text-cyan-400 mb-1" />
+                  <Cpu className="w-4 h-4 mx-auto text-teal-400 mb-1" />
                   <span className="text-sm font-bold block text-white">{metrics.hardwareConcurrency}</span>
                   <span className="text-[9px] text-gray-500 uppercase">Cores</span>
                 </div>
                 <div className="bg-black/30 rounded-xl p-3 border border-white/5 text-center">
-                  <Database className="w-4 h-4 mx-auto text-purple-400 mb-1" />
+                  <Database className="w-4 h-4 mx-auto text-emerald-400 mb-1" />
                   <span className="text-sm font-bold block text-white">{metrics.deviceMemory} GB</span>
                   <span className="text-[9px] text-gray-500 uppercase">RAM Specs</span>
                 </div>
@@ -758,11 +758,11 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
           ) : null}
 
           {/* RAM Optimizer Dashboard */}
-          <div className="bg-gradient-to-r from-cyan-950/20 to-blue-950/20 border border-cyan-500/20 rounded-2xl p-5 backdrop-blur-md">
+          <div className="bg-gradient-to-r from-teal-950/20 to-emerald-950/20 border border-teal-500/20 rounded-2xl p-5 backdrop-blur-md">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-cyan-500/10 rounded-xl border border-cyan-500/20">
-                  <Zap className="w-5 h-5 text-cyan-400" />
+                <div className="p-2.5 bg-teal-500/10 rounded-xl border border-teal-500/20">
+                  <Zap className="w-5 h-5 text-teal-400" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-white">{t.ramOptimizer}</h3>
@@ -772,7 +772,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
               <button
                 onClick={optimizeRAM}
                 disabled={isOptimizing}
-                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-lg shadow-cyan-600/20 transition flex items-center gap-1"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-lg shadow-teal-600/20 transition flex items-center gap-1"
               >
                 {isOptimizing ? (
                   <>
@@ -796,7 +796,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
                       {opt.status === 'done' ? (
                         <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
                       ) : opt.status === 'running' ? (
-                        <RefreshCw className="w-4 h-4 text-cyan-400 animate-spin shrink-0" />
+                        <RefreshCw className="w-4 h-4 text-teal-400 animate-spin shrink-0" />
                       ) : (
                         <div className="w-4 h-4 rounded-full border border-gray-600 shrink-0" />
                       )}
@@ -815,8 +815,8 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
         <div className="space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-md">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                <FileSearch className="w-5 h-5 text-blue-400" />
+              <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                <FileSearch className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
                 <h3 className="font-bold text-sm text-white">{t.integrityScanner}</h3>
@@ -835,7 +835,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={computingHashes || shredding}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-black rounded-xl shadow-lg shadow-blue-600/20 transition flex items-center justify-center gap-2 mb-4"
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-black rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2 mb-4"
             >
               <FileCheck className="w-4 h-4" />
               {computingHashes ? t.computeHashes : t.selectFiles}
@@ -894,7 +894,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-xs truncate text-white">{f.name}</p>
                         <p className="text-[10px] text-gray-500 mt-0.5">{formatBytes(f.size)} · {f.scannedAt}</p>
-                        <p className="text-[10px] font-mono text-cyan-400 mt-1 break-all bg-black/40 p-1.5 rounded border border-white/5">
+                        <p className="text-[10px] font-mono text-teal-400 mt-1 break-all bg-black/40 p-1.5 rounded border border-white/5">
                           SHA-256: {f.hash}
                         </p>
                       </div>
@@ -909,13 +909,13 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
           {/* DoD Wipe Steps Info */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-md">
             <h4 className="font-bold text-xs text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Lock className="w-4 h-4 text-purple-400" />
+              <Lock className="w-4 h-4 text-emerald-400" />
               {t.dodTitle}
             </h4>
             <div className="space-y-2.5 text-xs text-gray-400">
               {t.dodSteps.map((step, idx) => (
                 <div key={idx} className="flex items-start gap-3 leading-relaxed">
-                  <span className="w-5 h-5 bg-purple-600/30 border border-purple-500/30 rounded-full flex items-center justify-center text-[10px] font-black text-purple-300 shrink-0">
+                  <span className="w-5 h-5 bg-emerald-600/30 border border-emerald-500/30 rounded-full flex items-center justify-center text-[10px] font-black text-emerald-300 shrink-0">
                     {idx + 1}
                   </span>
                   <span>{step}</span>
@@ -946,7 +946,7 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
                 </div>
                 <div className="text-right shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
                   <span className="text-[10px] text-gray-500 font-mono">{entry.timestamp}</span>
-                  <span className="px-2 py-0.5 bg-purple-500/10 text-purple-300 border border-purple-500/20 rounded-full text-[9px] font-bold">
+                  <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 rounded-full text-[9px] font-bold">
                     {entry.passes} {t.auditPasses}
                   </span>
                 </div>
@@ -957,8 +957,8 @@ export default function AISystemGuardian(_props?: { lang?: 'en' | 'hi' }) {
       )}
 
       {/* Local Footnote */}
-      <div className="mt-8 p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
-        <div className="flex items-start gap-3 text-xs leading-relaxed text-blue-400">
+      <div className="mt-8 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
+        <div className="flex items-start gap-3 text-xs leading-relaxed text-emerald-400">
           <Lock className="w-4 h-4 shrink-0 mt-0.5" />
           <p>{t.localFootnote}</p>
         </div>

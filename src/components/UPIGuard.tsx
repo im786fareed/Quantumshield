@@ -19,7 +19,7 @@ const UPI_FRAUD_PATTERNS = [
   { name: 'Fake Merchant', nameHi: 'नकली व्यापारी', desc: 'Fraudulent QR codes with lookalike merchant names', descHi: 'नकली QR कोड', icon: QrCode, amount: '₹45Cr', color: 'text-red-400', bg: 'bg-red-500/20 border-red-500/30' },
   { name: 'Request Scam', nameHi: 'रिक्वेस्ट स्कैम', desc: '"Collect money" sent as payment request', descHi: 'भुगतान अनुरोध घोटाला', icon: CreditCard, amount: '₹28Cr', color: 'text-orange-400', bg: 'bg-orange-500/20 border-orange-500/30' },
   { name: 'Cashback Fraud', nameHi: 'कैशबैक धोखा', desc: 'Pay ₹1 to get ₹1000 cashback trick', descHi: '₹1 दो, ₹1000 पाओ — झूठ', icon: AlertTriangle, amount: '₹15Cr', color: 'text-yellow-400', bg: 'bg-yellow-500/20 border-yellow-500/30' },
-  { name: 'Screen Share Hack', nameHi: 'स्क्रीन शेयर हैक', desc: 'Attacker views PIN via remote access apps', descHi: 'रिमोट ऐप से PIN देखना', icon: Eye, amount: '₹7Cr', color: 'text-purple-400', bg: 'bg-purple-500/20 border-purple-500/30' },
+  { name: 'Screen Share Hack', nameHi: 'स्क्रीन शेयर हैक', desc: 'Attacker views PIN via remote access apps', descHi: 'रिमोट ऐप से PIN देखना', icon: Eye, amount: '₹7Cr', color: 'text-emerald-400', bg: 'bg-emerald-500/20 border-emerald-500/30' },
 ];
 
 const SAFE_CHECKLIST = [
@@ -270,7 +270,7 @@ export default function UPIGuard() {
                     <ul className="space-y-2">
                       {result.advice.map((adv, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm">
-                          <ChevronRight className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
+                          <ChevronRight className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
                           <span>{adv}</span>
                         </li>
                       ))}

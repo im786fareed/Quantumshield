@@ -127,8 +127,13 @@ body {
 }
 .qs-card:hover::before { opacity: 1; }
 
+/* Command Center — radar sweep behind the score ring while scanning */
+@keyframes av-sweep { to { transform: rotate(360deg); } }
+.av-sweep { animation: av-sweep 1.4s linear infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .qs-ring::before,
   .qs-glow,
-  .qs-shimmer { animation: none; }
+  .qs-shimmer,
+  .av-sweep { animation: none; }
 }

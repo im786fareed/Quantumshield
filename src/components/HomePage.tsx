@@ -67,7 +67,7 @@ function HeroBackdrop() {
         if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(96,165,250,0.35)';
+        ctx.fillStyle = 'rgba(52,211,153,0.32)';
         ctx.fill();
       }
       for (let i = 0; i < parts.length; i++) {
@@ -79,7 +79,7 @@ function HeroBackdrop() {
             ctx.beginPath();
             ctx.moveTo(parts[i].x, parts[i].y);
             ctx.lineTo(parts[j].x, parts[j].y);
-            ctx.strokeStyle = `rgba(139,92,246,${(1 - d / 120) * 0.12})`;
+            ctx.strokeStyle = `rgba(16,185,129,${(1 - d / 120) * 0.14})`;
             ctx.lineWidth = 0.6;
             ctx.stroke();
           }
@@ -284,12 +284,12 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
     s === 'high'     ? 'border-orange-500/40 bg-orange-500/10 text-orange-400' :
                        'border-yellow-500/30 bg-yellow-500/10 text-yellow-400';
 
-  const ToolCard = ({ tool, accent = 'text-blue-400' }: { tool: Tool; accent?: string }) => {
+  const ToolCard = ({ tool, accent = 'text-emerald-400' }: { tool: Tool; accent?: string }) => {
     const Icon = tool.icon;
     return (
       <a
         href={tool.path}
-        className="qs-card bg-white/5 border border-white/10 rounded-xl p-4 transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-900/20 group"
+        className="qs-card bg-white/5 border border-white/10 rounded-xl p-4 transition-all duration-300 hover:bg-white/10 hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-900/20 hover:border-emerald-500/30 group"
       >
         <Icon className={`w-7 h-7 mb-2.5 transition-transform group-hover:scale-110 ${accent}`} />
         <h4 className="font-bold text-sm mb-1 leading-snug">
@@ -309,8 +309,8 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
       <section className="relative">
         {/* ambient backdrop */}
         <HeroBackdrop />
-        <div className="pointer-events-none absolute -top-40 -right-40 w-[36rem] h-[36rem] rounded-full bg-blue-600/10 blur-[120px]" />
-        <div className="pointer-events-none absolute -bottom-40 -left-40 w-[32rem] h-[32rem] rounded-full bg-purple-600/10 blur-[120px]" />
+        <div className="pointer-events-none absolute -top-40 -right-40 w-[36rem] h-[36rem] rounded-full bg-emerald-600/10 blur-[120px]" />
+        <div className="pointer-events-none absolute -bottom-40 -left-40 w-[32rem] h-[32rem] rounded-full bg-emerald-500/[0.07] blur-[120px]" />
 
         <div className="relative max-w-6xl mx-auto px-4 pt-14 pb-2 md:pt-20">
           <div className="text-center mb-10">
@@ -318,13 +318,13 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
             <motion.div
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mx-auto w-fit flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 mb-7"
+              className="mx-auto w-fit flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-7"
             >
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-400" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
               </span>
-              <span className="text-[11px] font-mono uppercase tracking-widest text-blue-300">{t.badgeLive}</span>
+              <span className="text-[11px] font-mono uppercase tracking-widest text-emerald-300">{t.badgeLive}</span>
             </motion.div>
 
             {/* animated shield logo */}
@@ -333,8 +333,8 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               className="relative mx-auto w-fit flex items-center justify-center mb-6"
             >
-              <div className="qs-glow absolute w-48 h-48 rounded-full bg-gradient-to-br from-blue-500/25 to-purple-500/25 blur-3xl" />
-              <div className="qs-ring relative w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-600/30 to-purple-600/30 border border-blue-500/40 flex items-center justify-center">
+              <div className="qs-glow absolute w-48 h-48 rounded-full bg-gradient-to-br from-emerald-500/25 to-teal-500/20 blur-3xl" />
+              <div className="qs-ring relative w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-600/25 to-emerald-500/15 border border-emerald-500/40 flex items-center justify-center">
                 <img
                   src="/logo.png"
                   alt="AdamasVault logo"
@@ -348,7 +348,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
             <motion.h1
               initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl md:text-7xl font-black mb-4 tracking-tight bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent qs-shimmer"
+              className="text-5xl md:text-7xl font-black mb-4 tracking-tight bg-gradient-to-r from-[#eef3f0] via-[#dfe7e3] to-[#7fe3c0] bg-clip-text text-transparent qs-shimmer"
             >
               {t.title}
             </motion.h1>
@@ -359,7 +359,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
               className="text-xl md:text-3xl font-bold text-gray-100 leading-snug max-w-3xl mx-auto"
             >
               {t.pitch}<br />
-              <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">{t.pitchAccent}</span>
+              <span className="bg-gradient-to-r from-emerald-300 to-teal-200 bg-clip-text text-transparent">{t.pitchAccent}</span>
             </motion.p>
 
             <motion.p
@@ -380,7 +380,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
                 const Icon = item.icon;
                 return (
                   <div key={i} className="flex items-center gap-2.5 bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2.5 text-left">
-                    <Icon className="w-4 h-4 text-blue-400 shrink-0" />
+                    <Icon className="w-4 h-4 text-emerald-400 shrink-0" />
                     <div className="min-w-0">
                       <div className="text-[11px] font-bold leading-tight truncate">{item.label}</div>
                       <div className="text-[9px] text-gray-500 leading-tight truncate">{item.sub}</div>
@@ -398,16 +398,16 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
             >
               <Link
                 href="/protection"
-                className="qs-card flex items-center gap-2.5 px-6 py-3 rounded-xl bg-cyan-600/20 border border-cyan-500/50 text-sm font-bold text-cyan-100 hover:bg-cyan-600/30 hover:border-cyan-400 hover:-translate-y-0.5 transition-all"
+                className="qs-card flex items-center gap-2.5 px-6 py-3 rounded-xl bg-emerald-600/20 border border-emerald-500/50 text-sm font-bold text-emerald-100 hover:bg-emerald-600/30 hover:border-emerald-400 hover:-translate-y-0.5 transition-all"
               >
-                <Shield className="w-4 h-4 text-cyan-300" />
+                <Shield className="w-4 h-4 text-emerald-300" />
                 {lang === 'en' ? 'Open Protection Center' : 'सुरक्षा केंद्र खोलें'}
               </Link>
               <button
                 onClick={openSecurityCheck}
-                className="qs-card flex items-center gap-2.5 px-6 py-3 rounded-xl bg-blue-600/15 border border-blue-500/40 text-sm font-bold text-blue-200 hover:bg-blue-600/25 hover:border-blue-400 hover:-translate-y-0.5 transition-all"
+                className="qs-card flex items-center gap-2.5 px-6 py-3 rounded-xl bg-white/[0.05] border border-white/15 text-sm font-bold text-[#dfe7e3] hover:bg-white/[0.09] hover:border-emerald-400/50 hover:-translate-y-0.5 transition-all"
               >
-                <ShieldCheck className="w-4 h-4 text-blue-400" />
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 {t.runCheck}
               </button>
             </motion.div>
@@ -461,15 +461,15 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
         <motion.a
           variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
           href="/trust-search"
-          className="qs-card relative overflow-hidden flex items-center gap-5 bg-gradient-to-r from-cyan-600/25 via-teal-600/15 to-transparent border-2 border-cyan-500/50 rounded-2xl p-6 mb-10 hover:border-cyan-400 hover:from-cyan-600/35 transition-all group">
+          className="qs-card relative overflow-hidden flex items-center gap-5 bg-gradient-to-r from-emerald-600/25 via-emerald-600/12 to-transparent border-2 border-emerald-500/50 rounded-2xl p-6 mb-10 hover:border-emerald-400 hover:from-emerald-600/35 transition-all group">
           <SearchCheck className="absolute right-5 bottom-3 w-24 h-24 opacity-10" />
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/25 flex items-center justify-center shrink-0">
-            <SearchCheck className="w-6 h-6 text-cyan-300" />
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/25 flex items-center justify-center shrink-0">
+            <SearchCheck className="w-6 h-6 text-emerald-300" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h2 className="text-xl font-black">{language === 'en' ? 'Trust Search' : 'ट्रस्ट सर्च'}</h2>
-              <span className="text-[10px] font-black uppercase tracking-widest text-cyan-300 bg-cyan-500/15 border border-cyan-500/40 rounded-full px-2.5 py-0.5">
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300 bg-emerald-500/15 border border-emerald-500/40 rounded-full px-2.5 py-0.5">
                 {language === 'en' ? 'New' : 'नया'}
               </span>
             </div>
@@ -479,22 +479,22 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
                 : 'भरोसा करने से पहले जांचें। कोई भी फोन नंबर, वेबसाइट, ईमेल, UPI ID या कस्टमर-केयर लाइन — कॉल, क्लिक या भुगतान से पहले असली आधिकारिक स्रोतों से जांचें।'}
             </p>
           </div>
-          <ArrowRight className="w-5 h-5 text-cyan-300 shrink-0 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-5 h-5 text-emerald-300 shrink-0 group-hover:translate-x-1 transition-transform" />
         </motion.a>
 
         {/* ── My Legal Rights — second home / legal intelligence engine ── */}
         <motion.a
           variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
           href="/legal-rights"
-          className="qs-card relative overflow-hidden flex items-center gap-5 bg-gradient-to-r from-indigo-600/25 via-violet-600/15 to-transparent border-2 border-indigo-500/50 rounded-2xl p-6 mb-10 hover:border-indigo-400 hover:from-indigo-600/35 transition-all group">
+          className="qs-card relative overflow-hidden flex items-center gap-5 bg-gradient-to-r from-white/[0.06] via-white/[0.02] to-transparent border-2 border-white/15 rounded-2xl p-6 mb-10 hover:border-emerald-400/40 hover:from-white/[0.09] transition-all group">
           <Scale className="absolute right-5 bottom-3 w-24 h-24 opacity-10" />
-          <div className="w-12 h-12 rounded-xl bg-indigo-500/25 flex items-center justify-center shrink-0">
-            <Scale className="w-6 h-6 text-indigo-300" />
+          <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
+            <Scale className="w-6 h-6 text-[#dfe7e3]" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h2 className="text-xl font-black">{language === 'en' ? 'My Legal Rights' : 'मेरे कानूनी अधिकार'}</h2>
-              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 bg-indigo-500/15 border border-indigo-500/40 rounded-full px-2.5 py-0.5">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#dfe7e3] bg-white/10 border border-white/20 rounded-full px-2.5 py-0.5">
                 {language === 'en' ? 'New' : 'नया'}
               </span>
             </div>
@@ -504,7 +504,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
                 : 'धोखाधड़ी, उत्पीड़न या अधिकार हनन? बताएं — AI आपके अधिकार, कानून, सही प्राधिकरण बताकर रिपोर्ट-तैयार केस फाइल बनाता है।'}
             </p>
           </div>
-          <ArrowRight className="w-5 h-5 text-indigo-300 shrink-0 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-5 h-5 text-[#93a79f] shrink-0 group-hover:translate-x-1 group-hover:text-emerald-300 transition-all" />
         </motion.a>
 
         {/* ── QuantumLocate — AI caller intelligence ── */}
@@ -540,22 +540,22 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
         >
           <h2 className="text-lg font-black mb-3 text-gray-200">{t.quickTitle}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Link href="/spam" className="qs-card flex items-center gap-4 bg-purple-600/15 border border-purple-500/40 rounded-xl p-4 hover:border-purple-400 hover:bg-purple-600/25 transition-all group">
-              <MessageSquare className="w-6 h-6 text-purple-400 shrink-0 group-hover:scale-110 transition-transform" />
+            <Link href="/spam" className="qs-card flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4 hover:border-emerald-500/40 hover:bg-white/[0.06] transition-all group">
+              <MessageSquare className="w-6 h-6 text-emerald-300 shrink-0 group-hover:scale-110 transition-transform" />
               <div>
                 <div className="font-bold text-sm">{t.quickMsg}</div>
                 <div className="text-[11px] text-gray-500">{t.quickMsgDesc}</div>
               </div>
             </Link>
-            <Link href="/scanner" className="qs-card flex items-center gap-4 bg-blue-600/15 border border-blue-500/40 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-600/25 transition-all group">
-              <Link2 className="w-6 h-6 text-blue-400 shrink-0 group-hover:scale-110 transition-transform" />
+            <Link href="/scanner" className="qs-card flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4 hover:border-emerald-500/40 hover:bg-white/[0.06] transition-all group">
+              <Link2 className="w-6 h-6 text-emerald-300 shrink-0 group-hover:scale-110 transition-transform" />
               <div>
                 <div className="font-bold text-sm">{t.quickUrl}</div>
                 <div className="text-[11px] text-gray-500">{t.quickUrlDesc}</div>
               </div>
             </Link>
-            <Link href="/phoneguard" className="qs-card flex items-center gap-4 bg-teal-600/15 border border-teal-500/40 rounded-xl p-4 hover:border-teal-400 hover:bg-teal-600/25 transition-all group">
-              <PhoneCall className="w-6 h-6 text-teal-400 shrink-0 group-hover:scale-110 transition-transform" />
+            <Link href="/phoneguard" className="qs-card flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4 hover:border-emerald-500/40 hover:bg-white/[0.06] transition-all group">
+              <PhoneCall className="w-6 h-6 text-emerald-300 shrink-0 group-hover:scale-110 transition-transform" />
               <div>
                 <div className="font-bold text-sm">{t.quickNum}</div>
                 <div className="text-[11px] text-gray-500">{t.quickNumDesc}</div>
@@ -584,7 +584,7 @@ export default function HomePage({ lang }: { lang?: 'en' | 'hi' }) {
 
         {/* ── Core tools ── */}
         <section className="mb-8">
-          <h2 className="text-lg font-black uppercase tracking-widest text-blue-400 mb-3">{t.coreTitle}</h2>
+          <h2 className="text-lg font-black uppercase tracking-widest text-emerald-400 mb-3">{t.coreTitle}</h2>
           <motion.div
             variants={{ show: { transition: { staggerChildren: 0.06 } } }}
             initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}

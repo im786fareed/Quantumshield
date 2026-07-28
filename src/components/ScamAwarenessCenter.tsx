@@ -237,7 +237,7 @@ export default function ScamAwarenessCenter({ lang = 'en' }: ScamAwarenessCenter
       case 'critical': return 'bg-red-600/20 border-red-500/50 text-red-400';
       case 'high': return 'bg-orange-600/20 border-orange-500/50 text-orange-400';
       case 'medium': return 'bg-yellow-600/20 border-yellow-500/50 text-yellow-400';
-      default: return 'bg-blue-600/20 border-blue-500/50 text-blue-400';
+      default: return 'bg-emerald-600/20 border-emerald-500/50 text-emerald-400';
     }
   };
 
@@ -287,14 +287,14 @@ export default function ScamAwarenessCenter({ lang = 'en' }: ScamAwarenessCenter
       {/* Educational Videos - EMBEDDED YOUTUBE */}
       <div className="bg-white/5 rounded-xl p-6 mb-6">
         <h2 className="font-bold text-2xl mb-2 flex items-center gap-2">
-          <PlayCircle className="w-6 h-6 text-blue-400" />
+          <PlayCircle className="w-6 h-6 text-emerald-400" />
           {t.educationalVideos}
         </h2>
         <p className="text-gray-400 mb-4">{t.videosDescription}</p>
         
         <div className="grid md:grid-cols-2 gap-6">
           {t.videos.map((video) => (
-            <div key={video.id} className="bg-black/50 rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition">
+            <div key={video.id} className="bg-black/50 rounded-xl overflow-hidden border border-white/10 hover:border-emerald-500/50 transition">
               {/* Embedded YouTube Video */}
               <div className="relative aspect-video">
                 <iframe
@@ -316,7 +316,7 @@ export default function ScamAwarenessCenter({ lang = 'en' }: ScamAwarenessCenter
                     href={`https://www.youtube.com/watch?v=${video.videoId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                    className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
                     Watch on YouTube
                     <ExternalLink className="w-3 h-3" />
                   </a>
@@ -355,14 +355,14 @@ export default function ScamAwarenessCenter({ lang = 'en' }: ScamAwarenessCenter
       </div>
 
       {/* Report Scam CTA */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-center">
+      <div className="bg-gradient-to-r from-emerald-600 to-emerald-600 rounded-xl p-6 text-center">
         <h3 className="font-bold text-2xl mb-3">{t.reportScam}</h3>
         <p className="text-gray-200 mb-4">{t.reportDescription}</p>
         <a
           href="https://cybercrime.gov.in"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-bold transition">
+          className="inline-flex items-center gap-2 bg-white text-emerald-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-bold transition">
           <Phone className="w-5 h-5" />
           {t.reportButton}
         </a>

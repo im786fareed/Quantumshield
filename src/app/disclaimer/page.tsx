@@ -2,7 +2,7 @@ import BackToHome from '@/components/BackToHome';
 
 export default function DisclaimerPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-900 to-black">
       <BackToHome />
       <div className="max-w-4xl mx-auto px-6 py-20">
         <h1 className="text-4xl font-bold mb-8">Disclaimer</h1>
@@ -58,7 +58,7 @@ export default function DisclaimerPage() {
             <p className="text-white">If you are a victim of cybercrime:</p>
             <ul className="list-disc list-inside space-y-2 mt-3">
               <li className="text-white">Call 1930 immediately (National Cybercrime Helpline)</li>
-              <li className="text-white">Report online at <a href="https://cybercrime.gov.in" className="text-blue-400 hover:text-blue-300">cybercrime.gov.in</a></li>
+              <li className="text-white">Report online at <a href="https://cybercrime.gov.in" className="text-emerald-400 hover:text-emerald-300">cybercrime.gov.in</a></li>
               <li className="text-white">Contact your bank if money is involved</li>
               <li className="text-white">Preserve all evidence (screenshots, messages, call logs)</li>
             </ul>
@@ -66,7 +66,7 @@ export default function DisclaimerPage() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Contact</h2>
-            <p>For support or questions: <a href="mailto:AdamasVault4india@gmail.com" className="text-blue-400 hover:text-blue-300">AdamasVault4india@gmail.com</a></p>
+            <p>For support or questions: <a href="mailto:AdamasVault4india@gmail.com" className="text-emerald-400 hover:text-emerald-300">AdamasVault4india@gmail.com</a></p>
           </section>
         </div>
       </div>

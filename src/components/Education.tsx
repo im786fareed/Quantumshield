@@ -35,15 +35,15 @@ const CATEGORIES: CategoryInfo[] = [
   { id: 'digital-arrest', label: 'Digital Arrest', labelHi: 'डिजिटल अरेस्ट', icon: AlertTriangle, color: 'text-orange-400 bg-orange-500/20' },
   { id: 'fake-police', label: 'Fake Police Calls', labelHi: 'नकली पुलिस कॉल', icon: Phone, color: 'text-yellow-400 bg-yellow-500/20' },
   { id: 'whatsapp-otp', label: 'WhatsApp/OTP Scam', labelHi: 'WhatsApp/OTP स्कैम', icon: Smartphone, color: 'text-green-400 bg-green-500/20' },
-  { id: 'upi-fraud', label: 'UPI Fraud', labelHi: 'UPI धोखाधड़ी', icon: CreditCard, color: 'text-blue-400 bg-blue-500/20' },
-  { id: 'kyc-scam', label: 'KYC Scam', labelHi: 'KYC स्कैम', icon: Mail, color: 'text-purple-400 bg-purple-500/20' },
-  { id: 'shopping-fraud', label: 'Shopping Fraud', labelHi: 'शॉपिंग धोखाधड़ी', icon: ShoppingCart, color: 'text-pink-400 bg-pink-500/20' },
+  { id: 'upi-fraud', label: 'UPI Fraud', labelHi: 'UPI धोखाधड़ी', icon: CreditCard, color: 'text-emerald-400 bg-emerald-500/20' },
+  { id: 'kyc-scam', label: 'KYC Scam', labelHi: 'KYC स्कैम', icon: Mail, color: 'text-emerald-400 bg-emerald-500/20' },
+  { id: 'shopping-fraud', label: 'Shopping Fraud', labelHi: 'शॉपिंग धोखाधड़ी', icon: ShoppingCart, color: 'text-emerald-400 bg-emerald-500/20' },
   { id: 'investment-scam', label: 'Investment Scam', labelHi: 'निवेश स्कैम', icon: Briefcase, color: 'text-emerald-400 bg-emerald-500/20' },
   { id: 'elder-safety', label: 'Elder Safety', labelHi: 'बुजुर्ग सुरक्षा', icon: Users, color: 'text-teal-400 bg-teal-500/20' },
-  { id: 'spam-calls', label: 'Spam Calls', labelHi: 'स्पैम कॉल', icon: Phone, color: 'text-indigo-400 bg-indigo-500/20' },
+  { id: 'spam-calls', label: 'Spam Calls', labelHi: 'स्पैम कॉल', icon: Phone, color: 'text-emerald-400 bg-emerald-500/20' },
   { id: 'parcel-scam', label: 'Parcel/Courier Scam', labelHi: 'पार्सल स्कैम', icon: Package, color: 'text-amber-400 bg-amber-500/20' },
   { id: 'romance-scam', label: 'Romance Scam', labelHi: 'रोमांस स्कैम', icon: Heart, color: 'text-rose-400 bg-rose-500/20' },
-  { id: 'steganography', label: 'Image Attacks', labelHi: 'छवि हमले', icon: ImageIcon, color: 'text-cyan-400 bg-cyan-500/20' },
+  { id: 'steganography', label: 'Image Attacks', labelHi: 'छवि हमले', icon: ImageIcon, color: 'text-teal-400 bg-teal-500/20' },
 ];
 
 const VIDEOS: Video[] = [
@@ -207,8 +207,8 @@ export default function Education({ lang }: Props) {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-block p-4 bg-cyan-500/20 rounded-2xl mb-4">
-          <BookOpen className="w-12 h-12 text-cyan-400" />
+        <div className="inline-block p-4 bg-teal-500/20 rounded-2xl mb-4">
+          <BookOpen className="w-12 h-12 text-teal-400" />
         </div>
         <h2 className="text-4xl font-bold mb-2">{content.title}</h2>
         <p className="text-gray-400 text-lg">{content.subtitle}</p>
@@ -227,7 +227,7 @@ export default function Education({ lang }: Props) {
         </div>
         <div className="w-full bg-black/40 rounded-full h-3 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-cyan-500 to-green-500 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-teal-500 to-green-500 rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -257,7 +257,7 @@ export default function Education({ lang }: Props) {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder={content.search}
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 focus:border-teal-500 outline-none text-white placeholder-gray-500"
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
@@ -268,10 +268,10 @@ export default function Education({ lang }: Props) {
         <div className="relative">
           <button
             onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-            className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:border-cyan-500/50 transition min-w-[200px] justify-between"
+            className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:border-teal-500/50 transition min-w-[200px] justify-between"
           >
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-cyan-400" />
+              <Filter className="w-4 h-4 text-teal-400" />
               <span className="text-sm">
                 {activeCategory === 'all'
                   ? content.allCategories
@@ -284,7 +284,7 @@ export default function Education({ lang }: Props) {
             <div className="absolute top-full mt-1 left-0 right-0 md:w-72 bg-gray-900 border border-white/20 rounded-xl shadow-2xl z-30 max-h-80 overflow-y-auto">
               <button
                 onClick={() => { setActiveCategory('all'); setShowCategoryDropdown(false); }}
-                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white/10 transition flex items-center gap-2 ${activeCategory === 'all' ? 'bg-cyan-500/20 text-cyan-400' : ''}`}
+                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white/10 transition flex items-center gap-2 ${activeCategory === 'all' ? 'bg-teal-500/20 text-teal-400' : ''}`}
               >
                 <Shield className="w-4 h-4" />
                 {content.allCategories} ({VIDEOS.length})
@@ -295,7 +295,7 @@ export default function Education({ lang }: Props) {
                   <button
                     key={cat.id}
                     onClick={() => { setActiveCategory(cat.id); setShowCategoryDropdown(false); }}
-                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white/10 transition flex items-center gap-2 ${activeCategory === cat.id ? 'bg-cyan-500/20 text-cyan-400' : ''}`}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white/10 transition flex items-center gap-2 ${activeCategory === cat.id ? 'bg-teal-500/20 text-teal-400' : ''}`}
                   >
                     <cat.icon className="w-4 h-4" />
                     {lang === 'en' ? cat.label : cat.labelHi} ({count})
@@ -312,7 +312,7 @@ export default function Education({ lang }: Props) {
         <button
           onClick={() => setActiveCategory('all')}
           className={`shrink-0 px-4 py-2 rounded-full text-sm font-bold transition ${
-            activeCategory === 'all' ? 'bg-cyan-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
+            activeCategory === 'all' ? 'bg-teal-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
           }`}
         >
           {content.allCategories}
@@ -322,7 +322,7 @@ export default function Education({ lang }: Props) {
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
             className={`shrink-0 px-4 py-2 rounded-full text-sm font-bold transition flex items-center gap-1.5 ${
-              activeCategory === cat.id ? 'bg-cyan-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
+              activeCategory === cat.id ? 'bg-teal-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
             }`}
           >
             <cat.icon className="w-3.5 h-3.5" />
@@ -334,7 +334,7 @@ export default function Education({ lang }: Props) {
       {/* Quick Safety Tips (collapsible) */}
       <details className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-5 mb-8 group">
         <summary className="text-xl font-bold flex items-center gap-3 cursor-pointer list-none">
-          <Shield className="w-6 h-6 text-cyan-400" />
+          <Shield className="w-6 h-6 text-teal-400" />
           {content.quickTips}
           <ChevronDown className="w-5 h-5 ml-auto group-open:rotate-180 transition" />
         </summary>
@@ -372,7 +372,7 @@ export default function Education({ lang }: Props) {
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
                     watchedIds.has(selectedVideo.id)
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                      : 'bg-white/10 text-gray-300 hover:bg-cyan-500/20 hover:text-cyan-400'
+                      : 'bg-white/10 text-gray-300 hover:bg-teal-500/20 hover:text-teal-400'
                   }`}
                 >
                   {watchedIds.has(selectedVideo.id) ? content.watched : content.markWatched}
@@ -398,7 +398,7 @@ export default function Education({ lang }: Props) {
       {/* Results Counter */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-bold flex items-center gap-3">
-          <Play className="w-5 h-5 text-cyan-400" />
+          <Play className="w-5 h-5 text-teal-400" />
           {content.showing} {filteredVideos.length} {content.of} {VIDEOS.length} {content.videos}
         </h3>
       </div>
@@ -419,7 +419,7 @@ export default function Education({ lang }: Props) {
             return (
               <div
                 key={video.id}
-                className={`bg-white/5 backdrop-blur rounded-2xl border overflow-hidden hover:border-cyan-400/50 transition-all group cursor-pointer relative ${
+                className={`bg-white/5 backdrop-blur rounded-2xl border overflow-hidden hover:border-teal-400/50 transition-all group cursor-pointer relative ${
                   isWatched ? 'border-green-500/30' : 'border-white/10'
                 }`}
                 onClick={() => setSelectedVideo(video)}
@@ -453,13 +453,13 @@ export default function Education({ lang }: Props) {
                   </div>
                   <h4 className="text-sm font-bold mb-3 line-clamp-2">{lang === 'en' ? video.title : video.titleHi}</h4>
                   <div className="flex items-center justify-between">
-                    <button className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold text-sm hover:shadow-lg transition flex items-center justify-center gap-1.5">
+                    <button className="flex-1 px-3 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl font-bold text-sm hover:shadow-lg transition flex items-center justify-center gap-1.5">
                       <Play className="w-3.5 h-3.5" />
                       {content.watchNow}
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); toggleWatched(video.id); }}
-                      className={`ml-2 p-2 rounded-xl transition ${isWatched ? 'bg-green-500/20 text-green-400' : 'bg-white/5 text-gray-500 hover:text-cyan-400'}`}
+                      className={`ml-2 p-2 rounded-xl transition ${isWatched ? 'bg-green-500/20 text-green-400' : 'bg-white/5 text-gray-500 hover:text-teal-400'}`}
                       title={isWatched ? content.watched : content.markWatched}
                     >
                       {isWatched ? <CheckCircle className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -473,7 +473,7 @@ export default function Education({ lang }: Props) {
       )}
 
       {/* Share Section */}
-      <div className="mt-10 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur rounded-2xl border border-purple-400/30 p-8 text-center">
+      <div className="mt-10 bg-gradient-to-r from-emerald-600/20 to-emerald-600/20 backdrop-blur rounded-2xl border border-emerald-400/30 p-8 text-center">
         <h3 className="text-2xl font-bold mb-3">{content.shareKnowledge}</h3>
         <p className="text-gray-300 mb-5">{content.shareMsg}</p>
         <button

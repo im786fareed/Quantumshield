@@ -2,7 +2,7 @@ import BackToHome from '@/components/BackToHome';
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-900 to-black">
       <BackToHome />
       <div className="max-w-4xl mx-auto px-6 py-20">
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
@@ -45,7 +45,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">Contact</h2>
-            <p>Questions: <a href="mailto:AdamasVault4india@gmail.com" className="text-blue-400 hover:text-blue-300">AdamasVault4india@gmail.com</a></p>
+            <p>Questions: <a href="mailto:AdamasVault4india@gmail.com" className="text-emerald-400 hover:text-emerald-300">AdamasVault4india@gmail.com</a></p>
           </section>
         </div>
       </div>

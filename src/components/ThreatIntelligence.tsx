@@ -152,7 +152,7 @@ export default function ThreatIntelligence(_props?: { lang?: 'en' | 'hi' }) {
 
         <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
           <div className="flex items-center gap-3 mb-3">
-            <BookOpen className="w-8 h-8 text-cyan-400" />
+            <BookOpen className="w-8 h-8 text-teal-400" />
             <h3 className="text-lg font-bold text-white">
               {lang === 'en' ? 'Curated Library' : 'क्यूरेटेड लाइब्रेरी'}
             </h3>
@@ -214,11 +214,11 @@ export default function ThreatIntelligence(_props?: { lang?: 'en' | 'hi' }) {
       </div>
 
       {/* Info Footer */}
-      <div className="mt-8 bg-cyan-600/20 backdrop-blur rounded-xl border border-cyan-500/50 p-6">
+      <div className="mt-8 bg-teal-600/20 backdrop-blur rounded-xl border border-teal-500/50 p-6">
         <div className="flex items-start gap-3">
-          <Shield className="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1" />
+          <Shield className="w-6 h-6 text-teal-400 flex-shrink-0 mt-1" />
           <div>
-            <p className="text-sm text-cyan-200">
+            <p className="text-sm text-teal-200">
               <strong>{content.howTitle}</strong>
               {' '}
               {content.how}

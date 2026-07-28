@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { LogOut, ShieldCheck, User as UserIcon } from 'lucide-react';
+import { LogOut, ShieldCheck, User as UserIcon, Crown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AccountButton() {
@@ -25,13 +25,20 @@ export default function AccountButton() {
       >
         {user.photoURL
           ? <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full" />
-          : <UserIcon className="w-4 h-4 text-blue-300" />}
+          : <UserIcon className="w-4 h-4 text-emerald-300" />}
         <span className="hidden md:block text-xs font-bold max-w-[10rem] truncate">{label}</span>
       </button>
 
       {open && (
         <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-white/10 rounded-xl shadow-xl p-2 z-50">
           <div className="px-3 py-2 text-xs text-gray-400 truncate border-b border-white/10 mb-1">{label}</div>
+          <Link
+            href="/premium"
+            onClick={() => setOpen(false)}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-emerald-500/10 text-emerald-300"
+          >
+            <Crown className="w-4 h-4" /> Upgrade to Premium
+          </Link>
           <Link
             href="/account"
             onClick={() => setOpen(false)}

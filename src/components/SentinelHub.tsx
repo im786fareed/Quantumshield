@@ -90,13 +90,13 @@ function InspectionResultView({ result, lang, onCloseup }: {
               </div>
               <p className="text-[11px] text-gray-500 mt-0.5">{o.location}</p>
               <p className="text-[13px] text-gray-300 mt-1.5 leading-relaxed">{o.reason}</p>
-              <p className="text-[13px] text-blue-300 mt-1.5 flex gap-1.5">
+              <p className="text-[13px] text-emerald-300 mt-1.5 flex gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" /> {o.recommendation}
               </p>
               {onCloseup && (o.concern === 'medium' || o.concern === 'high') && (
                 <button
                   onClick={() => onCloseup(o)}
-                  className="mt-2 w-full bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/40 text-blue-200 rounded-lg py-2 text-[12px] font-bold flex items-center justify-center gap-1.5 transition"
+                  className="mt-2 w-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-200 rounded-lg py-2 text-[12px] font-bold flex items-center justify-center gap-1.5 transition"
                 >
                   <Camera className="w-3.5 h-3.5" />
                   {L(lang, 'Check up close — photo from 15–20 cm', 'नज़दीक से जांचें — 15–20 सेमी से फ़ोटो')}
@@ -112,7 +112,7 @@ function InspectionResultView({ result, lang, onCloseup }: {
           <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">{L(lang, 'Next steps', 'अगले कदम')}</h4>
           <ul className="space-y-1.5">
             {result.recommendations.map((r, i) => (
-              <li key={i} className="text-[13px] text-gray-300 flex gap-2"><span className="text-blue-400">•</span> {r}</li>
+              <li key={i} className="text-[13px] text-gray-300 flex gap-2"><span className="text-emerald-400">•</span> {r}</li>
             ))}
           </ul>
         </div>
@@ -347,7 +347,7 @@ function RoomInspector({ lang }: { lang: Lang }) {
           'लगभग 10 सेकंड तक फ़ोन को कमरे में धीरे-धीरे घुमाएं। ऐप वीडियो से कुछ फ़्रेम लेता है और AI पूरे स्वीप की जांच करता है — कोणों के बीच चमकती या हिलती परछाइयाँ ही छुपे लेंस की पहचान होती हैं। यह बताता है कि किन चीज़ों को हाथ से जांचें — और क्यों।')}
       </p>
 
-      <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 flex gap-2 text-[12px] text-blue-200/90">
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 flex gap-2 text-[12px] text-emerald-200/90">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <span>{L(lang,
           'The AI can never confirm a hidden camera — it only points you to objects to check by hand. Only a few still frames from your pan are sent for this one analysis; the video itself never leaves your phone, and nothing is stored on our servers.',
@@ -356,8 +356,8 @@ function RoomInspector({ lang }: { lang: Lang }) {
 
       {idle && (
         <div className="space-y-2">
-          <button onClick={startCamera} className="w-full border-2 border-dashed border-white/20 hover:border-blue-400/60 rounded-xl py-10 flex flex-col items-center gap-2 transition">
-            <PlayCircle className="w-9 h-9 text-blue-400" />
+          <button onClick={startCamera} className="w-full border-2 border-dashed border-white/20 hover:border-emerald-400/60 rounded-xl py-10 flex flex-col items-center gap-2 transition">
+            <PlayCircle className="w-9 h-9 text-emerald-400" />
             <span className="font-bold">{L(lang, 'Start video sweep', 'वीडियो स्वीप शुरू करें')}</span>
             <span className="text-xs text-gray-500">{L(lang, '≈10 seconds · slow pan around the room', '≈10 सेकंड · कमरे में धीमा पैन')}</span>
           </button>
@@ -382,7 +382,7 @@ function RoomInspector({ lang }: { lang: Lang }) {
           {recording ? (
             <div className="space-y-2">
               <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all" style={{ width: `${progress}%` }} />
+                <div className="h-full bg-gradient-to-r from-teal-400 to-emerald-500 transition-all" style={{ width: `${progress}%` }} />
               </div>
               <p className="text-[13px] text-gray-400 text-center">{L(lang,
                 'Pan slowly — cover the ceiling, corners, mirrors, sockets and anything facing the bed.',
@@ -390,7 +390,7 @@ function RoomInspector({ lang }: { lang: Lang }) {
             </div>
           ) : (
             <div className="flex gap-2">
-              <button onClick={startScan} className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+              <button onClick={startScan} className="flex-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
                 <PlayCircle className="w-5 h-5" /> {L(lang, 'Start 10-second scan', '10 सेकंड का स्कैन शुरू करें')}
               </button>
               <button onClick={stopCamera} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-3 px-4 font-bold text-sm transition">
@@ -417,10 +417,10 @@ function RoomInspector({ lang }: { lang: Lang }) {
           <input
             value={note} onChange={(e) => setNote(e.target.value)}
             placeholder={L(lang, 'Optional note — e.g. "check the smoke detector above the bed"', 'वैकल्पिक नोट — जैसे "बेड के ऊपर वाला स्मोक डिटेक्टर जांचें"')}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm placeholder:text-gray-600 focus:outline-none focus:border-blue-400/60"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm placeholder:text-gray-600 focus:outline-none focus:border-emerald-400/60"
           />
           <div className="flex gap-2">
-            <button onClick={analyzeSweep} disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+            <button onClick={analyzeSweep} disabled={loading} className="flex-1 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
               {loading
                 ? <><Loader2 className="w-5 h-5 animate-spin" /> {L(lang, 'Inspecting sweep…', 'स्वीप की जांच हो रही है…')}</>
                 : <><Eye className="w-5 h-5" /> {L(lang, 'Inspect this sweep', 'इस स्वीप की जांच करें')}</>}
@@ -444,9 +444,9 @@ function RoomInspector({ lang }: { lang: Lang }) {
           <input
             value={note} onChange={(e) => setNote(e.target.value)}
             placeholder={L(lang, 'Optional note — e.g. "check the smoke detector above the bed"', 'वैकल्पिक नोट — जैसे "बेड के ऊपर वाला स्मोक डिटेक्टर जांचें"')}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm placeholder:text-gray-600 focus:outline-none focus:border-blue-400/60"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm placeholder:text-gray-600 focus:outline-none focus:border-emerald-400/60"
           />
-          <button onClick={analyzePhoto} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-60 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+          <button onClick={analyzePhoto} disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
             {loading
               ? <><Loader2 className="w-5 h-5 animate-spin" /> {L(lang, 'Inspecting…', 'जांच हो रही है…')}</>
               : <><Eye className="w-5 h-5" /> {L(lang, 'Inspect this scene', 'इस दृश्य की जांच करें')}</>}
@@ -465,8 +465,8 @@ function RoomInspector({ lang }: { lang: Lang }) {
           <InspectionResultView result={result} lang={lang} onCloseup={startCloseup} />
 
           {closeup && (
-            <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-3 space-y-3">
-              <h4 className="text-xs font-black uppercase tracking-widest text-cyan-300">
+            <div className="rounded-xl border border-teal-500/30 bg-teal-500/5 p-3 space-y-3">
+              <h4 className="text-xs font-black uppercase tracking-widest text-teal-300">
                 {L(lang, 'Close-up check', 'नज़दीकी जांच')}: {closeup.name}
               </h4>
               {!closeup.preview && !closeup.loading && (
@@ -475,7 +475,7 @@ function RoomInspector({ lang }: { lang: Lang }) {
                     'Hold your phone 15–20 cm from the object, fill the frame, keep it steady (turn on the torch if it is dark), and take the photo.',
                     'फ़ोन को वस्तु से 15–20 सेमी दूर रखें, फ्रेम भरें, स्थिर रखें (अंधेरा हो तो टॉर्च जलाएं), और फ़ोटो लें।')}</p>
                   <div className="flex gap-2">
-                    <button onClick={() => closeupFileRef.current?.click()} className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl py-2.5 font-bold text-sm flex items-center justify-center gap-1.5 transition">
+                    <button onClick={() => closeupFileRef.current?.click()} className="flex-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl py-2.5 font-bold text-sm flex items-center justify-center gap-1.5 transition">
                       <Camera className="w-4 h-4" /> {L(lang, 'Take close-up photo', 'नज़दीकी फ़ोटो लें')}
                     </button>
                     <button onClick={() => setCloseup(null)} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 px-4 font-bold text-sm transition">
@@ -490,7 +490,7 @@ function RoomInspector({ lang }: { lang: Lang }) {
               )}
               {closeup.loading && (
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-300 py-2">
-                  <Loader2 className="w-5 h-5 animate-spin text-cyan-400" /> {L(lang, 'Inspecting close-up…', 'नज़दीकी जांच हो रही है…')}
+                  <Loader2 className="w-5 h-5 animate-spin text-teal-400" /> {L(lang, 'Inspecting close-up…', 'नज़दीकी जांच हो रही है…')}
                 </div>
               )}
               {closeup.error && (
@@ -616,7 +616,7 @@ function EmfScan({ lang }: { lang: Lang }) {
         "Hidden electronics distort the local magnetic field. This uses your phone's real magnetometer: hold still for 3 seconds to calibrate, then slowly move the top of your phone over smoke detectors, sockets, mirrors, vents and decor. Watch for a sustained jump above the baseline.",
         'छुपे इलेक्ट्रॉनिक्स स्थानीय मैग्नेटिक फ़ील्ड को बदल देते हैं। यह आपके फ़ोन के असली मैग्नेटोमीटर का उपयोग करता है: 3 सेकंड स्थिर रहें (कैलिब्रेशन), फिर फ़ोन के ऊपरी हिस्से को स्मोक डिटेक्टर, सॉकेट, शीशे, वेंट और सजावट के ऊपर धीरे-धीरे घुमाएं। बेसलाइन से लगातार बढ़ोतरी पर ध्यान दें।')}</p>
 
-      <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 text-[12px] text-blue-200/90 flex gap-2">
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-[12px] text-emerald-200/90 flex gap-2">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <span>{L(lang,
           'Magnets, metal frames, speakers and wiring also move the needle — a spike means "look closer here," not "camera found."',
@@ -624,7 +624,7 @@ function EmfScan({ lang }: { lang: Lang }) {
       </div>
 
       {!running ? (
-        <button onClick={start} className="w-full bg-blue-600 hover:bg-blue-500 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+        <button onClick={start} className="w-full bg-emerald-600 hover:bg-emerald-500 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
           <Radar className="w-5 h-5" /> {L(lang, 'Start EMF scan', 'EMF स्कैन शुरू करें')}
         </button>
       ) : (
@@ -632,7 +632,7 @@ function EmfScan({ lang }: { lang: Lang }) {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
             {baseline == null ? (
               <div className="flex flex-col items-center gap-2 py-2">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+                <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
                 <span className="text-sm text-gray-400">{L(lang, 'Calibrating — hold still…', 'कैलिब्रेशन — स्थिर रहें…')}</span>
               </div>
             ) : (
@@ -720,7 +720,7 @@ function LensSweep({ lang }: { lang: Lang }) {
         'Camera lenses bounce light straight back as a tiny bright dot. In a dimmed room, turn on a flashlight, hold it next to your eyes, and slowly sweep this magnified view across vents, smoke detectors, mirrors, clocks, sockets and decor. A pinpoint reflection that follows your light is worth inspecting by hand.',
         'कैमरा लेंस रोशनी को एक छोटे चमकीले बिंदु के रूप में सीधे वापस भेजते हैं। कमरे की रोशनी कम करके टॉर्च जलाएं, उसे आँखों के पास रखें, और इस बड़े किए गए दृश्य को वेंट, स्मोक डिटेक्टर, शीशे, घड़ी, सॉकेट और सजावट पर धीरे-धीरे घुमाएं। आपकी रोशनी के साथ चलने वाली बिंदु-जैसी चमक को हाथ से जांचें।')}</p>
 
-      <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 text-[12px] text-blue-200/90 flex gap-2">
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-[12px] text-emerald-200/90 flex gap-2">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <span>{L(lang,
           "This is a manual visual aid — it doesn't auto-detect cameras, it helps your eyes spot reflections. No video is recorded or uploaded.",
@@ -728,7 +728,7 @@ function LensSweep({ lang }: { lang: Lang }) {
       </div>
 
       {!running ? (
-        <button onClick={start} className="w-full bg-blue-600 hover:bg-blue-500 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
+        <button onClick={start} className="w-full bg-emerald-600 hover:bg-emerald-500 rounded-xl py-3 font-bold flex items-center justify-center gap-2 transition">
           <Flashlight className="w-5 h-5" /> {L(lang, 'Open camera sweep', 'कैमरा स्वीप खोलें')}
         </button>
       ) : (
@@ -736,7 +736,7 @@ function LensSweep({ lang }: { lang: Lang }) {
           <div className="relative rounded-xl overflow-hidden border border-white/10 bg-black">
             <video ref={videoRef} playsInline muted className="w-full max-h-[60vh] object-contain" style={{ filter: boost ? 'brightness(1.6) contrast(1.5) saturate(0.6)' : 'none' }} />
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div className="w-16 h-16 border-2 border-cyan-400/70 rounded-full" />
+              <div className="w-16 h-16 border-2 border-teal-400/70 rounded-full" />
             </div>
           </div>
           <div className="flex gap-2">
@@ -832,7 +832,7 @@ function Playbooks({ lang }: { lang: Lang }) {
         return (
           <div key={i} className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
             <button onClick={() => setOpen(isOpen ? null : i)} className="w-full flex items-center gap-3 p-3.5 text-left hover:bg-white/5 transition">
-              <Icon className="w-5 h-5 text-blue-400 shrink-0" />
+              <Icon className="w-5 h-5 text-emerald-400 shrink-0" />
               <span className="font-bold text-sm flex-1">{pb.title[idx]}</span>
               <span className="text-gray-500 text-lg leading-none">{isOpen ? '−' : '+'}</span>
             </button>
@@ -840,7 +840,7 @@ function Playbooks({ lang }: { lang: Lang }) {
               <ol className="px-4 pb-4 space-y-2">
                 {pb.steps.map((s, j) => (
                   <li key={j} className="flex gap-2.5 text-[13px] text-gray-300 leading-relaxed">
-                    <span className="shrink-0 w-5 h-5 rounded-full bg-blue-500/20 text-blue-300 text-[11px] font-black flex items-center justify-center mt-0.5">{j + 1}</span>
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-black flex items-center justify-center mt-0.5">{j + 1}</span>
                     {s[idx]}
                   </li>
                 ))}
@@ -868,7 +868,7 @@ function HardwareRoadmap({ lang }: { lang: Lang }) {
   return (
     <div className="space-y-3">
       <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-[13px] text-gray-300 leading-relaxed flex gap-2">
-        <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
+        <Info className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
         {L(lang,
           "These modules need hardware a phone doesn't have, or access the platform blocks. We'd rather show them as honest roadmap than fake a reading — that's the AdamasVault promise.",
           'इन मॉड्यूल्स को ऐसा हार्डवेयर चाहिए जो फ़ोन में नहीं है, या जिसे प्लेटफ़ॉर्म रोकता है। नकली रीडिंग दिखाने के बजाय हम इन्हें ईमानदार रोडमैप के रूप में दिखाते हैं — यही AdamasVault का वादा है।')}
@@ -909,7 +909,7 @@ function SweepWizard({ lang, onExit }: { lang: Lang; onExit: () => void }) {
               L(lang, 'Allow camera and sensor permissions when asked.', 'पूछे जाने पर कैमरा और सेंसर अनुमति दें।'),
               L(lang, 'Move slowly — rushing misses the small signals.', 'धीरे चलें — जल्दबाज़ी में छोटे संकेत छूट जाते हैं।'),
             ].map((s, i) => (
-              <li key={i} className="flex gap-2 text-[13px] text-gray-300"><CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" /> {s}</li>
+              <li key={i} className="flex gap-2 text-[13px] text-gray-300"><CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" /> {s}</li>
             ))}
           </ul>
         </div>
@@ -922,8 +922,8 @@ function SweepWizard({ lang, onExit }: { lang: Lang; onExit: () => void }) {
       label: L(lang, 'Finish', 'समाप्त'),
       body: (
         <div className="space-y-4">
-          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4">
-            <h4 className="font-bold flex items-center gap-2 mb-1"><ShieldCheck className="w-5 h-5 text-cyan-400" /> {L(lang, 'Sweep complete', 'स्वीप पूरा')}</h4>
+          <div className="rounded-xl border border-teal-500/30 bg-teal-500/5 p-4">
+            <h4 className="font-bold flex items-center gap-2 mb-1"><ShieldCheck className="w-5 h-5 text-teal-400" /> {L(lang, 'Sweep complete', 'स्वीप पूरा')}</h4>
             <p className="text-[13px] text-gray-300 leading-relaxed">{L(lang,
               "You've checked the room with light, AI vision and the magnetic sensor. If anything looked or read as unusual, trust it — re-check that spot by hand.",
               'आपने कमरे को रोशनी, AI विज़न और मैग्नेटिक सेंसर से जांचा। अगर कुछ असामान्य दिखा या पढ़ा, तो उस पर भरोसा करें — उस जगह को हाथ से दोबारा जांचें।')}</p>
@@ -935,7 +935,7 @@ function SweepWizard({ lang, onExit }: { lang: Lang; onExit: () => void }) {
               'उसे खोलें नहीं। जहाँ है वहीं फ़ोटो लें, Evidence Vault में छेड़छाड़-प्रमाण सबूत सेव करें, कमरा छोड़ें, और 112 (पुलिस) तथा 1930 (साइबर क्राइम) पर कॉल करें।')}</p>
           </div>
           <div className="flex gap-2">
-            <Link href="/evidence" className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl py-2.5 font-bold text-sm text-center transition flex items-center justify-center gap-1.5">
+            <Link href="/evidence" className="flex-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl py-2.5 font-bold text-sm text-center transition flex items-center justify-center gap-1.5">
               <FileText className="w-4 h-4" /> {L(lang, 'Save evidence', 'सबूत सेव करें')}
             </Link>
             <button onClick={onExit} className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2.5 font-bold text-sm transition">
@@ -956,14 +956,14 @@ function SweepWizard({ lang, onExit }: { lang: Lang; onExit: () => void }) {
       <div className="flex items-center gap-1.5">
         {steps.map((s, i) => (
           <div key={i} className="flex-1">
-            <div className={`h-1.5 rounded-full transition-colors ${i <= step ? 'bg-cyan-400' : 'bg-white/10'}`} />
-            <span className={`block text-[9px] mt-1 text-center font-bold uppercase tracking-wide ${i === step ? 'text-cyan-300' : 'text-gray-600'}`}>{s.label}</span>
+            <div className={`h-1.5 rounded-full transition-colors ${i <= step ? 'bg-teal-400' : 'bg-white/10'}`} />
+            <span className={`block text-[9px] mt-1 text-center font-bold uppercase tracking-wide ${i === step ? 'text-teal-300' : 'text-gray-600'}`}>{s.label}</span>
           </div>
         ))}
       </div>
 
       <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-        <div className="text-[11px] font-black uppercase tracking-widest text-cyan-300/70 mb-2">
+        <div className="text-[11px] font-black uppercase tracking-widest text-teal-300/70 mb-2">
           {L(lang, 'Step', 'चरण')} {step + 1} / {steps.length} · {cur.label}
         </div>
         {cur.body}
@@ -977,7 +977,7 @@ function SweepWizard({ lang, onExit }: { lang: Lang; onExit: () => void }) {
           </button>
         )}
         {step < last ? (
-          <button onClick={() => setStep((s) => s + 1)} className="flex-1 bg-cyan-600 hover:bg-cyan-500 rounded-xl py-2.5 font-bold text-sm transition flex items-center justify-center gap-1.5">
+          <button onClick={() => setStep((s) => s + 1)} className="flex-1 bg-teal-600 hover:bg-teal-500 rounded-xl py-2.5 font-bold text-sm transition flex items-center justify-center gap-1.5">
             {step === 0 ? L(lang, 'Start sweep', 'स्वीप शुरू करें') : L(lang, 'Next step', 'अगला चरण')} <ArrowRight className="w-4 h-4" />
           </button>
         ) : null}
@@ -1032,7 +1032,7 @@ export default function SentinelHub() {
         >
           <Globe className="w-3.5 h-3.5" /> {lang === 'en' ? 'हिं' : 'EN'}
         </button>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[11px] font-black uppercase tracking-widest mb-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-[11px] font-black uppercase tracking-widest mb-3">
           <ShieldCheck className="w-4 h-4" /> AdamasVault Sentinel
         </div>
         <h1 className="text-3xl font-black tracking-tight">{L(lang, 'Privacy & Surveillance Sweep', 'निजता और निगरानी स्वीप')}</h1>
@@ -1046,14 +1046,14 @@ export default function SentinelHub() {
           {/* full sweep CTA */}
           <button
             onClick={() => setActive('sweep')}
-            className="w-full mb-3 rounded-xl border border-cyan-500/40 bg-gradient-to-r from-cyan-500/15 to-blue-500/10 hover:from-cyan-500/25 hover:to-blue-500/20 p-4 flex items-center gap-3 transition text-left group"
+            className="w-full mb-3 rounded-xl border border-teal-500/40 bg-gradient-to-r from-teal-500/15 to-emerald-500/10 hover:from-teal-500/25 hover:to-emerald-500/20 p-4 flex items-center gap-3 transition text-left group"
           >
-            <PlayCircle className="w-9 h-9 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
+            <PlayCircle className="w-9 h-9 text-teal-400 shrink-0 group-hover:scale-110 transition-transform" />
             <div className="flex-1">
               <h3 className="font-black">{L(lang, 'Start Full Sweep', 'पूरा स्वीप शुरू करें')}</h3>
               <p className="text-[12px] text-gray-400">{L(lang, 'Guided: dim lights → lens → AI video sweep → EMF → what to do', 'गाइडेड: रोशनी कम → लेंस → AI वीडियो स्वीप → EMF → आगे क्या करें')}</p>
             </div>
-            <ArrowRight className="w-5 h-5 text-cyan-400 shrink-0" />
+            <ArrowRight className="w-5 h-5 text-teal-400 shrink-0" />
           </button>
 
           <div className="grid sm:grid-cols-2 gap-3">
@@ -1062,8 +1062,8 @@ export default function SentinelHub() {
               return (
                 <button key={m.id} onClick={() => setActive(m.id)} className="text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:-translate-y-0.5 transition p-4 group">
                   <div className="flex items-center justify-between mb-2">
-                    <Icon className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
-                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-cyan-500/30 text-cyan-300/80">{m.tag[idx]}</span>
+                    <Icon className="w-7 h-7 text-teal-400 group-hover:scale-110 transition-transform" />
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-teal-500/30 text-teal-300/80">{m.tag[idx]}</span>
                   </div>
                   <h3 className="font-bold text-sm">{m.label[idx]}</h3>
                   <p className="text-[12px] text-gray-500 mt-0.5 leading-snug">{m.desc[idx]}</p>
@@ -1072,8 +1072,8 @@ export default function SentinelHub() {
             })}
             <Link href="/evidence" className="text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:-translate-y-0.5 transition p-4 group">
               <div className="flex items-center justify-between mb-2">
-                <FileText className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
-                <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-cyan-500/30 text-cyan-300/80">{L(lang, 'Forensic', 'फ़ॉरेंसिक')}</span>
+                <FileText className="w-7 h-7 text-teal-400 group-hover:scale-110 transition-transform" />
+                <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-teal-500/30 text-teal-300/80">{L(lang, 'Forensic', 'फ़ॉरेंसिक')}</span>
               </div>
               <h3 className="font-bold text-sm">{L(lang, 'Evidence Vault', 'एविडेंस वॉल्ट')}</h3>
               <p className="text-[12px] text-gray-500 mt-0.5 leading-snug">{L(lang, 'Capture tamper-evident proof (SHA-256)', 'छेड़छाड़-प्रमाण सबूत लें (SHA-256)')}</p>
@@ -1081,13 +1081,13 @@ export default function SentinelHub() {
           </div>
 
           <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4 flex gap-3">
-            <Activity className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+            <Activity className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
             <div className="text-[13px] text-gray-400 leading-relaxed">
               <span className="font-bold text-gray-200">{L(lang, 'How to do a full sweep:', 'पूरा स्वीप कैसे करें:')}</span>{' '}
               {L(lang, 'dim the lights →', 'रोशनी कम करें →')}{' '}
-              <button onClick={() => setActive('lens')} className="text-cyan-400 underline">{L(lang, 'Lens Sweep', 'लेंस स्वीप')}</button> →{' '}
-              <button onClick={() => setActive('inspect')} className="text-cyan-400 underline">{L(lang, 'AI Room Inspector', 'AI रूम इंस्पेक्टर')}</button> →{' '}
-              <button onClick={() => setActive('emf')} className="text-cyan-400 underline">{L(lang, 'EMF Scan', 'EMF स्कैन')}</button> →{' '}
+              <button onClick={() => setActive('lens')} className="text-teal-400 underline">{L(lang, 'Lens Sweep', 'लेंस स्वीप')}</button> →{' '}
+              <button onClick={() => setActive('inspect')} className="text-teal-400 underline">{L(lang, 'AI Room Inspector', 'AI रूम इंस्पेक्टर')}</button> →{' '}
+              <button onClick={() => setActive('emf')} className="text-teal-400 underline">{L(lang, 'EMF Scan', 'EMF स्कैन')}</button> →{' '}
               {L(lang, 'if you find something, preserve evidence and call', 'कुछ मिले तो सबूत सुरक्षित करें और कॉल करें')}{' '}
               <strong>112</strong> / <strong>1930</strong>.
             </div>
@@ -1100,10 +1100,10 @@ export default function SentinelHub() {
           </button>
           {ActiveIcon && activeTitle && (
             <div className="flex items-center gap-3 mb-4">
-              <ActiveIcon className="w-7 h-7 text-cyan-400" />
+              <ActiveIcon className="w-7 h-7 text-teal-400" />
               <div>
                 <h2 className="text-xl font-black">{activeTitle[idx]}</h2>
-                {activeMeta && <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-300/70">{activeMeta.tag[idx]}</span>}
+                {activeMeta && <span className="text-[11px] font-bold uppercase tracking-wider text-teal-300/70">{activeMeta.tag[idx]}</span>}
               </div>
             </div>
           )}

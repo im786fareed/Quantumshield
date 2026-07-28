@@ -4,6 +4,12 @@ import type { NextConfig } from "next";
  * Optimized for Mobile Permissions and Educational Video Playback
  */
 
+// React's dev runtime (and Turbopack HMR) require eval(); production never does.
+// Allow 'unsafe-eval' ONLY in development so local dev hydrates, while keeping
+// the deployed CSP hardened (no eval in production).
+const isDev = process.env.NODE_ENV !== "production";
+const devEval = isDev ? " 'unsafe-eval'" : "";
+
 const securityHeaders = [
   { 
     key: "X-Frame-Options", 
@@ -38,7 +44,7 @@ const securityHeaders = [
       // apis.google.com is required for Firebase Auth sign-in popups;
       // www.google.com + www.gstatic.com serve the reCAPTCHA that Firebase
       // requires for phone OTP sign-in and SMS 2-step verification
-      "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://*.youtube.com https://s.ytimg.com https://*.youtube-nocookie.com https://cdn.jsdelivr.net https://apis.google.com https://www.google.com https://www.gstatic.com",
+      "script-src 'self' 'unsafe-inline'" + devEval + " https://vercel.live https://*.vercel-scripts.com https://www.youtube.com https://*.youtube.com https://s.ytimg.com https://*.youtube-nocookie.com https://cdn.jsdelivr.net https://apis.google.com https://www.google.com https://www.gstatic.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
       "media-src 'self' blob:",

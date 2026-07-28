@@ -155,18 +155,18 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
     s === 'PASS' ? <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" /> :
     s === 'WARN' ? <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" /> :
     s === 'FAIL' ? <ShieldX className="w-4 h-4 text-red-400 shrink-0" /> :
-    <Info className="w-4 h-4 text-blue-400 shrink-0" />;
+    <Info className="w-4 h-4 text-emerald-400 shrink-0" />;
 
   const C = 2 * Math.PI * 34; // circumference for r=34
 
   return (
     <div className="fixed inset-0 z-[95] bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-6 animate-fade-in">
-      <div className="bg-slate-900 border border-blue-500/30 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-slide-up max-h-[92vh] overflow-y-auto">
+      <div className="bg-slate-900 border border-emerald-500/30 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-slide-up max-h-[92vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-500/15 rounded-2xl border border-blue-500/25">
-              <ShieldCheck className="w-6 h-6 text-blue-400" />
+            <div className="p-2.5 bg-emerald-500/15 rounded-2xl border border-emerald-500/25">
+              <ShieldCheck className="w-6 h-6 text-emerald-400" />
             </div>
             <div>
               <h2 className="text-lg font-black text-white leading-tight">{T.title}</h2>
@@ -181,7 +181,7 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
         {/* Scanning */}
         {scanning && (
           <div className="py-10 flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+            <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
             <p className="text-sm text-slate-400">{T.running}</p>
           </div>
         )}
@@ -228,9 +228,9 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
             )}
 
             {/* Clipboard link scan */}
-            <div className="bg-blue-500/[0.06] border border-blue-500/20 rounded-2xl p-4">
+            <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-1">
-                <ClipboardCheck className="w-4 h-4 text-blue-400" />
+                <ClipboardCheck className="w-4 h-4 text-emerald-400" />
                 <h3 className="text-sm font-bold text-white">{T.linkTitle}</h3>
               </div>
               <p className="text-[11px] text-slate-400 leading-snug mb-3">{T.linkDesc}</p>
@@ -239,7 +239,7 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
                 <button
                   onClick={checkClipboard}
                   disabled={linkState === 'checking'}
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white text-sm font-bold py-2.5 rounded-xl transition"
+                  className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white text-sm font-bold py-2.5 rounded-xl transition"
                 >
                   {linkState === 'checking'
                     ? <><Loader2 className="w-4 h-4 animate-spin" /> {T.checking}</>
@@ -271,7 +271,7 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
                       ))}
                     </ul>
                   )}
-                  <Link href="/scanner" className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 mt-2">
+                  <Link href="/scanner" className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 hover:text-emerald-300 mt-2">
                     {T.openScanner} <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -289,7 +289,7 @@ export default function SecurityCheck({ lang = 'en' }: { lang?: 'en' | 'hi' }) {
               <Link href="/scanner" className="flex-1 text-center bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-slate-200 py-3 rounded-xl transition">
                 {T.openScanner}
               </Link>
-              <button onClick={close} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-black py-3 rounded-xl transition">
+              <button onClick={close} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black py-3 rounded-xl transition">
                 {T.dismiss}
               </button>
             </div>

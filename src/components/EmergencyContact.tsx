@@ -169,9 +169,9 @@ export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
       </div>
 
       {/* Quick Family Alert — real one-tap messages, user-initiated */}
-      <div className="bg-black/40 border border-purple-500/40 rounded-xl p-6 mb-6">
+      <div className="bg-black/40 border border-emerald-500/40 rounded-xl p-6 mb-6">
         <h2 className="text-xl font-bold flex items-center gap-2 mb-2">
-          <MessageCircle className="w-6 h-6 text-purple-400" />
+          <MessageCircle className="w-6 h-6 text-emerald-400" />
           {t.quickAlert}
         </h2>
         <p className="text-sm text-gray-300 mb-4">{t.quickAlertDesc}</p>
@@ -197,7 +197,7 @@ export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
                   </a>
                   <a
                     href={`sms:${c.phone}?body=${encodedAlert}`}
-                    className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded-lg text-sm font-bold transition"
+                    className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 px-3 py-2 rounded-lg text-sm font-bold transition"
                   >
                     <MessageSquare className="w-4 h-4" /> SMS
                   </a>
@@ -216,7 +216,7 @@ export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
       {/* Trusted Contacts */}
       <div className="bg-white/5 rounded-xl p-6 mb-6">
         <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-          <Users className="w-5 h-5 text-blue-400" />
+          <Users className="w-5 h-5 text-emerald-400" />
           {t.trustedContacts}
         </h3>
         <p className="text-sm text-gray-400 mb-3">{t.trustedContactsDesc}</p>
@@ -236,7 +236,7 @@ export default function EmergencyContact(_props?: { lang?: 'en' | 'hi' }) {
         {trustedContacts.length < 3 && (
           <button
             onClick={() => setShowAddContact(true)}
-            className="mt-3 bg-blue-600 px-4 py-2 rounded"
+            className="mt-3 bg-emerald-600 px-4 py-2 rounded"
           >
             + {t.addContact}
           </button>

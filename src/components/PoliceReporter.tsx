@@ -352,7 +352,7 @@ Ref: ${refId}
         <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <h2 className="text-white font-bold flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-blue-400" />
+              <MessageSquare className="w-4 h-4 text-emerald-400" />
               {en ? '4. What Happened (step-by-step)' : '4. क्या हुआ (चरण-दर-चरण)'}
             </h2>
             <VoiceDictationButton
@@ -384,13 +384,13 @@ Ref: ${refId}
         {/* Section 5: Legal sections preview */}
         <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
           <h2 className="text-white font-bold mb-4 flex items-center gap-2">
-            <Landmark className="w-4 h-4 text-purple-400" />
+            <Landmark className="w-4 h-4 text-emerald-400" />
             {en ? '5. Applicable Law Sections (auto-detected)' : '5. लागू कानून धाराएं (स्वतः पहचानी गई)'}
           </h2>
           <div className="space-y-2">
             {sections.map((s, i) => (
               <div key={i} className="flex items-start gap-3 text-sm">
-                <span className="text-purple-400 font-mono font-bold shrink-0 w-36">{s.section}</span>
+                <span className="text-emerald-400 font-mono font-bold shrink-0 w-36">{s.section}</span>
                 <span className="text-slate-300">{s.desc}</span>
               </div>
             ))}
@@ -421,8 +421,8 @@ Ref: ${refId}
             ))}
             {evidenceCount > 0 && (
               <div className="flex items-center gap-3">
-                <Camera className="w-4 h-4 text-blue-400" />
-                <span className="text-blue-300 text-sm">
+                <Camera className="w-4 h-4 text-emerald-400" />
+                <span className="text-emerald-300 text-sm">
                   {evidenceCount} {en ? 'screenshot(s) in Evidence Vault' : 'स्क्रीनशॉट Evidence Vault में'}
                 </span>
               </div>
@@ -464,13 +464,13 @@ Ref: ${refId}
             href="https://cybercrime.gov.in"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between bg-indigo-600/20 border border-indigo-500/40 hover:bg-indigo-600/30 rounded-2xl px-5 py-4 transition"
+            className="flex items-center justify-between bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30 rounded-2xl px-5 py-4 transition"
           >
             <div>
-              <div className="text-indigo-300 font-bold">cybercrime.gov.in</div>
+              <div className="text-emerald-300 font-bold">cybercrime.gov.in</div>
               <div className="text-slate-400 text-xs">{en ? 'National Cyber Crime Portal' : 'राष्ट्रीय साइबर अपराध पोर्टल'}</div>
             </div>
-            <ExternalLink className="w-5 h-5 text-indigo-400" />
+            <ExternalLink className="w-5 h-5 text-emerald-400" />
           </a>
         </div>
       </div>

@@ -398,9 +398,9 @@ export default function WhatsAppGhostPairing({ lang = 'en' }: { lang?: 'en' | 'h
       </div>
 
       {/* Check Now */}
-      <div className="bg-blue-600/20 border border-blue-500/50 rounded-xl p-6 mb-6">
+      <div className="bg-emerald-600/20 border border-emerald-500/50 rounded-xl p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <CheckCircle className="w-6 h-6 text-blue-400" />
+          <CheckCircle className="w-6 h-6 text-emerald-400" />
           {t.checkNow.title}
         </h2>
         <p className="text-gray-300 mb-4">{t.checkNow.instruction}</p>
@@ -410,7 +410,7 @@ export default function WhatsAppGhostPairing({ lang = 'en' }: { lang?: 'en' | 'h
           <ol className="space-y-2">
             {t.checkNow.steps[0].steps.map((step, index) => (
               <li key={index} className="flex items-start gap-3">
-                <span className="text-blue-400 font-bold">{index + 1}.</span>
+                <span className="text-emerald-400 font-bold">{index + 1}.</span>
                 <span className="text-gray-300">{step}</span>
               </li>
             ))}
@@ -455,7 +455,7 @@ href={t.checkNow.whatsappUrl}
       {/* Protection Steps */}
       <div className="bg-white/5 rounded-xl p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <Shield className="w-6 h-6 text-blue-400" />
+          <Shield className="w-6 h-6 text-emerald-400" />
           {t.protection.title}
         </h2>
         
@@ -470,13 +470,13 @@ href={t.checkNow.whatsappUrl}
       </div>
 
       {/* Common Scenarios */}
-      <div className="bg-purple-600/20 border border-purple-500/50 rounded-xl p-6 mb-6">
+      <div className="bg-emerald-600/20 border border-emerald-500/50 rounded-xl p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4">{t.commonScenarios.title}</h2>
         
         <div className="space-y-4">
           {t.commonScenarios.scenarios.map((scenario, index) => (
             <div key={index} className="bg-black/30 rounded-lg p-4">
-              <h3 className="font-bold text-purple-400 mb-2">{scenario.title}</h3>
+              <h3 className="font-bold text-emerald-400 mb-2">{scenario.title}</h3>
               <div className="bg-red-600/20 border-l-4 border-red-500 p-3 mb-2">
                 <p className="text-sm text-gray-300 italic">"{scenario.script}"</p>
               </div>

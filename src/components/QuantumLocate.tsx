@@ -28,7 +28,7 @@ const REC_CFG: Record<Recommendation, { icon: any; en: string; hi: string; cls: 
 };
 
 const STATUS_ICON: Record<string, any> = { PASS: CheckCircle, WARN: AlertTriangle, FAIL: XCircle, INFO: Info };
-const STATUS_COLOR: Record<string, string> = { PASS: 'text-emerald-400', WARN: 'text-yellow-400', FAIL: 'text-red-400', INFO: 'text-cyan-400' };
+const STATUS_COLOR: Record<string, string> = { PASS: 'text-emerald-400', WARN: 'text-yellow-400', FAIL: 'text-red-400', INFO: 'text-teal-400' };
 
 interface Enrichment {
   carrier: string | null;
@@ -99,12 +99,12 @@ export default function QuantumLocate() {
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 bg-indigo-500/20 rounded-2xl">
-          <MapPin className="w-8 h-8 text-indigo-400" />
+        <div className="p-3 bg-emerald-500/20 rounded-2xl">
+          <MapPin className="w-8 h-8 text-emerald-400" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-white">
-            QuantumLocate<span className="text-indigo-400">™</span>
+            QuantumLocate<span className="text-emerald-400">™</span>
           </h1>
           <p className="text-slate-400 text-sm">
             {en
@@ -116,7 +116,7 @@ export default function QuantumLocate() {
 
       {/* Honesty banner */}
       <div className="bg-slate-900/60 border border-slate-700/40 rounded-xl p-3 mb-5 flex items-start gap-2">
-        <Info className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
+        <Info className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
         <p className="text-xs text-slate-400 leading-relaxed">
           {en
             ? 'QuantumLocate estimates a Likely Origin from telecom data — never your caller\'s live GPS or exact address. Where evidence is thin, it says "Origin Unknown" instead of guessing.'
@@ -136,12 +136,12 @@ export default function QuantumLocate() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleCheck()}
             placeholder={en ? '+91 98765 43210 · +1 202… · 140…' : '+91 98765 43210 · +1 202… · 140…'}
-            className="flex-1 bg-slate-800 border border-slate-600 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 placeholder-slate-500"
+            className="flex-1 bg-slate-800 border border-slate-600 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 placeholder-slate-500"
           />
           <button
             onClick={handleCheck}
             disabled={!input.trim()}
-            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-semibold px-5 py-3 rounded-xl transition"
+            className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white font-semibold px-5 py-3 rounded-xl transition"
           >
             {en ? 'Analyse' : 'विश्लेषण'}
           </button>
@@ -186,19 +186,19 @@ export default function QuantumLocate() {
             {/* Likely origin */}
             <div className="bg-slate-900/80 border border-slate-700/50 rounded-xl p-4 col-span-2">
               <div className="flex items-center gap-2 mb-1">
-                <MapPin className="w-4 h-4 text-indigo-400" />
+                <MapPin className="w-4 h-4 text-emerald-400" />
                 <span className="text-slate-400 text-xs">{en ? 'Likely Origin' : 'संभावित मूल'}</span>
               </div>
               <div className="text-white font-semibold text-lg">{originText}</div>
               <div className="flex items-center gap-2 mt-2">
                 <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${originConf}%` }} />
+                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${originConf}%` }} />
                 </div>
                 <span className="text-xs text-slate-400">{originConf}% {en ? 'confidence' : 'विश्वास'}</span>
               </div>
               <ul className="mt-2 space-y-0.5">
                 {(en ? result.originConfidenceReasons : result.originConfidenceReasonsHi).map((r, i) => (
-                  <li key={i} className="text-[11px] text-slate-500 flex gap-1.5"><span className="text-indigo-400">·</span>{r}</li>
+                  <li key={i} className="text-[11px] text-slate-500 flex gap-1.5"><span className="text-emerald-400">·</span>{r}</li>
                 ))}
               </ul>
             </div>
@@ -206,7 +206,7 @@ export default function QuantumLocate() {
             {/* Number type */}
             <div className="bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Phone className="w-4 h-4 text-cyan-400" />
+                <Phone className="w-4 h-4 text-teal-400" />
                 <span className="text-slate-400 text-xs">{en ? 'Number Type' : 'नंबर प्रकार'}</span>
               </div>
               <div className="text-white font-medium text-sm">{en ? result.numberType : result.numberTypeHi}</div>
@@ -218,7 +218,7 @@ export default function QuantumLocate() {
             {/* Country */}
             <div className="bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Globe className="w-4 h-4 text-blue-400" />
+                <Globe className="w-4 h-4 text-emerald-400" />
                 <span className="text-slate-400 text-xs">{en ? 'Country' : 'देश'}</span>
               </div>
               <div className="text-white font-medium text-sm">
@@ -229,7 +229,7 @@ export default function QuantumLocate() {
             {/* Carrier (enrichment) */}
             <div className="bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Radio className="w-4 h-4 text-purple-400" />
+                <Radio className="w-4 h-4 text-emerald-400" />
                 <span className="text-slate-400 text-xs">{en ? 'Carrier' : 'कैरियर'}</span>
               </div>
               {enrich?.carrier ? (
@@ -275,7 +275,7 @@ export default function QuantumLocate() {
           {/* AI analysis */}
           <div className="bg-slate-900/80 border border-slate-700/50 rounded-2xl p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-indigo-400" />
+              <Sparkles className="w-4 h-4 text-emerald-400" />
               <h3 className="text-white font-semibold text-sm">{en ? 'AI Analysis' : 'AI विश्लेषण'}</h3>
               <span className="text-[10px] uppercase tracking-wide text-slate-500 border border-slate-700 rounded px-1.5 py-0.5">
                 {enrich?.engine === 'ai' ? (en ? 'Gemini' : 'Gemini') : (en ? 'On-device' : 'ऑन-डिवाइस')}
@@ -289,7 +289,7 @@ export default function QuantumLocate() {
               <ul className="mt-3 space-y-1">
                 {enrich.aiWhyPoints.map((p, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <CheckCircle className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />{p}
+                    <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />{p}
                   </li>
                 ))}
               </ul>
@@ -303,7 +303,7 @@ export default function QuantumLocate() {
               <button
                 onClick={handleEnrich}
                 disabled={enriching}
-                className="mt-4 w-full flex items-center justify-center gap-2 bg-indigo-600/20 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-600/30 disabled:opacity-50 rounded-xl py-3 text-sm font-semibold transition"
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/30 disabled:opacity-50 rounded-xl py-3 text-sm font-semibold transition"
               >
                 {enriching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 {enriching
@@ -394,7 +394,7 @@ export default function QuantumLocate() {
               'स्कैम कॉल रिपोर्ट करें: 1930 डायल करें या cybercrime.gov.in पर जाएं।',
             ]).map((r, i) => (
               <div key={i} className="flex items-start gap-2">
-                <span className="text-indigo-400 mt-0.5">•</span><span>{r}</span>
+                <span className="text-emerald-400 mt-0.5">•</span><span>{r}</span>
               </div>
             ))}
           </div>

@@ -61,11 +61,11 @@ function MfaChallenge() {
     });
 
   const btn = 'w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold text-sm transition disabled:opacity-60';
-  const input = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-600';
+  const input = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500 placeholder-slate-600';
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-indigo-300">
+      <div className="flex items-center gap-2 text-emerald-300">
         <KeyRound className="w-5 h-5" />
         <h2 className="font-bold text-sm">Two-step verification</h2>
       </div>
@@ -78,7 +78,7 @@ function MfaChallenge() {
           {hints.map((h) => (
             <button key={h.uid} onClick={() => { setSelected(h); setError(''); }}
               className={`${btn} bg-slate-800 border border-slate-700 hover:bg-slate-700 justify-start`}>
-              {h.factorId === 'totp' ? <KeyRound className="w-4 h-4 text-indigo-300" /> : <Smartphone className="w-4 h-4 text-indigo-300" />}
+              {h.factorId === 'totp' ? <KeyRound className="w-4 h-4 text-emerald-300" /> : <Smartphone className="w-4 h-4 text-emerald-300" />}
               {h.displayName || (h.factorId === 'totp' ? 'Authenticator app' : 'SMS code')}
             </button>
           ))}
@@ -90,7 +90,7 @@ function MfaChallenge() {
           <p className="text-xs text-slate-400">Enter the 6-digit code from your authenticator app.</p>
           <input className={input} inputMode="numeric" autoComplete="one-time-code" placeholder="6-digit code"
             value={code} onChange={e => setCode(e.target.value)} />
-          <button onClick={verify} disabled={busy || code.trim().length < 6} className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+          <button onClick={verify} disabled={busy || code.trim().length < 6} className={`${btn} bg-emerald-600 hover:bg-emerald-500`}>
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />} Verify &amp; sign in
           </button>
         </div>
@@ -99,7 +99,7 @@ function MfaChallenge() {
       {isPhone && (
         <div className="space-y-3">
           {!smsVerificationId ? (
-            <button onClick={sendSms} disabled={busy} className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+            <button onClick={sendSms} disabled={busy} className={`${btn} bg-emerald-600 hover:bg-emerald-500`}>
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
               Send code to {selected?.displayName || 'your phone'}
             </button>
@@ -108,7 +108,7 @@ function MfaChallenge() {
               <p className="text-xs text-slate-400">Enter the 6-digit code we sent by SMS.</p>
               <input className={input} inputMode="numeric" autoComplete="one-time-code" placeholder="6-digit code"
                 value={code} onChange={e => setCode(e.target.value)} />
-              <button onClick={verify} disabled={busy || code.trim().length < 6} className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+              <button onClick={verify} disabled={busy || code.trim().length < 6} className={`${btn} bg-emerald-600 hover:bg-emerald-500`}>
                 {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />} Verify &amp; sign in
               </button>
             </>
@@ -174,17 +174,17 @@ export default function LoginScreen() {
     });
 
   const btn = 'w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold text-sm transition disabled:opacity-60';
-  const input = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-600';
+  const input = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500 placeholder-slate-600';
 
   return (
     <div className="min-h-[80vh] bg-black text-white flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/30 to-purple-600/30 border border-blue-500/40 mb-4">
-            <Shield className="w-9 h-9 text-blue-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600/30 to-emerald-600/30 border border-emerald-500/40 mb-4">
+            <Shield className="w-9 h-9 text-emerald-400" />
           </div>
-          <h1 className="text-3xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-400 via-emerald-400 to-emerald-400 bg-clip-text text-transparent">
             AdamasVault
           </h1>
           <p className="text-sm text-gray-500 mt-2">Sign in to continue</p>
@@ -221,11 +221,11 @@ export default function LoginScreen() {
           {/* Tab switch */}
           <div className="flex rounded-xl border border-slate-700 overflow-hidden text-sm font-bold">
             <button onClick={() => { setTab('email'); setError(''); }}
-              className={`flex-1 py-2.5 flex items-center justify-center gap-2 transition ${tab === 'email' ? 'bg-indigo-600 text-white' : 'bg-slate-950 text-slate-400'}`}>
+              className={`flex-1 py-2.5 flex items-center justify-center gap-2 transition ${tab === 'email' ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-400'}`}>
               <Mail className="w-4 h-4" /> Email
             </button>
             <button onClick={() => { setTab('phone'); setError(''); }}
-              className={`flex-1 py-2.5 flex items-center justify-center gap-2 transition ${tab === 'phone' ? 'bg-indigo-600 text-white' : 'bg-slate-950 text-slate-400'}`}>
+              className={`flex-1 py-2.5 flex items-center justify-center gap-2 transition ${tab === 'phone' ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-400'}`}>
               <Phone className="w-4 h-4" /> Phone
             </button>
           </div>
@@ -237,13 +237,13 @@ export default function LoginScreen() {
               <input className={input} type="password" placeholder="Password" autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 value={password} onChange={e => setPassword(e.target.value)} />
               <button onClick={submitEmail} disabled={!!busy || !email || !password}
-                className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+                className={`${btn} bg-emerald-600 hover:bg-emerald-500`}>
                 {busy === 'email' ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                 {mode === 'signup' ? 'Create account' : 'Sign in'}
               </button>
               <p className="text-center text-xs text-slate-500">
                 {mode === 'signup' ? 'Already have an account?' : 'New here?'}{' '}
-                <button className="text-indigo-400 font-bold hover:underline"
+                <button className="text-emerald-400 font-bold hover:underline"
                   onClick={() => { setMode(mode === 'signup' ? 'signin' : 'signup'); setError(''); }}>
                   {mode === 'signup' ? 'Sign in' : 'Create one'}
                 </button>
@@ -256,7 +256,7 @@ export default function LoginScreen() {
                   <input className={input} type="tel" placeholder="+91 98765 43210"
                     value={phone} onChange={e => setPhone(e.target.value)} />
                   <button onClick={sendCode} disabled={!!busy || !phone}
-                    className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+                    className={`${btn} bg-emerald-600 hover:bg-emerald-500`}>
                     {busy === 'phone-send' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
                     Send code
                   </button>
@@ -267,7 +267,7 @@ export default function LoginScreen() {
                   <input className={input} inputMode="numeric" placeholder="6-digit code"
                     value={code} onChange={e => setCode(e.target.value)} />
                   <button onClick={confirmCode} disabled={!!busy || !code}
-                    className={`${btn} bg-indigo-600 hover:bg-indigo-500`}>
+                    className={`${btn} bg-emerald-600 hover:bg-emerald-500`}>
                     {busy === 'phone-confirm' ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                     Verify &amp; sign in
                   </button>

@@ -55,8 +55,8 @@ export default function AboutAI({ lang }: Props) {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-12">
-        <div className="inline-block p-4 bg-cyan-500/20 rounded-2xl mb-4">
-          <Brain className="w-12 h-12 text-cyan-400" />
+        <div className="inline-block p-4 bg-teal-500/20 rounded-2xl mb-4">
+          <Brain className="w-12 h-12 text-teal-400" />
         </div>
         <h2 className="text-4xl font-bold mb-2">{content.title}</h2>
         <p className="text-gray-400 text-lg">{content.subtitle}</p>
@@ -65,7 +65,7 @@ export default function AboutAI({ lang }: Props) {
       <div className="grid md:grid-cols-2 gap-6 mb-12">
         <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Brain className="w-8 h-8 text-cyan-400" />
+            <Brain className="w-8 h-8 text-teal-400" />
             <h3 className="text-2xl font-bold">{content.mlTitle}</h3>
           </div>
           <p className="text-gray-300">{content.mlDesc}</p>
@@ -73,7 +73,7 @@ export default function AboutAI({ lang }: Props) {
 
         <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Cpu className="w-8 h-8 text-purple-400" />
+            <Cpu className="w-8 h-8 text-emerald-400" />
             <h3 className="text-2xl font-bold">{content.algoTitle}</h3>
           </div>
           <p className="text-gray-300">{content.algoDesc}</p>
@@ -89,34 +89,34 @@ export default function AboutAI({ lang }: Props) {
 
         <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Shield className="w-8 h-8 text-blue-400" />
+            <Shield className="w-8 h-8 text-emerald-400" />
             <h3 className="text-2xl font-bold">{content.privacyTitle}</h3>
           </div>
           <p className="text-gray-300">{content.privacyDesc}</p>
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-cyan-600/20 to-blue-600/20 backdrop-blur rounded-2xl border border-cyan-400/30 p-8 mb-12">
+      <div className="bg-gradient-to-r from-teal-600/20 to-emerald-600/20 backdrop-blur rounded-2xl border border-teal-400/30 p-8 mb-12">
         <h3 className="text-3xl font-bold mb-6">{content.features}</h3>
         <ul className="space-y-4">
           <li className="flex items-start gap-3">
-            <span className="text-cyan-400 text-2xl">✓</span>
+            <span className="text-teal-400 text-2xl">✓</span>
             <span className="text-gray-200 text-lg">{content.feature1}</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-cyan-400 text-2xl">✓</span>
+            <span className="text-teal-400 text-2xl">✓</span>
             <span className="text-gray-200 text-lg">{content.feature2}</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-cyan-400 text-2xl">✓</span>
+            <span className="text-teal-400 text-2xl">✓</span>
             <span className="text-gray-200 text-lg">{content.feature3}</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-cyan-400 text-2xl">✓</span>
+            <span className="text-teal-400 text-2xl">✓</span>
             <span className="text-gray-200 text-lg">{content.feature4}</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-cyan-400 text-2xl">✓</span>
+            <span className="text-teal-400 text-2xl">✓</span>
             <span className="text-gray-200 text-lg">{content.feature5}</span>
           </li>
         </ul>

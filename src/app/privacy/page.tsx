@@ -17,13 +17,13 @@ export default function PrivacyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-900 to-black text-white">
       <BackToHome />
 
       <div className="max-w-4xl mx-auto px-6 py-20">
         <header className="mb-12">
           <h1 className="text-5xl font-black uppercase tracking-tighter italic mb-4">
-            Privacy <span className="text-indigo-400">Policy</span>
+            Privacy <span className="text-emerald-400">Policy</span>
           </h1>
           <p className="text-sm text-gray-400 uppercase tracking-widest font-mono">
             Compliance: DPDP Act 2023 | IT Act 2000 · Last updated 22 June 2026
@@ -32,9 +32,9 @@ export default function PrivacyPage() {
 
         <div className="space-y-12 text-gray-300">
           {/* Section 1: Core Promise */}
-          <section className="border-l-4 border-indigo-500 pl-6">
+          <section className="border-l-4 border-emerald-500 pl-6">
             <h2 className="text-2xl font-bold text-white mb-3 flex items-center gap-2">
-              <Lock className="w-6 h-6 text-indigo-400" /> Our Privacy Promise
+              <Lock className="w-6 h-6 text-emerald-400" /> Our Privacy Promise
             </h2>
             <p className="leading-relaxed">
               AdamasVault is built <strong>local-first</strong>. We do <strong>not</strong> store your
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
           {/* Section 2: What We Process & Where It Goes */}
           <section>
             <h2 className="text-2xl font-bold text-white mb-3 flex items-center gap-2">
-              <Database className="w-6 h-6 text-indigo-400" /> What We Process & Where It Goes
+              <Database className="w-6 h-6 text-emerald-400" /> What We Process & Where It Goes
             </h2>
             <ul className="grid md:grid-cols-2 gap-4">
               <li className="bg-white/5 p-4 rounded-2xl border border-white/10">
@@ -81,23 +81,23 @@ export default function PrivacyPage() {
           {/* Section 3: Third-party processors */}
           <section>
             <h2 className="text-2xl font-bold text-white mb-3 flex items-center gap-2">
-              <Share2 className="w-6 h-6 text-indigo-400" /> Trusted Processors
+              <Share2 className="w-6 h-6 text-emerald-400" /> Trusted Processors
             </h2>
             <p className="leading-relaxed mb-4">
               We rely on a small set of reputable services to perform real-time analysis. They receive
               only what is needed for that check and do not receive your identity from us:
             </p>
             <ul className="space-y-2 text-sm">
-              <li className="flex gap-2"><Server className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" /><span><strong>Google</strong> — Safe Browsing (link threats) and Gemini AI (scam & legal analysis).</span></li>
-              <li className="flex gap-2"><Server className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" /><span><strong>XposedOrNot</strong> — public data-breach lookup for the email you enter.</span></li>
-              <li className="flex gap-2"><Server className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" /><span><strong>Vercel</strong> — hosting and anonymous, privacy-friendly usage analytics.</span></li>
+              <li className="flex gap-2"><Server className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" /><span><strong>Google</strong> — Safe Browsing (link threats) and Gemini AI (scam & legal analysis).</span></li>
+              <li className="flex gap-2"><Server className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" /><span><strong>XposedOrNot</strong> — public data-breach lookup for the email you enter.</span></li>
+              <li className="flex gap-2"><Server className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" /><span><strong>Vercel</strong> — hosting and anonymous, privacy-friendly usage analytics.</span></li>
             </ul>
           </section>
 
           {/* Section 4: Accounts (not yet enabled) */}
           <section className="bg-white/5 border border-white/10 p-6 rounded-[2rem]">
             <h2 className="text-2xl font-bold text-white mb-3 flex items-center gap-2">
-              <UserCheck className="w-6 h-6 text-indigo-400" /> Accounts &amp; Sign-In
+              <UserCheck className="w-6 h-6 text-emerald-400" /> Accounts &amp; Sign-In
             </h2>
             <p className="leading-relaxed text-sm">
               Account sign-in is <strong>not currently enabled</strong> — you can use AdamasVault
@@ -131,12 +131,12 @@ export default function PrivacyPage() {
           {/* Section 6: Contact Us */}
           <section className="pt-10 border-t border-white/10">
             <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-              <Mail className="w-6 h-6 text-indigo-400" /> Contact Security Team
+              <Mail className="w-6 h-6 text-emerald-400" /> Contact Security Team
             </h2>
             <p>For privacy inquiries or technical support:</p>
             <a
               href="mailto:AdamasVault4india@gmail.com"
-              className="text-blue-400 hover:text-blue-300 font-bold underline underline-offset-4"
+              className="text-emerald-400 hover:text-emerald-300 font-bold underline underline-offset-4"
             >
               AdamasVault4india@gmail.com
             </a>

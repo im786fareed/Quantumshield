@@ -43,7 +43,7 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
   const warnCount = scanResults.filter(r => r.status === 'WARN').length;
 
   const healthColor = overallHealth === null ? 'text-slate-400'
-    : overallHealth >= 80 ? 'text-cyan-400'
+    : overallHealth >= 80 ? 'text-teal-400'
     : overallHealth >= 55 ? 'text-amber-400'
     : 'text-red-400';
 
@@ -56,7 +56,7 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
     if (status === 'PASS') return <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />;
     if (status === 'WARN') return <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />;
     if (status === 'FAIL') return <ShieldX className="w-4 h-4 text-red-400 shrink-0" />;
-    return <Info className="w-4 h-4 text-blue-400 shrink-0" />;
+    return <Info className="w-4 h-4 text-emerald-400 shrink-0" />;
   };
 
   const statusColor = (s: ScanResult['status']) =>
@@ -68,13 +68,13 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 bg-black/40 border border-slate-800 rounded-[2.5rem] shadow-2xl relative overflow-hidden backdrop-blur-md">
       {!embedded && <BackToHome />}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent blur-sm" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-teal-500 to-transparent blur-sm" />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
         <div className="flex items-center gap-4">
-          <div className="p-4 bg-cyan-500/10 rounded-2xl border border-cyan-500/20">
-            <Cpu className={`w-8 h-8 text-cyan-400 ${isScanning ? 'animate-spin' : ''}`} />
+          <div className="p-4 bg-teal-500/10 rounded-2xl border border-teal-500/20">
+            <Cpu className={`w-8 h-8 text-teal-400 ${isScanning ? 'animate-spin' : ''}`} />
           </div>
           <div>
             <div className="flex items-center gap-3">
@@ -85,7 +85,7 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
                 onClick={() => setCurrentLang(currentLang === 'en' ? 'hi' : 'en')}
                 className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300 flex items-center gap-1 transition"
               >
-                <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                <Globe className="w-3.5 h-3.5 text-teal-400" />
                 {L === 'en' ? 'हिन्दी' : 'English'}
               </button>
             </div>
@@ -102,7 +102,7 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
         {!isScanning && !overallHealth && (
           <button
             onClick={runScanner}
-            className="px-8 py-4 bg-cyan-600 hover:bg-cyan-500 text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(8,145,178,0.3)] hover:scale-105"
+            className="px-8 py-4 bg-teal-600 hover:bg-teal-500 text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(8,145,178,0.3)] hover:scale-105"
           >
             {L === 'en' ? 'INITIALIZE REAL SCAN' : 'वास्तविक स्कैन शुरू करें'}
           </button>
@@ -112,13 +112,13 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
       {/* Scanning state */}
       {isScanning && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          <div className="flex justify-between text-xs font-mono text-cyan-400 mb-2">
+          <div className="flex justify-between text-xs font-mono text-teal-400 mb-2">
             <span className="animate-pulse">{currentPhase}</span>
             <span>{scanProgress}%</span>
           </div>
           <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
             <div
-              className="h-full bg-gradient-to-r from-cyan-600 to-blue-400 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-teal-600 to-emerald-400 transition-all duration-300"
               style={{ width: `${scanProgress}%` }}
             />
           </div>
@@ -139,7 +139,7 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
                 <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent"
                   strokeDasharray={364.4}
                   strokeDashoffset={364.4 - (364.4 * overallHealth) / 100}
-                  className={overallHealth >= 80 ? 'text-cyan-500' : overallHealth >= 55 ? 'text-amber-500' : 'text-red-500'}
+                  className={overallHealth >= 80 ? 'text-teal-500' : overallHealth >= 55 ? 'text-amber-500' : 'text-red-500'}
                   style={{ transition: 'stroke-dashoffset 1s ease' }}
                 />
               </svg>
@@ -180,7 +180,7 @@ export default function DeviceSecurityScanner({ embedded = false }: { lang?: 'en
           <div className="flex gap-3">
             <button
               onClick={() => { setOverallHealth(null); setScanResults([]); }}
-              className="flex-1 py-3.5 text-slate-500 hover:text-cyan-400 text-xs font-black uppercase transition border border-slate-800 rounded-xl hover:border-cyan-500/30"
+              className="flex-1 py-3.5 text-slate-500 hover:text-teal-400 text-xs font-black uppercase transition border border-slate-800 rounded-xl hover:border-teal-500/30"
             >
               {L === 'en' ? '← Re-scan Device' : '← डिवाइस पुनः स्कैन करें'}
             </button>

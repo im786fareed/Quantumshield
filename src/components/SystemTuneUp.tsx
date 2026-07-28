@@ -76,7 +76,7 @@ async function loadRealMetrics(): Promise<TuneMetric[]> {
         label: 'JS Heap', labelHi: 'JS हीप', value: heapPct, unit: '%',
         status: statusOf(heapPct, 50, 75),
         icon: Cpu,
-        color: heapPct >= 75 ? 'text-red-400' : heapPct >= 50 ? 'text-yellow-400' : 'text-blue-400',
+        color: heapPct >= 75 ? 'text-red-400' : heapPct >= 50 ? 'text-yellow-400' : 'text-emerald-400',
       });
     }
   } catch { /* not available */ }
@@ -312,7 +312,7 @@ export default function SystemTuneUp({ embedded = false }: { embedded?: boolean 
             </div>
           ) : (
             <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-gray-400 text-sm flex items-start gap-3">
-              <Info className="w-5 h-5 shrink-0 text-blue-400" />
+              <Info className="w-5 h-5 shrink-0 text-emerald-400" />
               {t.metricsEmpty}
             </div>
           )}
@@ -328,7 +328,7 @@ export default function SystemTuneUp({ embedded = false }: { embedded?: boolean 
           </button>
           <button
             onClick={() => setActiveTab('battery')}
-            className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'battery' ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'battery' ? 'bg-gradient-to-r from-emerald-600 to-emerald-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
           >
             🔋 {t.tab2}
           </button>
@@ -358,8 +358,8 @@ export default function SystemTuneUp({ embedded = false }: { embedded?: boolean 
         </div>
 
         {/* Honesty note — turns the missing fake button into a trust + education moment */}
-        <div className="bg-blue-600/10 border border-blue-500/30 rounded-2xl p-6">
-          <h3 className="font-bold text-blue-300 mb-2 flex items-center gap-2">
+        <div className="bg-emerald-600/10 border border-emerald-500/30 rounded-2xl p-6">
+          <h3 className="font-bold text-emerald-300 mb-2 flex items-center gap-2">
             <Shield className="w-5 h-5" /> {t.honestTitle}
           </h3>
           <p className="text-gray-300 text-sm leading-relaxed">{t.honestBody}</p>

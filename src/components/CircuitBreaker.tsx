@@ -412,7 +412,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
   /* ─── Derived UI values ─── */
   const stateColor: Record<ProtocolState, string> = {
     idle:        'text-gray-400',
-    monitoring:  'text-blue-400',
+    monitoring:  'text-emerald-400',
     isolating:   'text-yellow-400',
     'pre-alert': 'text-orange-400',
     triggered:   'text-red-400',
@@ -420,7 +420,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
 
   const stateBg: Record<ProtocolState, string> = {
     idle:        'border-gray-500/30 bg-gray-500/5',
-    monitoring:  'border-blue-500/40 bg-blue-500/5',
+    monitoring:  'border-emerald-500/40 bg-emerald-500/5',
     isolating:   'border-yellow-500/40 bg-yellow-500/10',
     'pre-alert': 'border-orange-500/60 bg-orange-500/15',
     triggered:   'border-red-500/70 bg-red-500/20',
@@ -443,7 +443,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
       {/* ── Header ── */}
       <div className="relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br from-slate-900 via-red-950/60 to-slate-900 border border-red-500/30 p-6">
         <div className="absolute inset-0 opacity-10"
-          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #dc2626 0%, transparent 50%), radial-gradient(circle at 80% 50%, #7c3aed 0%, transparent 50%)' }} />
+          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #dc2626 0%, transparent 50%), radial-gradient(circle at 80% 50%, #059669 0%, transparent 50%)' }} />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-mono bg-red-600/20 border border-red-500/40 text-red-400 px-3 py-1 rounded-full tracking-widest">
@@ -457,7 +457,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-1 text-white">{t.title}</h1>
           <p className="text-sm text-gray-400">{t.subtitle}</p>
           <Link href="/global-guardian"
-            className="mt-3 inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full transition-all">
+            className="mt-3 inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full transition-all">
             <Globe className="w-3 h-3" />
             Global Guardian — {typeof window !== 'undefined' ? (allCountries.find(c => c.code === (localStorage.getItem('qs_shield_country') || 'IN'))?.flag ?? '🇮🇳') : '🇮🇳'} Country Shield active
           </Link>
@@ -599,7 +599,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           {guardianActive && protocolState !== 'triggered' && (
             <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
               <div className="text-sm font-semibold text-gray-300 flex items-center gap-2">
-                <Info className="w-4 h-4 text-blue-400" />
+                <Info className="w-4 h-4 text-emerald-400" />
                 Manual / PWA Mode
               </div>
               {!manualCallActive ? (
@@ -648,10 +648,10 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           )}
 
           {/* Platform note */}
-          <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 text-xs text-gray-500 space-y-1">
-            <p className="text-blue-400 font-semibold">Android App</p>
+          <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 text-xs text-gray-500 space-y-1">
+            <p className="text-emerald-400 font-semibold">Android App</p>
             <p>{t.androidNote}</p>
-            <p className="text-purple-400 font-semibold mt-2">iOS / PWA</p>
+            <p className="text-emerald-400 font-semibold mt-2">iOS / PWA</p>
             <p>{t.iosnote}</p>
           </div>
         </div>
@@ -671,7 +671,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
             <div key={c.id} className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-4">
               <div className="flex items-center gap-3">
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-white text-sm
-                  ${i === 0 ? 'bg-red-600' : i === 1 ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                  ${i === 0 ? 'bg-red-600' : i === 1 ? 'bg-emerald-600' : 'bg-emerald-600'}`}>
                   {c.name[0]?.toUpperCase()}
                 </div>
                 <div>
@@ -705,19 +705,19 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
                 value={newContact.name}
                 onChange={e => setNewContact({ ...newContact, name: e.target.value })}
                 placeholder={t.contactName}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-500/50"
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none focus:border-emerald-500/50"
               />
               <input
                 value={newContact.phone}
                 onChange={e => setNewContact({ ...newContact, phone: e.target.value })}
                 placeholder={t.contactPhone}
                 type="tel"
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-500/50"
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none focus:border-emerald-500/50"
               />
               <select
                 value={newContact.relation}
                 onChange={e => setNewContact({ ...newContact, relation: e.target.value })}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-blue-500/50"
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500/50"
               >
                 <option value="">{t.contactRelation}</option>
                 {t.relations.map(r => <option key={r} value={r}>{r}</option>)}
@@ -773,7 +773,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
           <button
             onClick={() => !testSent && sendDistressSignal('test')}
             disabled={contacts.length === 0 || testSent}
-            className="w-full bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 disabled:opacity-50 text-blue-300 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+            className="w-full bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30 disabled:opacity-50 text-emerald-300 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
           >
             <Activity className="w-4 h-4" />
             {testSent ? t.testSent : t.sendTest}
@@ -849,7 +849,7 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
 
           {/* Architecture diagram */}
           <div className="bg-black/40 border border-white/10 rounded-xl p-5 space-y-3">
-            <h3 className="font-bold text-sm text-purple-400">System Architecture</h3>
+            <h3 className="font-bold text-sm text-emerald-400">System Architecture</h3>
             {[
               { from: 'WhatsApp Notification', via: 'NotificationListenerService (Android)', to: 'LocalTracker (EncryptedSharedPreferences)' },
               { from: 'LocalTracker', via: '30-min WorkManager heartbeat', to: '6h Logic Gate check' },
@@ -866,8 +866,8 @@ export default function CircuitBreaker({ lang = 'en' }: { lang?: 'en' | 'hi' }) 
             ))}
           </div>
 
-          <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 text-xs text-gray-400 space-y-2">
-            <p className="text-blue-400 font-bold">Privacy Guarantee</p>
+          <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 text-xs text-gray-400 space-y-2">
+            <p className="text-emerald-400 font-bold">Privacy Guarantee</p>
             <p>Circuit Breaker monitors only notification <em>metadata</em> (is a call ongoing? is the contact saved?). It does <strong className="text-white">NOT</strong> record audio, read message content, or store any data on external servers.</p>
             <p>All logic runs <strong className="text-white">on-device</strong>. The server is contacted only once — when sending the FCM distress signal.</p>
           </div>

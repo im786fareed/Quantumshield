@@ -383,7 +383,7 @@ Ref: ${caseId}
     URL.revokeObjectURL(url);
   };
 
-  const inputCls = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-600 transition';
+  const inputCls = 'w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500 placeholder-slate-600 transition';
   const labelCls = 'text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 block';
 
   return (
@@ -392,15 +392,15 @@ Ref: ${caseId}
 
         {/* ── Hero ── */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/30 to-violet-600/30 border border-indigo-500/40 mb-5">
-            <Scale className="w-9 h-9 text-indigo-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600/30 to-emerald-600/30 border border-emerald-500/40 mb-5">
+            <Scale className="w-9 h-9 text-emerald-400" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-3 bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-black mb-3 bg-gradient-to-r from-emerald-400 via-emerald-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
             My Legal Rights
           </h1>
           <p className="text-lg md:text-2xl font-bold text-gray-100 leading-snug max-w-2xl mx-auto">
             Know your rights. Understand your options.{' '}
-            <span className="bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-emerald-400 to-emerald-400 bg-clip-text text-transparent">
               Build a report-ready case file in minutes.
             </span>
           </p>
@@ -424,8 +424,8 @@ Ref: ${caseId}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-9">
           {QUICK_HELPLINES.map(h => (
             <a key={h.tel} href={`tel:${h.tel}`}
-              className="flex flex-col items-center bg-white/5 border border-white/10 rounded-xl py-3 hover:border-indigo-400/60 hover:bg-white/10 transition">
-              <span className="text-lg font-black text-indigo-300">{h.number}</span>
+              className="flex flex-col items-center bg-white/5 border border-white/10 rounded-xl py-3 hover:border-emerald-400/60 hover:bg-white/10 transition">
+              <span className="text-lg font-black text-emerald-300">{h.number}</span>
               <span className="text-[10px] text-gray-500 uppercase tracking-wide">{h.name}</span>
             </a>
           ))}
@@ -441,7 +441,7 @@ Ref: ${caseId}
           {/* Incident details */}
           <div className="bg-slate-900/70 border border-slate-700/50 rounded-2xl p-6">
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-indigo-400" /> 1. Incident Details
+              <FileText className="w-4 h-4 text-emerald-400" /> 1. Incident Details
             </h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
@@ -464,7 +464,7 @@ Ref: ${caseId}
                           <span className="text-sm font-medium text-slate-200">{g.group}</span>
                           <span className="flex items-center gap-2">
                             {selCount > 0 && (
-                              <span className="text-[10px] font-bold bg-indigo-500/25 text-indigo-200 border border-indigo-500/50 rounded-full px-2 py-0.5">
+                              <span className="text-[10px] font-bold bg-emerald-500/25 text-emerald-200 border border-emerald-500/50 rounded-full px-2 py-0.5">
                                 {selCount} selected
                               </span>
                             )}
@@ -479,7 +479,7 @@ Ref: ${caseId}
                               return (
                                 <button key={c} type="button" onClick={() => toggleCategory(c)}
                                   className={`text-xs px-3 py-2 rounded-lg border transition text-left ${
-                                    sel ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-200'
+                                    sel ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
                                         : 'bg-slate-950 border-slate-700 text-slate-400 hover:border-slate-500'
                                   }`}>
                                   {sel ? '✓ ' : ''}{short}
@@ -493,7 +493,7 @@ Ref: ${caseId}
                   })}
                 </div>
                 {categories.length > 0 && (
-                  <p className="text-[11px] text-indigo-300/80 mt-2">
+                  <p className="text-[11px] text-emerald-300/80 mt-2">
                     {categories.length === 1
                       ? '1 category selected'
                       : `${categories.length} categories selected — the AI will consider every offence together.`}
@@ -521,7 +521,7 @@ Ref: ${caseId}
           {/* Other party */}
           <div className="bg-slate-900/70 border border-slate-700/50 rounded-2xl p-6">
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Users className="w-4 h-4 text-violet-400" /> 2. Other Party (if known)
+              <Users className="w-4 h-4 text-emerald-400" /> 2. Other Party (if known)
             </h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -561,7 +561,7 @@ Ref: ${caseId}
           <div className="bg-slate-900/70 border border-slate-700/50 rounded-2xl p-6">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <h2 className="font-bold flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-blue-400" /> 4. What Happened
+                <BookOpen className="w-4 h-4 text-emerald-400" /> 4. What Happened
               </h2>
 
               {/* Voice typing */}
@@ -572,7 +572,7 @@ Ref: ${caseId}
                     {(['en-IN', 'hi-IN'] as const).map(l => (
                       <button key={l} type="button" onClick={() => switchDictLang(l)}
                         className={`px-2.5 py-1.5 transition ${
-                          dictLang === l ? 'bg-indigo-600 text-white' : 'bg-slate-950 text-slate-400 hover:text-slate-200'
+                          dictLang === l ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-400 hover:text-slate-200'
                         }`}>
                         {l === 'en-IN' ? 'EN' : 'हिं'}
                       </button>
@@ -582,7 +582,7 @@ Ref: ${caseId}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
                       listening
                         ? 'bg-red-600 border-red-500 text-white animate-pulse'
-                        : 'bg-indigo-600/20 border-indigo-500/50 text-indigo-200 hover:bg-indigo-600/30'
+                        : 'bg-emerald-600/20 border-emerald-500/50 text-emerald-200 hover:bg-emerald-600/30'
                     }`}>
                     {listening ? <><MicOff className="w-4 h-4" /> Stop</> : <><Mic className="w-4 h-4" /> Speak</>}
                   </button>
@@ -615,7 +615,7 @@ Ref: ${caseId}
           )}
 
           <button onClick={analyze} disabled={loading}
-            className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-60 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 shadow-xl shadow-indigo-500/20 transition text-lg">
+            className="w-full bg-gradient-to-r from-emerald-600 to-emerald-600 hover:from-emerald-500 hover:to-emerald-500 disabled:opacity-60 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/20 transition text-lg">
             {loading
               ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing your case…</>
               : <><Sparkles className="w-5 h-5" /> Analyze My Case &amp; Build Report</>}
@@ -634,9 +634,9 @@ Ref: ${caseId}
                 <div className="text-[10px] uppercase tracking-widest opacity-80">Risk Level</div>
                 <div className="text-2xl font-black mt-1">{result.riskLevel}</div>
               </div>
-              <div className="rounded-2xl border border-indigo-500/40 bg-indigo-500/10 p-4 text-center">
-                <div className="text-[10px] uppercase tracking-widest text-indigo-300/80">Case Readiness</div>
-                <div className="text-2xl font-black mt-1 text-indigo-300">{result.caseReadinessScore}<span className="text-sm text-indigo-400/70">/100</span></div>
+              <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-center">
+                <div className="text-[10px] uppercase tracking-widest text-emerald-300/80">Case Readiness</div>
+                <div className="text-2xl font-black mt-1 text-emerald-300">{result.caseReadinessScore}<span className="text-sm text-emerald-400/70">/100</span></div>
               </div>
               <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-center">
                 <div className="text-[10px] uppercase tracking-widest text-emerald-300/80">Evidence Confidence</div>
@@ -644,16 +644,16 @@ Ref: ${caseId}
               </div>
             </div>
 
-            <Section icon={FileText} color="text-indigo-400" title="Incident Summary">
+            <Section icon={FileText} color="text-emerald-400" title="Incident Summary">
               <p className="text-sm text-slate-300 leading-relaxed">{result.incidentSummary}</p>
             </Section>
 
             {result.timeline.length > 0 && (
-              <Section icon={Clock} color="text-blue-400" title="Timeline of Events">
+              <Section icon={Clock} color="text-emerald-400" title="Timeline of Events">
                 <ol className="space-y-2">
                   {result.timeline.map((t, i) => (
                     <li key={i} className="flex gap-3 text-sm">
-                      <span className="text-blue-300 font-mono shrink-0 min-w-[7rem]">{t.when}</span>
+                      <span className="text-emerald-300 font-mono shrink-0 min-w-[7rem]">{t.when}</span>
                       <span className="text-slate-300">{t.event}</span>
                     </li>
                   ))}
@@ -661,7 +661,7 @@ Ref: ${caseId}
               </Section>
             )}
 
-            <Section icon={Users} color="text-violet-400" title="Parties Involved">
+            <Section icon={Users} color="text-emerald-400" title="Parties Involved">
               <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">{result.partiesInvolved}</p>
             </Section>
 
@@ -694,19 +694,19 @@ Ref: ${caseId}
 
             <div className="grid md:grid-cols-2 gap-5">
               {result.rightsAffected.length > 0 && (
-                <Section icon={Shield} color="text-indigo-400" title="Potential Rights Affected">
+                <Section icon={Shield} color="text-emerald-400" title="Potential Rights Affected">
                   <ul className="space-y-1.5">
                     {result.rightsAffected.map((x, i) => (
-                      <li key={i} className="text-sm text-slate-300 flex gap-2"><span className="text-indigo-400 mt-0.5">•</span>{x}</li>
+                      <li key={i} className="text-sm text-slate-300 flex gap-2"><span className="text-emerald-400 mt-0.5">•</span>{x}</li>
                     ))}
                   </ul>
                 </Section>
               )}
               {result.legalIssues.length > 0 && (
-                <Section icon={Gavel} color="text-fuchsia-400" title="Potential Legal Issues">
+                <Section icon={Gavel} color="text-emerald-400" title="Potential Legal Issues">
                   <ul className="space-y-1.5">
                     {result.legalIssues.map((x, i) => (
-                      <li key={i} className="text-sm text-slate-300 flex gap-2"><span className="text-fuchsia-400 mt-0.5">•</span>{x}</li>
+                      <li key={i} className="text-sm text-slate-300 flex gap-2"><span className="text-emerald-400 mt-0.5">•</span>{x}</li>
                     ))}
                   </ul>
                 </Section>
@@ -714,12 +714,12 @@ Ref: ${caseId}
             </div>
 
             {result.relevantLaws.length > 0 && (
-              <Section icon={Landmark} color="text-purple-400" title="Potentially Relevant Laws">
+              <Section icon={Landmark} color="text-emerald-400" title="Potentially Relevant Laws">
                 <p className="text-xs text-slate-500 mb-3">These are possibilities only — authorities decide what actually applies.</p>
                 <div className="space-y-3">
                   {result.relevantLaws.map((l, i) => (
                     <div key={i} className="text-sm">
-                      <div className="font-bold text-purple-300">{l.law} <span className="font-mono text-purple-400">{l.provision}</span></div>
+                      <div className="font-bold text-emerald-300">{l.law} <span className="font-mono text-emerald-400">{l.provision}</span></div>
                       <p className="text-slate-400 text-xs mt-0.5">{l.relevance}</p>
                     </div>
                   ))}
@@ -742,7 +742,7 @@ Ref: ${caseId}
             )}
 
             {result.nextSteps.length > 0 && (
-              <Section icon={ArrowRight} color="text-cyan-400" title="Recommended Next Steps">
+              <Section icon={ArrowRight} color="text-teal-400" title="Recommended Next Steps">
                 <ol className="space-y-2 list-decimal list-inside">
                   {result.nextSteps.map((s, i) => (
                     <li key={i} className="text-sm text-slate-300">{s}</li>
@@ -775,7 +775,7 @@ Ref: ${caseId}
               </Section>
             )}
 
-            <Section icon={Scale} color="text-indigo-400" title="Recommended Professional Assistance">
+            <Section icon={Scale} color="text-emerald-400" title="Recommended Professional Assistance">
               <p className="text-sm text-slate-300 leading-relaxed">{result.recommendedAssistance}</p>
             </Section>
 
@@ -798,12 +798,12 @@ Ref: ${caseId}
                 <Phone className="w-6 h-6 text-red-400" />
               </a>
               <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-between bg-indigo-600/20 border border-indigo-500/40 hover:bg-indigo-600/30 rounded-2xl px-5 py-4 transition">
+                className="flex items-center justify-between bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30 rounded-2xl px-5 py-4 transition">
                 <div>
-                  <div className="text-indigo-300 font-bold">cybercrime.gov.in</div>
+                  <div className="text-emerald-300 font-bold">cybercrime.gov.in</div>
                   <div className="text-slate-400 text-xs">National Cyber Crime Portal</div>
                 </div>
-                <ExternalLink className="w-5 h-5 text-indigo-400" />
+                <ExternalLink className="w-5 h-5 text-emerald-400" />
               </a>
             </div>
           </div>

@@ -111,7 +111,7 @@ export default function VoiceDictationButton({
         {(['en-IN', 'hi-IN'] as const).map(l => (
           <button key={l} type="button" onClick={() => switchLang(l)}
             className={`px-2.5 py-1.5 transition ${
-              dictLang === l ? 'bg-indigo-600 text-white' : 'bg-slate-950 text-slate-400 hover:text-slate-200'
+              dictLang === l ? 'bg-emerald-600 text-white' : 'bg-slate-950 text-slate-400 hover:text-slate-200'
             }`}>
             {l === 'en-IN' ? 'EN' : 'हिं'}
           </button>
@@ -121,7 +121,7 @@ export default function VoiceDictationButton({
         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
           listening
             ? 'bg-red-600 border-red-500 text-white animate-pulse'
-            : 'bg-indigo-600/20 border-indigo-500/50 text-indigo-200 hover:bg-indigo-600/30'
+            : 'bg-emerald-600/20 border-emerald-500/50 text-emerald-200 hover:bg-emerald-600/30'
         }`}>
         {listening ? <><MicOff className="w-4 h-4" /> Stop</> : <><Mic className="w-4 h-4" /> {idleLabel}</>}
       </button>

@@ -191,7 +191,7 @@ const THREAT_COLORS: Record<ThreatLevel, { bg: string; border: string; text: str
   critical: { bg: 'bg-red-600/10', border: 'border-red-500/50', text: 'text-red-400', badge: 'bg-red-600' },
   high: { bg: 'bg-orange-600/10', border: 'border-orange-500/40', text: 'text-orange-400', badge: 'bg-orange-600' },
   medium: { bg: 'bg-yellow-600/10', border: 'border-yellow-500/30', text: 'text-yellow-400', badge: 'bg-yellow-600' },
-  low: { bg: 'bg-blue-600/10', border: 'border-blue-500/30', text: 'text-blue-400', badge: 'bg-blue-500' },
+  low: { bg: 'bg-emerald-600/10', border: 'border-emerald-500/30', text: 'text-emerald-400', badge: 'bg-emerald-500' },
 };
 
 export default function LatestNews(_props?: Props) {
@@ -247,9 +247,9 @@ export default function LatestNews(_props?: Props) {
           <p className="text-2xl font-black text-orange-400">{threatStats.high}</p>
           <p className="text-xs text-gray-400">{isEn ? 'High Risk' : 'उच्च जोखिम'}</p>
         </div>
-        <div className="bg-cyan-600/10 border border-cyan-500/30 rounded-xl p-4 text-center">
-          <Globe className="w-6 h-6 text-cyan-400 mx-auto mb-1" />
-          <p className="text-2xl font-black text-cyan-400">{news.length}</p>
+        <div className="bg-teal-600/10 border border-teal-500/30 rounded-xl p-4 text-center">
+          <Globe className="w-6 h-6 text-teal-400 mx-auto mb-1" />
+          <p className="text-2xl font-black text-teal-400">{news.length}</p>
           <p className="text-xs text-gray-400">{isEn ? 'Documented Cases' : 'दस्तावेज़ित मामले'}</p>
         </div>
         <div className="bg-green-600/10 border border-green-500/30 rounded-xl p-4 text-center">
@@ -290,13 +290,13 @@ export default function LatestNews(_props?: Props) {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder={isEn ? 'Search scam news...' : 'घोटाला समाचार खोजें...'}
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 focus:border-teal-500 outline-none text-white placeholder-gray-500"
           />
         </div>
         <select
           value={selectedRegion}
           onChange={e => setSelectedRegion(e.target.value as NewsRegion)}
-          className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 min-w-[160px]"
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-teal-500 min-w-[160px]"
         >
           {REGIONS.map(r => (
             <option key={r.id} value={r.id} className="bg-gray-900">{isEn ? r.label : r.labelHi}</option>
@@ -305,7 +305,7 @@ export default function LatestNews(_props?: Props) {
         <select
           value={selectedScamType}
           onChange={e => setSelectedScamType(e.target.value as ScamType)}
-          className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 min-w-[160px]"
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-teal-500 min-w-[160px]"
         >
           {SCAM_TYPES.map(t => (
             <option key={t.id} value={t.id} className="bg-gray-900">{isEn ? t.label : t.labelHi}</option>
@@ -350,7 +350,7 @@ export default function LatestNews(_props?: Props) {
                     </span>
                   )}
                   {item.isTrending && (
-                    <span className="px-2.5 py-1 bg-purple-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                    <span className="px-2.5 py-1 bg-emerald-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
                       <TrendingUp className="w-3 h-3" /> {isEn ? 'WIDESPREAD' : 'व्यापक'}
                     </span>
                   )}
@@ -389,7 +389,7 @@ export default function LatestNews(_props?: Props) {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}
-                    className="ml-auto flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-bold"
+                    className="ml-auto flex items-center gap-1 text-teal-400 hover:text-teal-300 font-bold"
                   >
                     {isEn ? 'Source' : 'स्रोत'} <ExternalLink className="w-3 h-3" />
                   </a>
@@ -412,21 +412,21 @@ export default function LatestNews(_props?: Props) {
       )}
 
       {/* Emergency Report CTA */}
-      <div className="mt-8 bg-gradient-to-r from-red-600/20 to-purple-600/20 backdrop-blur rounded-2xl border border-red-500/30 p-6 text-center">
+      <div className="mt-8 bg-gradient-to-r from-red-600/20 to-emerald-600/20 backdrop-blur rounded-2xl border border-red-500/30 p-6 text-center">
         <h3 className="text-xl font-bold mb-2">{isEn ? 'Been Scammed? Report Immediately!' : 'घोटाले का शिकार? तुरंत रिपोर्ट करें!'}</h3>
         <p className="text-gray-300 text-sm mb-4">{isEn ? 'Call 1930 or visit cybercrime.gov.in' : '1930 पर कॉल करें या cybercrime.gov.in पर जाएं'}</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <a href="tel:1930" className="px-6 py-3 bg-red-600 rounded-xl font-bold hover:bg-red-700 transition inline-flex items-center justify-center gap-2">
             <Shield className="w-4 h-4" /> {isEn ? 'Call 1930' : '1930 कॉल करें'}
           </a>
-          <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-cyan-600 rounded-xl font-bold hover:bg-cyan-700 transition inline-flex items-center justify-center gap-2">
+          <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-teal-600 rounded-xl font-bold hover:bg-teal-700 transition inline-flex items-center justify-center gap-2">
             <ExternalLink className="w-4 h-4" /> cybercrime.gov.in
           </a>
         </div>
       </div>
 
       {/* Share Section */}
-      <div className="mt-6 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur rounded-2xl border border-purple-400/30 p-6 text-center">
+      <div className="mt-6 bg-gradient-to-r from-emerald-600/20 to-emerald-600/20 backdrop-blur rounded-2xl border border-emerald-400/30 p-6 text-center">
         <h3 className="text-xl font-bold mb-3">{isEn ? 'Protect Your Community' : 'अपने समुदाय की रक्षा करें'}</h3>
         <p className="text-gray-300 text-sm mb-4">{isEn ? 'Share these alerts with family and friends' : 'इन अलर्ट को परिवार और दोस्तों के साथ साझा करें'}</p>
         <button
@@ -434,7 +434,7 @@ export default function LatestNews(_props?: Props) {
             const msg = 'AdamasVault Scam Alert: Stay updated on latest cyber threats worldwide! https://AdamasVault.vercel.app/news';
             if (navigator.share) { navigator.share({ text: msg }); } else { navigator.clipboard.writeText(msg); }
           }}
-          className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full font-bold hover:scale-105 transition"
+          className="px-8 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full font-bold hover:scale-105 transition"
         >
           {isEn ? 'Share Alerts' : 'अलर्ट शेयर करें'}
         </button>

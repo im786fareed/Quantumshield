@@ -152,10 +152,10 @@ Or call: ${country.cyber_hotline}
 
   /* ─── Region colour ─── */
   const regionColor: Record<string, string> = {
-    Asia: 'text-orange-400', Americas: 'text-blue-400',
-    Europe: 'text-purple-400', Africa: 'text-green-400',
-    Oceania: 'text-cyan-400', 'Middle East': 'text-yellow-400',
-    'Europe/Asia': 'text-pink-400',
+    Asia: 'text-orange-400', Americas: 'text-emerald-400',
+    Europe: 'text-emerald-400', Africa: 'text-green-400',
+    Oceania: 'text-teal-400', 'Middle East': 'text-yellow-400',
+    'Europe/Asia': 'text-emerald-400',
   };
 
   /* ═══ RENDER ═══ */
@@ -163,12 +163,12 @@ Or call: ${country.cyber_hotline}
     <div className="max-w-4xl mx-auto p-4 md:p-6 text-white">
 
       {/* ── Header ── */}
-      <div className="relative overflow-hidden rounded-2xl mb-6 border border-blue-500/30 bg-gradient-to-br from-slate-900 via-blue-950/50 to-slate-900 p-6">
+      <div className="relative overflow-hidden rounded-2xl mb-6 border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-emerald-950/50 to-slate-900 p-6">
         <div className="absolute inset-0 opacity-10"
-          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #3b82f6 0%, transparent 50%), radial-gradient(circle at 80% 50%, #8b5cf6 0%, transparent 50%)' }} />
+          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #10b981 0%, transparent 50%), radial-gradient(circle at 80% 50%, #14b8a6 0%, transparent 50%)' }} />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <span className="text-xs font-mono bg-blue-600/20 border border-blue-500/40 text-blue-400 px-3 py-1 rounded-full tracking-widest">
+            <span className="text-xs font-mono bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 px-3 py-1 rounded-full tracking-widest">
               GLOBAL GUARDIAN
             </span>
             <button
@@ -177,7 +177,7 @@ Or call: ${country.cyber_hotline}
             >
               <span className="text-xl">{country.flag}</span>
               <span>{country.name}</span>
-              <Globe className="w-3.5 h-3.5 text-blue-400" />
+              <Globe className="w-3.5 h-3.5 text-emerald-400" />
             </button>
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-1">Global Guardian</h1>
@@ -185,14 +185,14 @@ Or call: ${country.cyber_hotline}
             World Cyber Safety Directory · {countries.length} Countries · Offline-First
           </p>
           {!isManual && (
-            <p className="text-xs text-blue-400 mt-2 flex items-center gap-1">
+            <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
               <Navigation className="w-3 h-3" /> Auto-detected: {country.name}
             </p>
           )}
           {isManual && (
             <p className="text-xs text-yellow-400 mt-2 flex items-center gap-1">
               <MapPin className="w-3 h-3" /> Manual override: {country.name}
-              <button onClick={autoDetect} className="ml-2 underline text-blue-400 hover:text-blue-300">Auto-detect</button>
+              <button onClick={autoDetect} className="ml-2 underline text-emerald-400 hover:text-emerald-300">Auto-detect</button>
             </p>
           )}
         </div>
@@ -215,7 +215,7 @@ Or call: ${country.cyber_hotline}
                 />
               </div>
               <button onClick={autoDetect}
-                className="mt-2 w-full text-xs text-blue-400 hover:text-blue-300 flex items-center justify-center gap-1 py-1">
+                className="mt-2 w-full text-xs text-emerald-400 hover:text-emerald-300 flex items-center justify-center gap-1 py-1">
                 <Navigation className="w-3 h-3" /> Auto-detect from browser
               </button>
             </div>
@@ -225,7 +225,7 @@ Or call: ${country.cyber_hotline}
                   key={c.code}
                   onClick={() => selectCountry(c.code, true)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-white/10 transition-all ${
-                    c.code === selectedCode ? 'bg-blue-500/20 border border-blue-500/40' : ''
+                    c.code === selectedCode ? 'bg-emerald-500/20 border border-emerald-500/40' : ''
                   }`}
                 >
                   <span className="text-2xl">{c.flag}</span>
@@ -234,7 +234,7 @@ Or call: ${country.cyber_hotline}
                     <div className={`text-xs ${regionColor[c.region] || 'text-gray-500'}`}>{c.region}</div>
                   </div>
                   <span className="text-xs text-gray-500 font-mono">{c.code}</span>
-                  {c.code === selectedCode && <CheckCircle className="w-4 h-4 text-blue-400" />}
+                  {c.code === selectedCode && <CheckCircle className="w-4 h-4 text-emerald-400" />}
                 </button>
               ))}
               {filteredCountries.length === 0 && (
@@ -264,7 +264,7 @@ Or call: ${country.cyber_hotline}
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 min-w-max text-sm py-2 px-3 rounded-lg font-semibold transition-all ${
               activeTab === tab.id
-                ? 'bg-blue-600 text-white shadow'
+                ? 'bg-emerald-600 text-white shadow'
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
@@ -279,12 +279,12 @@ Or call: ${country.cyber_hotline}
       {activeTab === 'passport' && (
         <div className="space-y-4">
           {/* Passport card */}
-          <div className="relative overflow-hidden rounded-2xl border border-blue-500/40 bg-gradient-to-br from-blue-950 via-slate-900 to-indigo-950 p-6">
+          <div className="relative overflow-hidden rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-950 p-6">
             <div className="absolute top-0 right-0 w-32 h-32 opacity-5"
-              style={{ backgroundImage: 'radial-gradient(circle, #60a5fa 0%, transparent 70%)' }} />
+              style={{ backgroundImage: 'radial-gradient(circle, #34d399 0%, transparent 70%)' }} />
             <div className="flex items-start justify-between mb-5">
               <div>
-                <div className="text-xs font-mono text-blue-400 tracking-widest mb-1">AdamasVault</div>
+                <div className="text-xs font-mono text-emerald-400 tracking-widest mb-1">AdamasVault</div>
                 <div className="text-xs text-gray-500">DIGITAL SAFETY PASSPORT</div>
               </div>
               <div className="text-5xl">{country.flag}</div>
@@ -309,7 +309,7 @@ Or call: ${country.cyber_hotline}
               </div>
               <div>
                 <div className="text-xs text-gray-500 mb-1">DETECTION MODE</div>
-                <div className={`text-sm font-semibold flex items-center gap-1 ${isManual ? 'text-yellow-400' : 'text-blue-400'}`}>
+                <div className={`text-sm font-semibold flex items-center gap-1 ${isManual ? 'text-yellow-400' : 'text-emerald-400'}`}>
                   {isManual ? <><MapPin className="w-3 h-3" /> Manual</> : <><Navigation className="w-3 h-3" /> Auto</>}
                 </div>
               </div>
@@ -331,7 +331,7 @@ Or call: ${country.cyber_hotline}
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: 'Cyber Hotline', num: country.cyber_hotline, color: 'bg-red-600 hover:bg-red-500' },
-              { label: 'Police', num: country.police, color: 'bg-blue-600 hover:bg-blue-500' },
+              { label: 'Police', num: country.police, color: 'bg-emerald-600 hover:bg-emerald-500' },
               { label: 'Ambulance', num: country.ambulance, color: 'bg-green-600 hover:bg-green-500' },
             ].map(btn => (
               <a key={btn.label} href={telLink(btn.num)}
@@ -370,7 +370,7 @@ Or call: ${country.cyber_hotline}
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: 'Cybercrime Hotline', num: country.cyber_hotline, icon: Shield, color: 'border-red-500/40 bg-red-500/10' },
-              { label: 'Police', num: country.police, icon: Phone, color: 'border-blue-500/40 bg-blue-500/10' },
+              { label: 'Police', num: country.police, icon: Phone, color: 'border-emerald-500/40 bg-emerald-500/10' },
               { label: 'Ambulance', num: country.ambulance, icon: Zap, color: 'border-green-500/40 bg-green-500/10' },
               { label: 'Fire', num: country.fire, icon: AlertTriangle, color: 'border-orange-500/40 bg-orange-500/10' },
             ].map(item => {
@@ -395,11 +395,11 @@ Or call: ${country.cyber_hotline}
               <div className="font-semibold">{country.cyber_agency}</div>
             </div>
             <a href={country.cyber_portal} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-semibold transition-all">
+              className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-semibold transition-all">
               <ExternalLink className="w-4 h-4" /> {country.cyber_portal}
             </a>
             <a href={country.report_url} target="_blank" rel="noopener noreferrer"
-              className="w-full block text-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all">
+              className="w-full block text-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all">
               File Official Report →
             </a>
           </div>
@@ -434,7 +434,7 @@ Or call: ${country.cyber_hotline}
               ))}
             </div>
             <button onClick={() => setShowPicker(true)}
-              className="w-full mt-2 text-xs text-blue-400 hover:text-blue-300 py-1">
+              className="w-full mt-2 text-xs text-emerald-400 hover:text-emerald-300 py-1">
               View all {countries.length} countries →
             </button>
           </div>
@@ -476,7 +476,7 @@ Or call: ${country.cyber_hotline}
                   </div>
                 </div>
                 <a href={country.report_url} target="_blank" rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300">
+                  className="text-emerald-400 hover:text-emerald-300">
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
@@ -484,8 +484,8 @@ Or call: ${country.cyber_hotline}
           </div>
 
           {/* Jurisdiction mismatch warning */}
-          <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-5">
-            <div className="flex items-center gap-2 text-purple-400 font-bold text-sm mb-2">
+          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-5">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm mb-2">
               <Shield className="w-4 h-4" /> Jurisdiction Mismatch Defence
             </div>
             <p className="text-xs text-gray-400 leading-relaxed">
@@ -505,7 +505,7 @@ Or call: ${country.cyber_hotline}
           {/* Global comparison */}
           <div className="bg-white/5 border border-white/10 rounded-xl p-5">
             <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
-              <Globe className="w-4 h-4 text-blue-400" /> High-Risk Countries — Cyber Fraud 2025–26
+              <Globe className="w-4 h-4 text-emerald-400" /> High-Risk Countries — Cyber Fraud 2025–26
             </h3>
             {[
               { code: 'IN', name: 'India', flag: '🇮🇳', risk: 'CRITICAL', tag: '₹1,935Cr Digital Arrests' },
@@ -555,7 +555,7 @@ Or call: ${country.cyber_hotline}
               <span className="font-black">{country.cyber_hotline}</span>
             </a>
             <a href={country.report_url} target="_blank" rel="noopener noreferrer"
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex flex-col items-center gap-1 transition-all">
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl flex flex-col items-center gap-1 transition-all">
               <ExternalLink className="w-5 h-5" />
               <span className="text-xs">File Online Report</span>
               <span className="text-xs font-bold truncate w-full text-center px-2">
@@ -586,8 +586,8 @@ Or call: ${country.cyber_hotline}
           </div>
 
           {/* What to do next */}
-          <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-5 space-y-3">
-            <h3 className="font-bold text-sm text-blue-400 flex items-center gap-2">
+          <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-5 space-y-3">
+            <h3 className="font-bold text-sm text-emerald-400 flex items-center gap-2">
               <BookOpen className="w-4 h-4" /> What To Do Next — {country.name}
             </h3>
             {[
@@ -598,7 +598,7 @@ Or call: ${country.cyber_hotline}
               `Contact Circuit Breaker Safety Circle contacts to confirm your safety`,
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-2 text-xs text-gray-400">
-                <span className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">
                   {i + 1}
                 </span>
                 <span>{step}</span>

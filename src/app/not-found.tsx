@@ -5,7 +5,7 @@ import { ShieldAlert } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-black text-white px-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-900 via-emerald-900 to-black text-white px-6">
       <div className="max-w-md text-center">
         <div className="flex justify-center mb-6">
           <ShieldAlert className="w-16 h-16 text-red-400" />
@@ -19,7 +19,7 @@ export default function NotFound() {
 
         <Link
           href="/"
-          className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition"
+          className="inline-block bg-gradient-to-r from-emerald-600 to-emerald-600 px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition"
         >
           Go back to Home
         </Link>

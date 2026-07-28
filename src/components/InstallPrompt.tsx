@@ -58,7 +58,7 @@ export default function InstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-4 shadow-2xl z-50 border border-white/20 animate-slide-up">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-gradient-to-r from-emerald-600 to-emerald-600 rounded-xl p-4 shadow-2xl z-50 border border-white/20 animate-slide-up">
       <button 
         onClick={handleDismiss}
         className="absolute top-2 right-2 text-white/70 hover:text-white transition"
@@ -79,7 +79,7 @@ export default function InstallPrompt() {
           <div className="flex gap-2">
             <button
               onClick={handleInstall}
-              className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2 text-sm"
+              className="bg-white text-emerald-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2 text-sm"
             >
               <Download className="w-4 h-4" />
               Install Now

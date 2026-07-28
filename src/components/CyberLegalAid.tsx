@@ -44,8 +44,8 @@ const DIGITAL_ARREST_STEPS = [
     actionHi: 'एविडेंस वॉल्ट खोलें →',
     actionLink: '/evidence',
     icon: Mic,
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10 border-blue-500/30',
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/10 border-emerald-500/30',
   },
   {
     step: 4,
@@ -69,8 +69,8 @@ const DIGITAL_ARREST_STEPS = [
     action: 'See FIR Checklist',
     actionHi: 'FIR चेकलिस्ट देखें',
     icon: FileText,
-    color: 'text-purple-400',
-    bg: 'bg-purple-500/10 border-purple-500/30',
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/10 border-emerald-500/30',
   },
   {
     step: 6,
@@ -206,10 +206,10 @@ export default function CyberLegalAid() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/30 to-blue-500/30 border border-purple-500/50 mb-5">
-            <Scale className="w-10 h-10 text-purple-400" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-emerald-500/30 border border-emerald-500/50 mb-5">
+            <Scale className="w-10 h-10 text-emerald-400" />
           </div>
-          <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-emerald-400 bg-clip-text text-transparent">
             {t.title}
           </h1>
           <p className="text-gray-300 font-semibold">{t.subtitle}</p>
@@ -226,7 +226,7 @@ export default function CyberLegalAid() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`py-2 px-2 rounded-lg text-xs font-semibold transition ${
-                activeTab === tab ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
+                activeTab === tab ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:text-white'
               }`}
             >
               {[t.tab1, t.tab2, t.tab3, t.tab4][i]}
@@ -314,8 +314,8 @@ export default function CyberLegalAid() {
               ))}
             </div>
 
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-              <p className="text-sm text-blue-300">
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
+              <p className="text-sm text-emerald-300">
                 <span className="font-bold">Tip:</span> You can also report online at <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" className="underline font-bold">cybercrime.gov.in</a> without visiting a police station. Online complaints are equally valid.
               </p>
             </div>
@@ -330,12 +330,12 @@ export default function CyberLegalAid() {
               {RIGHTS.map((r, i) => (
                 <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5">
                   <div className="flex items-start gap-3 mb-2">
-                    <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0 text-purple-400 font-black text-xs">
+                    <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 text-emerald-400 font-black text-xs">
                       {i + 1}
                     </div>
                     <div>
-                      <h3 className="font-black text-purple-300">{lang === 'en' ? r.right : r.rightHi}</h3>
-                      <p className="text-xs text-purple-500/70 mb-2">{r.law}</p>
+                      <h3 className="font-black text-emerald-300">{lang === 'en' ? r.right : r.rightHi}</h3>
+                      <p className="text-xs text-emerald-500/70 mb-2">{r.law}</p>
                       <p className="text-sm text-gray-300">{lang === 'en' ? r.desc : r.descHi}</p>
                     </div>
                   </div>
@@ -366,8 +366,8 @@ export default function CyberLegalAid() {
                     rel={isPhone ? undefined : 'noopener noreferrer'}
                     className="flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5 text-purple-400" />
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                      <Icon className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div className="flex-1">
                       <div className="font-semibold">{lang === 'en' ? r.name : r.nameHi}</div>
@@ -380,22 +380,22 @@ export default function CyberLegalAid() {
             </div>
 
             {/* AdamasVault internal tools */}
-            <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/30 rounded-2xl p-5">
-              <h3 className="font-bold mb-4 flex items-center gap-2 text-blue-400">
+            <div className="bg-gradient-to-br from-emerald-600/10 to-emerald-600/10 border border-emerald-500/30 rounded-2xl p-5">
+              <h3 className="font-bold mb-4 flex items-center gap-2 text-emerald-400">
                 <Shield className="w-5 h-5" />
                 AdamasVault Tools for Legal Cases
               </h3>
               <div className="space-y-3">
-                <Link href="/evidence" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
-                  <ChevronRight className="w-4 h-4 text-blue-400" />
+                <Link href="/evidence" className="flex items-center gap-3 text-sm hover:text-emerald-400 transition">
+                  <ChevronRight className="w-4 h-4 text-emerald-400" />
                   Evidence Vault — Record & preserve tamper-proof proof
                 </Link>
-                <Link href="/aianalyzer" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
-                  <ChevronRight className="w-4 h-4 text-blue-400" />
+                <Link href="/aianalyzer" className="flex items-center gap-3 text-sm hover:text-emerald-400 transition">
+                  <ChevronRight className="w-4 h-4 text-emerald-400" />
                   AI Call Analyzer — Detect scam call patterns in real-time
                 </Link>
-                <Link href="/reporter" className="flex items-center gap-3 text-sm hover:text-blue-400 transition">
-                  <ChevronRight className="w-4 h-4 text-blue-400" />
+                <Link href="/reporter" className="flex items-center gap-3 text-sm hover:text-emerald-400 transition">
+                  <ChevronRight className="w-4 h-4 text-emerald-400" />
                   Police Reporter — Generate structured report for FIR
                 </Link>
               </div>

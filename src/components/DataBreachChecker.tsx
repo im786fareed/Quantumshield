@@ -107,12 +107,12 @@ export default function DataBreachChecker({ lang = 'en' }: { lang?: 'en' | 'hi' 
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && checkBreaches()}
             placeholder={t.emailPlaceholder}
-            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-emerald-500"
           />
           <button
             onClick={checkBreaches}
             disabled={loading || !email.trim()}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+            className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
             <Search className="w-5 h-5" />
             {loading ? t.checking : t.checkButton}
           </button>
@@ -179,7 +179,7 @@ export default function DataBreachChecker({ lang = 'en' }: { lang?: 'en' | 'hi' 
           href="https://haveibeenpwned.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-400 underline hover:text-blue-300 inline-flex items-center gap-1">
+          className="text-emerald-400 underline hover:text-emerald-300 inline-flex items-center gap-1">
           Have I Been Pwned <ExternalLink className="w-3.5 h-3.5" />
         </a>
       </p>

@@ -390,7 +390,7 @@ export default function TrustSearch() {
   const Section = ({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) => (
     <div className="bg-white/5 border border-white/10 rounded-xl p-4">
       <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 mb-3">
-        <Icon className="w-4 h-4 text-blue-400" /> {title}
+        <Icon className="w-4 h-4 text-emerald-400" /> {title}
       </h3>
       {children}
     </div>
@@ -430,11 +430,11 @@ export default function TrustSearch() {
 
       {/* ── Header ── */}
       <div className="text-center mb-8">
-        <div className="mx-auto w-fit flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 mb-5">
-          <BadgeCheck className="w-3.5 h-3.5 text-blue-300" />
-          <span className="text-[11px] font-mono uppercase tracking-widest text-blue-300">{t.noAds}</span>
+        <div className="mx-auto w-fit flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-5">
+          <BadgeCheck className="w-3.5 h-3.5 text-emerald-300" />
+          <span className="text-[11px] font-mono uppercase tracking-widest text-emerald-300">{t.noAds}</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black mb-2 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-black mb-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-teal-400 bg-clip-text text-transparent">
           {t.title}
         </h1>
         <p className="text-lg font-bold text-gray-200 mb-2">{t.subtitle}</p>
@@ -451,10 +451,10 @@ export default function TrustSearch() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && runSearch()}
               placeholder={t.placeholder}
-              className="w-full bg-white/5 border border-white/15 rounded-xl pl-12 pr-24 py-4 text-sm outline-none focus:border-blue-400 placeholder-gray-600 transition"
+              className="w-full bg-white/5 border border-white/15 rounded-xl pl-12 pr-24 py-4 text-sm outline-none focus:border-emerald-400 placeholder-gray-600 transition"
             />
             {hint && !listening && (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-blue-500/15 border border-blue-500/30 rounded-full px-2.5 py-1">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 rounded-full px-2.5 py-1">
                 {t.hint[hint as keyof typeof t.hint]}
               </span>
             )}
@@ -481,7 +481,7 @@ export default function TrustSearch() {
           <button
             onClick={() => runSearch()}
             disabled={loading || !query.trim()}
-            className="px-6 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed font-black text-sm transition flex items-center gap-2"
+            className="px-6 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed font-black text-sm transition flex items-center gap-2"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
             {t.verify}
@@ -508,7 +508,7 @@ export default function TrustSearch() {
       {/* ── Loading (honest about what is happening) ── */}
       {loading && (
         <div className="max-w-3xl mx-auto text-center bg-white/5 border border-white/10 rounded-2xl p-10 mt-6">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-400 mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mx-auto mb-4" />
           <p className="font-bold text-gray-200">{t.verifying}</p>
           <p className="text-xs text-gray-500 mt-1">{t.verifyingSub}</p>
         </div>
@@ -525,7 +525,7 @@ export default function TrustSearch() {
       {/* ── "Showing results for" (typo correction, Google-style) ── */}
       {v && !loading && v.correctedQuery && (
         <p className="max-w-6xl mx-auto mt-5 text-sm text-gray-400">
-          {t.showingFor} <span className="font-bold text-blue-300">{v.correctedQuery}</span>
+          {t.showingFor} <span className="font-bold text-emerald-300">{v.correctedQuery}</span>
         </p>
       )}
 
@@ -607,8 +607,8 @@ export default function TrustSearch() {
 
             {/* recommendation */}
             {v.recommendation && (
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-                <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-300 mb-2">
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
+                <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-300 mb-2">
                   <ListChecks className="w-4 h-4" /> {t.recommendation}
                 </h3>
                 <p className="text-sm text-gray-200 leading-relaxed">{v.recommendation}</p>
@@ -723,7 +723,7 @@ export default function TrustSearch() {
                     <ul className="space-y-1.5">
                       {v.supportChannels.map((s, i) => (
                         <li key={i} className="text-sm text-gray-200 flex gap-2">
-                          <span className="text-blue-400">•</span> {s}
+                          <span className="text-emerald-400">•</span> {s}
                         </li>
                       ))}
                     </ul>
@@ -771,7 +771,7 @@ export default function TrustSearch() {
                   {graphRows.map((row, i) => (
                     <div key={i} className="flex items-stretch gap-3">
                       <div className="flex flex-col items-center">
-                        <span className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${row.danger ? 'bg-red-500' : (row as any).root ? style.dot : 'bg-blue-400'}`} />
+                        <span className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${row.danger ? 'bg-red-500' : (row as any).root ? style.dot : 'bg-emerald-400'}`} />
                         {i < graphRows.length - 1 && <span className="w-px flex-1 bg-white/15" />}
                       </div>
                       <p className={`text-sm pb-3 break-words min-w-0 ${row.danger ? 'text-red-300' : (row as any).root ? 'font-black text-gray-100' : 'text-gray-300'}`}>
@@ -804,7 +804,7 @@ export default function TrustSearch() {
                       href={s.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-blue-300 hover:text-blue-200 hover:underline break-all"
+                      className="flex items-center gap-2 text-sm text-emerald-300 hover:text-emerald-200 hover:underline break-all"
                     >
                       <ExternalLink className="w-3.5 h-3.5 shrink-0" /> {s.title}
                     </a>
@@ -822,9 +822,9 @@ export default function TrustSearch() {
           {/* ═══ RIGHT: AI Trust Assistant ═══ */}
           <div className="lg:col-span-2">
             <div className="lg:sticky lg:top-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col overflow-hidden" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/25 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-4 h-4 text-blue-300" />
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-emerald-600/20 to-emerald-600/20">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/25 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-emerald-300" />
                 </div>
                 <div>
                   <h3 className="font-black text-sm">{t.assistant}</h3>
@@ -837,7 +837,7 @@ export default function TrustSearch() {
                   <div key={i} className={`flex ${turn.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[90%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
                       turn.role === 'user'
-                        ? 'bg-blue-600 text-white rounded-br-sm'
+                        ? 'bg-emerald-600 text-white rounded-br-sm'
                         : 'bg-white/10 text-gray-100 rounded-bl-sm'
                     }`}>
                       {turn.text}
@@ -876,12 +876,12 @@ export default function TrustSearch() {
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && askAssistant()}
                     placeholder={t.chatPlaceholder}
-                    className="flex-1 bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-blue-400 placeholder-gray-600 transition"
+                    className="flex-1 bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-emerald-400 placeholder-gray-600 transition"
                   />
                   <button
                     onClick={() => askAssistant()}
                     disabled={chatBusy || !chatInput.trim()}
-                    className="px-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                    className="px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed transition"
                     aria-label={t.chatSend}
                   >
                     <Send className="w-4 h-4" />

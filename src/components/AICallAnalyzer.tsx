@@ -794,7 +794,7 @@ export default function AICallAnalyzer() {
         const y = (h - size) / 2;
 
         // 1. Draw glowing HUD corners
-        ctx.strokeStyle = '#a855f7'; // Purple neon
+        ctx.strokeStyle = '#34d399'; // Purple neon
         ctx.lineWidth = 3;
 
         // Top Left
@@ -894,7 +894,7 @@ export default function AICallAnalyzer() {
         ctx.strokeRect(8, 8, 195, 70);
 
         ctx.font = 'bold 8px monospace';
-        ctx.fillStyle = '#c084fc'; ctx.fillText(d.biometricFeed, 12, 20);
+        ctx.fillStyle = '#6ee7b7'; ctx.fillText(d.biometricFeed, 12, 20);
         ctx.fillStyle = mpFaceDetected ? '#10b981' : '#22d3ee';
         ctx.fillText(`Engine: ${mpFaceDetected ? 'MediaPipe ML' : 'Pixel Analysis'} | Faces: ${mpFaceCount || (realSkinRatio > 0.10 ? '~1' : '0')}`, 12, 33);
         ctx.fillStyle = '#22d3ee'; ctx.fillText(`${d.blinkingFreq}: ${timeDiff.toFixed(1)}s (${blinkCount})`, 12, 46);
@@ -1077,15 +1077,15 @@ export default function AICallAnalyzer() {
 
         {/* ─── CARD HEADER ──────────────────────────────────────────────────────── */}
         <div className="relative overflow-hidden bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-purple-600/10 rounded-full filter blur-[80px]" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-600/10 rounded-full filter blur-[80px]" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-600/10 rounded-full filter blur-[80px]" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-600/10 rounded-full filter blur-[80px]" />
 
           <div className="flex items-center gap-4 relative z-10">
-            <div className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/40 p-4 rounded-2xl shrink-0 shadow-lg shadow-purple-600/10">
-              <Brain className="w-10 h-10 text-purple-400 animate-pulse" />
+            <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-500/20 border border-emerald-500/40 p-4 rounded-2xl shrink-0 shadow-lg shadow-emerald-600/10">
+              <Brain className="w-10 h-10 text-emerald-400 animate-pulse" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-purple-400 via-indigo-300 to-cyan-400 bg-clip-text text-transparent tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-400 bg-clip-text text-transparent tracking-tight">
                 {d.title}
               </h1>
               <p className="text-gray-400 text-xs md:text-sm mt-1 max-w-xl font-medium leading-relaxed">
@@ -1119,11 +1119,11 @@ export default function AICallAnalyzer() {
                 onClick={() => handleTabChange(tab.id as any)}
                 className={`py-3 px-4 rounded-xl flex items-center justify-center gap-2 font-bold text-xs md:text-sm transition-all border ${
                   active
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 border-purple-500 text-white shadow-lg shadow-purple-600/20'
+                    ? 'bg-gradient-to-r from-emerald-600 to-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-600/20'
                     : 'border-transparent text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${active ? 'text-cyan-300' : 'text-gray-500'}`} />
+                <Icon className={`w-4 h-4 ${active ? 'text-teal-300' : 'text-gray-500'}`} />
                 {tab.label}
               </button>
             );
@@ -1146,7 +1146,7 @@ export default function AICallAnalyzer() {
                     <h2 className="text-lg font-black text-white">{d.voiceHeader}</h2>
                     <p className="text-gray-400 text-xs mt-0.5">{d.voiceDesc}</p>
                   </div>
-                  <span className="text-[10px] text-cyan-400 font-mono tracking-widest bg-cyan-900/20 border border-cyan-500/20 px-2.5 py-1 rounded-full uppercase">
+                  <span className="text-[10px] text-teal-400 font-mono tracking-widest bg-teal-900/20 border border-teal-500/20 px-2.5 py-1 rounded-full uppercase">
                     {d.secScan}
                   </span>
                 </div>
@@ -1168,7 +1168,7 @@ export default function AICallAnalyzer() {
                       </div>
                       <button
                         onClick={startVoiceAudit}
-                        className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-bold text-sm transition-all shadow-lg hover:scale-105"
+                        className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm transition-all shadow-lg hover:scale-105"
                       >
                         {d.startAudit}
                       </button>
@@ -1177,9 +1177,9 @@ export default function AICallAnalyzer() {
                 </div>
 
                 {voiceAuditing && (
-                  <div className="mt-4 flex justify-between items-center bg-purple-950/20 border border-purple-500/10 p-3 rounded-xl">
-                    <span className="text-xs text-purple-300 flex items-center gap-2">
-                      <Activity className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                  <div className="mt-4 flex justify-between items-center bg-emerald-950/20 border border-emerald-500/10 p-3 rounded-xl">
+                    <span className="text-xs text-emerald-300 flex items-center gap-2">
+                      <Activity className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
                       {lang === 'en' ? 'Listening for biological artifacts...' : 'जैविक संकेतों का मिलान किया जा रहा है...'}
                     </span>
                     <button
@@ -1235,11 +1235,11 @@ export default function AICallAnalyzer() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-bold text-gray-400">
                     <span>{d.compressionRatio}</span>
-                    <span className="text-indigo-400">{audioStats.compression}x</span>
+                    <span className="text-emerald-400">{audioStats.compression}x</span>
                   </div>
                   <div className="h-2 rounded-full bg-slate-950 overflow-hidden border border-white/5">
                     <div
-                      className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(audioStats.compression * 20, 100)}%` }}
                     />
                   </div>
@@ -1249,13 +1249,13 @@ export default function AICallAnalyzer() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-bold text-gray-400">
                     <span>{d.deepfakeConfidence}</span>
-                    <span className="text-cyan-400">
+                    <span className="text-teal-400">
                       {audioStats.naturalness < 50 ? (100 - audioStats.naturalness).toFixed(1) : (100 - audioStats.naturalness).toFixed(1)}%
                     </span>
                   </div>
                   <div className="h-2 rounded-full bg-slate-950 overflow-hidden border border-white/5">
                     <div
-                      className="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                      className="h-full bg-teal-500 rounded-full transition-all duration-500"
                       style={{ width: `${100 - audioStats.naturalness}%` }}
                     />
                   </div>
@@ -1320,7 +1320,7 @@ export default function AICallAnalyzer() {
                             onClick={() => setCallSource('regular')}
                             className={`p-3 rounded-xl border font-bold text-xs transition-all ${
                               callSource === 'regular'
-                                ? 'bg-purple-500/20 border-purple-500 text-purple-300'
+                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
                                 : 'border-slate-800 text-gray-400 hover:border-slate-700'
                             }`}
                           >
@@ -1330,7 +1330,7 @@ export default function AICallAnalyzer() {
                             onClick={() => setCallSource('whatsapp')}
                             className={`p-3 rounded-xl border font-bold text-xs transition-all ${
                               callSource === 'whatsapp'
-                                ? 'bg-blue-500/20 border-blue-500 text-blue-300'
+                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
                                 : 'border-slate-800 text-gray-400 hover:border-slate-700'
                             }`}
                           >
@@ -1342,7 +1342,7 @@ export default function AICallAnalyzer() {
 
                     <button
                       onClick={startListening}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02]"
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-600 hover:from-emerald-500 hover:to-emerald-500 text-white font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02]"
                     >
                       <Mic className="w-4 h-4" />
                       {d.startScamScan}
@@ -1351,7 +1351,7 @@ export default function AICallAnalyzer() {
                 </div>
 
                 <div className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 flex flex-col justify-center space-y-4">
-                  <h3 className="font-bold text-sm text-purple-300 flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-emerald-300 flex items-center gap-2">
                     <Shield className="w-4 h-4" />
                     {lang === 'en' ? 'Continuous Language Rotation' : 'कंटीन्यूअस भाषा रोटेशन'}
                   </h3>
@@ -1383,7 +1383,7 @@ export default function AICallAnalyzer() {
                   <div className={`p-4 rounded-2xl border-2 flex items-center justify-between gap-4 transition-all ${
                     analysis?.isScam
                       ? 'bg-red-950/20 border-red-500 animate-pulse'
-                      : 'bg-purple-950/15 border-purple-500/30'
+                      : 'bg-emerald-950/15 border-emerald-500/30'
                   }`}>
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-red-500 animate-ping" />
@@ -1406,7 +1406,7 @@ export default function AICallAnalyzer() {
                   <div className="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
                     <div className="border-b border-slate-800 p-4 bg-slate-900/30 flex items-center justify-between">
                       <span className="text-xs font-bold text-gray-400 flex items-center gap-2">
-                        <Volume2 className="w-4 h-4 text-purple-400" />
+                        <Volume2 className="w-4 h-4 text-emerald-400" />
                         {d.liveTranscript}
                       </span>
                       <span className="text-[10px] text-gray-500 font-mono">
@@ -1432,7 +1432,7 @@ export default function AICallAnalyzer() {
                       {liveText && (
                         <div className="flex gap-2 opacity-50">
                           <span className="text-gray-600 text-xs shrink-0 w-10 text-right">...</span>
-                          <span className="text-purple-300 italic">{liveText}</span>
+                          <span className="text-emerald-300 italic">{liveText}</span>
                         </div>
                       )}
                     </div>
@@ -1617,7 +1617,7 @@ export default function AICallAnalyzer() {
                       </div>
                       <button
                         onClick={startVideoAudit}
-                        className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-bold text-sm transition-all shadow-lg hover:scale-105"
+                        className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm transition-all shadow-lg hover:scale-105"
                       >
                         {d.startCamera}
                       </button>
@@ -1626,9 +1626,9 @@ export default function AICallAnalyzer() {
                 </div>
 
                 {videoAuditing && (
-                  <div className="mt-4 flex justify-between items-center bg-cyan-950/20 border border-cyan-500/10 p-3 rounded-xl">
-                    <span className="text-xs text-cyan-300 flex items-center gap-2">
-                      <Activity className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                  <div className="mt-4 flex justify-between items-center bg-teal-950/20 border border-teal-500/10 p-3 rounded-xl">
+                    <span className="text-xs text-teal-300 flex items-center gap-2">
+                      <Activity className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
                       {lang === 'en' ? 'Running active mesh structural analysis...' : 'लाइव वीडियो ग्रिड और पिक्सेल ऑडिट चालू है...'}
                     </span>
                     <button
@@ -1667,7 +1667,7 @@ export default function AICallAnalyzer() {
                   </div>
                   <div>
                     <span className="text-slate-500 block text-[10px] uppercase font-bold">Warp Drift Margin</span>
-                    <span className="text-cyan-400 font-bold">{(biometricStats.warpFactor * 100).toFixed(2)}% (Optimal)</span>
+                    <span className="text-teal-400 font-bold">{(biometricStats.warpFactor * 100).toFixed(2)}% (Optimal)</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block text-[10px] uppercase font-bold">Spectral Noise Density</span>
@@ -1697,7 +1697,7 @@ export default function AICallAnalyzer() {
               {/* Upload drag zone */}
               <div
                 onClick={triggerFileBrowser}
-                className="border-2 border-dashed border-slate-800 hover:border-purple-500/50 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-slate-900/10 hover:bg-purple-950/5 relative group"
+                className="border-2 border-dashed border-slate-800 hover:border-emerald-500/50 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-slate-900/10 hover:bg-emerald-950/5 relative group"
               >
                 <input
                   ref={fileInputRef}
@@ -1707,8 +1707,8 @@ export default function AICallAnalyzer() {
                   className="hidden"
                 />
 
-                <div className="bg-purple-950/20 border border-purple-500/15 p-4 rounded-xl group-hover:scale-105 transition-all shadow-md">
-                  <Upload className="w-8 h-8 text-purple-400" />
+                <div className="bg-emerald-950/20 border border-emerald-500/15 p-4 rounded-xl group-hover:scale-105 transition-all shadow-md">
+                  <Upload className="w-8 h-8 text-emerald-400" />
                 </div>
                 {uploadedFile ? (
                   <div className="mt-4 space-y-1">
@@ -1728,7 +1728,7 @@ export default function AICallAnalyzer() {
               {uploadedFile && !isInspecting && !forensicScore && (
                 <button
                   onClick={executeForensicInspection}
-                  className="w-full py-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.01]"
+                  className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.01]"
                 >
                   <Play className="w-4 h-4 fill-white" />
                   {d.btnStartInspection}
@@ -1739,8 +1739,8 @@ export default function AICallAnalyzer() {
               {isInspecting && (
                 <div className="bg-slate-900/30 border border-slate-800 rounded-2xl p-6 space-y-4">
                   <div className="flex justify-between items-center text-xs text-gray-400 font-mono">
-                    <span className="text-purple-300 flex items-center gap-2">
-                      <RefreshCw className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                    <span className="text-emerald-300 flex items-center gap-2">
+                      <RefreshCw className="w-3.5 h-3.5 text-teal-400 animate-spin" />
                       {d.inspectionProgress}
                     </span>
                     <span>Stage {forensicStage} of 4</span>
@@ -1748,16 +1748,16 @@ export default function AICallAnalyzer() {
 
                   <div className="h-2 rounded-full bg-slate-950 overflow-hidden border border-white/5">
                     <div
-                      className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full transition-all duration-700"
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-700"
                       style={{ width: `${(forensicStage / 4) * 100}%` }}
                     />
                   </div>
 
                   <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-bold uppercase tracking-widest font-mono pt-2 text-gray-500">
-                    <span className={forensicStage >= 1 ? 'text-purple-400' : ''}>FFT Spectral</span>
-                    <span className={forensicStage >= 2 ? 'text-purple-400' : ''}>Codec Matrix</span>
-                    <span className={forensicStage >= 3 ? 'text-purple-400' : ''}>A/V Lip-Sync</span>
-                    <span className={forensicStage >= 4 ? 'text-purple-400' : ''}>Neural Match</span>
+                    <span className={forensicStage >= 1 ? 'text-emerald-400' : ''}>FFT Spectral</span>
+                    <span className={forensicStage >= 2 ? 'text-emerald-400' : ''}>Codec Matrix</span>
+                    <span className={forensicStage >= 3 ? 'text-emerald-400' : ''}>A/V Lip-Sync</span>
+                    <span className={forensicStage >= 4 ? 'text-emerald-400' : ''}>Neural Match</span>
                   </div>
                 </div>
               )}
@@ -1766,7 +1766,7 @@ export default function AICallAnalyzer() {
               {forensicLogs.length > 0 && (
                 <div className="bg-slate-950 border border-slate-850 p-5 rounded-2xl space-y-3 font-mono">
                   <h4 className="text-xs uppercase font-bold text-gray-400 tracking-wider flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-purple-400" />
+                    <FileText className="w-4 h-4 text-emerald-400" />
                     {d.forensicLogs}
                   </h4>
                   <div className="max-h-40 overflow-y-auto space-y-2 text-xs leading-relaxed border-t border-slate-900 pt-3">
@@ -1794,7 +1794,7 @@ export default function AICallAnalyzer() {
                     : 'bg-slate-900/50 border-slate-800'
                 }`}>
                   <div className={`absolute -top-10 -right-10 w-44 h-44 rounded-full filter blur-xl ${forensicScore.certType === 'synthetic' ? 'bg-red-500/10' : 'bg-emerald-500/5'}`} />
-                  <div className={`absolute -bottom-10 -left-10 w-44 h-44 rounded-full filter blur-xl ${forensicScore.certType === 'synthetic' ? 'bg-orange-500/10' : 'bg-purple-500/5'}`} />
+                  <div className={`absolute -bottom-10 -left-10 w-44 h-44 rounded-full filter blur-xl ${forensicScore.certType === 'synthetic' ? 'bg-orange-500/10' : 'bg-emerald-500/5'}`} />
 
                   <div className="flex flex-col items-center space-y-3">
                     <div className={`inline-flex p-3 rounded-full border ${
@@ -1835,7 +1835,7 @@ export default function AICallAnalyzer() {
                     </div>
                     <div className="space-y-1">
                       <p className="text-slate-500 text-[10px] uppercase font-bold">{d.compressionRatio}</p>
-                      <p className={`text-xs font-bold ${forensicScore.compression > 2 ? 'text-orange-400' : 'text-indigo-400'}`}>
+                      <p className={`text-xs font-bold ${forensicScore.compression > 2 ? 'text-orange-400' : 'text-emerald-400'}`}>
                         {forensicScore.compression}x {forensicScore.certType === 'synthetic' ? '(Compressed)' : '(Clean Stream)'}
                       </p>
                     </div>

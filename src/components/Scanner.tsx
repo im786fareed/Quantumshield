@@ -533,8 +533,8 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
   return (
     <div className="max-w-3xl mx-auto space-y-6 p-4 sm:p-6">
       <div className="text-center">
-        <div className="inline-block p-4 bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 rounded-3xl mb-4">
-          <Search className="w-10 h-10 text-cyan-400" />
+        <div className="inline-block p-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/15 border border-emerald-500/20 rounded-3xl mb-4">
+          <Search className="w-10 h-10 text-emerald-400" />
         </div>
         <h1 className="text-3xl font-bold text-white mb-1">{t.title}</h1>
         <p className="text-slate-400 text-sm">{t.subtitle}</p>
@@ -547,7 +547,7 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
           return (
             <button key={k} onClick={() => switchTab(k)}
               className={`flex flex-col items-center gap-1 px-2 py-3 rounded-xl font-bold text-xs transition ${
-                tab === k ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                tab === k ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'
               }`}>
               <Icon className="w-5 h-5" />
               {t.tabs[k]}
@@ -558,7 +558,7 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
 
       {/* ── Inputs ── */}
       {!outcome && (
-        <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-5 space-y-4">
+        <div className="bg-[#0f1815] border border-white/10 rounded-2xl p-5 space-y-4">
           {tab === 'link' && (
             <>
               <input
@@ -566,11 +566,11 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
                 onChange={(e) => setUrlInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !busy && scanLink()}
                 placeholder={t.linkPlaceholder}
-                className="w-full bg-black/40 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500 outline-none"
+                className="w-full bg-black/40 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-emerald-500 outline-none"
               />
               <p className="text-xs text-slate-500 flex items-start gap-2"><Info className="w-4 h-4 shrink-0 mt-0.5" />{t.linkPrivacy}</p>
               <button onClick={() => scanLink()} disabled={busy || urlInput.trim().length < 4}
-                className="w-full bg-cyan-600 hover:bg-cyan-700 disabled:opacity-40 px-6 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition">
+                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 px-6 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition">
                 {busy ? <><Loader2 className="w-5 h-5 animate-spin" />{stage || t.scanning}</> : t.scan}
               </button>
             </>
@@ -583,11 +583,11 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
                 value={msgInput}
                 onChange={(e) => setMsgInput(e.target.value)}
                 placeholder={t.msgPlaceholder}
-                className="w-full bg-black/40 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500 outline-none resize-none"
+                className="w-full bg-black/40 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-emerald-500 outline-none resize-none"
               />
               <p className="text-xs text-slate-500 flex items-start gap-2"><Info className="w-4 h-4 shrink-0 mt-0.5" />{t.msgPrivacy}</p>
               <button onClick={() => scanMessage()} disabled={busy || msgInput.trim().length < 3}
-                className="w-full bg-cyan-600 hover:bg-cyan-700 disabled:opacity-40 px-6 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition">
+                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 px-6 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition">
                 {busy ? <><Loader2 className="w-5 h-5 animate-spin" />{stage || t.scanning}</> : t.scan}
               </button>
               <div className="pt-1">
@@ -613,7 +613,7 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
                   onDrop={(e) => { e.preventDefault(); setDragOver(false); onPickFile(e.dataTransfer.files?.[0]); }}
                   onClick={() => fileRef.current?.click()}
                   className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition ${
-                    dragOver ? 'border-cyan-500 bg-cyan-600/10' : 'border-slate-700 hover:border-slate-500'
+                    dragOver ? 'border-emerald-500 bg-emerald-600/10' : 'border-slate-700 hover:border-slate-500'
                   }`}>
                   <Upload className="w-12 h-12 mx-auto mb-3 text-slate-500" />
                   <p className="text-slate-300 text-sm">{tab === 'apk' ? t.dropApk : t.dropFile}</p>
@@ -622,7 +622,7 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
                 </div>
               ) : (
                 <div className="bg-black/40 rounded-xl p-4 flex items-center gap-3">
-                  <FileText className="w-8 h-8 text-cyan-400 shrink-0" />
+                  <FileText className="w-8 h-8 text-emerald-400 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-white truncate">{file.name}</p>
                     <p className="text-xs text-slate-400">{fmtSize(file.size)}</p>
@@ -634,7 +634,7 @@ export default function Scanner({ initialTab = 'link' }: { lang?: 'en' | 'hi'; i
               )}
               <p className="text-xs text-slate-500 flex items-start gap-2"><Info className="w-4 h-4 shrink-0 mt-0.5" />{tab === 'apk' ? t.apkPrivacy : t.filePrivacy}</p>
               <button onClick={scanFile} disabled={busy || !file}
-                className="w-full bg-cyan-600 hover:bg-cyan-700 disabled:opacity-40 px-6 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition">
+                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 px-6 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition">
                 {busy ? <><Loader2 className="w-5 h-5 animate-spin" />{stage || t.scanning}</> : t.scan}
               </button>
             </>
@@ -681,7 +681,7 @@ function VerdictCard({ outcome, t, hi, onReset }: {
       </div>
 
       {/* Evidence */}
-      <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-5">
+      <div className="bg-[#0f1815] border border-white/10 rounded-2xl p-5">
         <h3 className="font-bold text-white mb-3">{t.whatWeFound}</h3>
         {v.signals.length === 0 ? (
           <p className="text-sm text-slate-400">{t.noSignals}</p>
@@ -690,7 +690,7 @@ function VerdictCard({ outcome, t, hi, onReset }: {
             {v.signals.map((s) => (
               <li key={s.id} className={`text-sm ${s.absorbedBy ? 'opacity-50' : ''}`}>
                 <p className="text-slate-200">
-                  <span className="text-cyan-400 mr-1.5">•</span>
+                  <span className="text-emerald-400 mr-1.5">•</span>
                   {hi ? s.titleHi : s.title}
                   {s.absorbedBy && <span className="text-xs text-slate-500"> ({t.countedOnce})</span>}
                 </p>
@@ -706,7 +706,7 @@ function VerdictCard({ outcome, t, hi, onReset }: {
 
       {/* Facts (file/apk details) */}
       {outcome.facts && (
-        <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-5">
+        <div className="bg-[#0f1815] border border-white/10 rounded-2xl p-5">
           <h3 className="font-bold text-white mb-3">{t.fileInfo}</h3>
           <dl className="space-y-2 text-sm">
             {outcome.facts.map((f) => (
@@ -720,7 +720,7 @@ function VerdictCard({ outcome, t, hi, onReset }: {
       )}
 
       {/* Actions */}
-      <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-5">
+      <div className="bg-[#0f1815] border border-white/10 rounded-2xl p-5">
         <h3 className="font-bold text-white mb-3">{t.whatToDo}</h3>
         <ul className="space-y-2">
           {outcome.recommendations.map((r, i) => (
@@ -733,7 +733,7 @@ function VerdictCard({ outcome, t, hi, onReset }: {
       </div>
 
       {/* Checks + notes */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-3">
+      <div className="bg-[#0b1210] border border-white/10 rounded-2xl p-5 space-y-3">
         <div>
           <p className="text-[11px] uppercase tracking-widest font-bold text-slate-500 mb-1.5">{t.checksRun}</p>
           <p className="text-xs text-slate-400">{v.checksRun.join(' · ')}</p>
@@ -744,7 +744,7 @@ function VerdictCard({ outcome, t, hi, onReset }: {
       </div>
 
       <button onClick={onReset}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl font-bold text-white transition">
+        className="w-full bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-xl font-bold text-white transition">
         {t.scanAnother}
       </button>
     </div>

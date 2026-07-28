@@ -60,7 +60,7 @@ export default function ConsumerProtection(_props?: { lang?: 'en' | 'hi' }) {
         {stats && stats.isNew ? (
           /* Honest empty state — no fake numbers for a brand-new user */
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
-            <ScanLine className="w-9 h-9 text-blue-400 mx-auto mb-3" />
+            <ScanLine className="w-9 h-9 text-emerald-400 mx-auto mb-3" />
             <p className="font-bold mb-1">
               {hi ? 'आपकी सुरक्षा यहीं से शुरू होती है' : 'Your protection record starts here'}
             </p>
@@ -70,16 +70,16 @@ export default function ConsumerProtection(_props?: { lang?: 'en' | 'hi' }) {
                 : 'Run your first scan and your real protection stats will appear here — true numbers, only from your own use.'}
             </p>
             <Link href="/scanner"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 font-bold px-6 py-3 rounded-xl text-sm transition">
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 font-bold px-6 py-3 rounded-xl text-sm transition">
               {hi ? 'पहला स्कैन चलाएँ' : 'Run your first scan'} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <StatCard icon={ScanLine}     value={stats?.checks ?? 0}           label={hi ? 'स्कैन किए' : 'Checks run'}        accent="text-blue-400" />
+            <StatCard icon={ScanLine}     value={stats?.checks ?? 0}           label={hi ? 'स्कैन किए' : 'Checks run'}        accent="text-emerald-400" />
             <StatCard icon={AlertTriangle} value={stats?.threats ?? 0}          label={hi ? 'खतरे पकड़े' : 'Risks flagged'}    accent="text-red-400" />
             <StatCard icon={CalendarDays}  value={stats?.daysProtected ?? 0}    label={hi ? 'दिन सुरक्षित' : 'Days protected'}  accent="text-green-400" />
-            <StatCard icon={GraduationCap} value={stats?.videosWatched ?? 0}    label={hi ? 'सबक देखे' : 'Lessons watched'}    accent="text-purple-400" />
+            <StatCard icon={GraduationCap} value={stats?.videosWatched ?? 0}    label={hi ? 'सबक देखे' : 'Lessons watched'}    accent="text-emerald-400" />
             <StatCard icon={Users}         value={stats?.contactsProtected ?? 0} label={hi ? 'भरोसेमंद संपर्क' : 'Trusted contacts'} accent="text-amber-400" />
           </div>
         )}
